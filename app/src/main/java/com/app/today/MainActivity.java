@@ -40,15 +40,18 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             // Permission has already been granted
+
         }
         if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             CalendarContentResolver calendar = new CalendarContentResolver(this);
             Set<String> CalSet = calendar.getCalendars();
-            CharSequence instances = "";
+            /*CharSequence instances = "";
             for (String s : CalSet) {
                 instances = instances + "," + s;
             }
-            textView.setText(instances);
+            textView.setText(instances);*/
+            
+
         }
     }
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
