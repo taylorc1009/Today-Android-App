@@ -1,16 +1,20 @@
 package com.app.today;
 
-/*import android.content.ContentResolver;
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public class CalendarContentResolver {
+public class CalendarContentResolver extends MainActivity {
     public static final String[] FIELDS = {
             CalendarContract.Calendars.NAME,
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
@@ -19,9 +23,22 @@ public class CalendarContentResolver {
     };
     public static final Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/calendars");
     ContentResolver contentResolver;
-    Set<String> calendars = new HashSet<String>();
+    Set<String> calendars = new HashSet<>();
 
     public CalendarContentResolver(Context context) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted >>> request
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
+            }
+        } else {
+            // Permission has already been granted
+        }
         contentResolver = context.getContentResolver();
     }
 
@@ -35,13 +52,12 @@ public class CalendarContentResolver {
                 //Boolean selected = !cursor.getString(3).equals("0");
                 //calendars.add(displayName);
             }
-        } catch (AssertionError ex) {
-        }
+        } catch (AssertionError ex) {}
         return calendars;
     }
-}*/
+}
 
-import java.util.Date;
+/*import java.util.Date;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 import android.content.ContentResolver;
@@ -121,15 +137,14 @@ public class ReadCalendar
                         final Date end = new Date(eventCursor.getLong(2));
                         final Boolean allDay = !eventCursor.getString(3).equals("0");
 
-                        /*  System.out.println("Title: " + title + " Begin: " + begin + " End: " + end +
-                                    " All Day: " + allDay);
-                        */
+                        //System.out.println("Title: " + title + " Begin: " + begin + " End: " + end + " All Day: " + allDay);
+
                         System.out.println("Title:"+title);
                         System.out.println("Begin:"+begin);
                         System.out.println("End:"+end);
                         System.out.println("All Day:"+allDay);
 
-                        /* the calendar control metting-begin events Respose  sub-string (starts....hare) */
+                        //the calendar control metting-begin events Respose  sub-string (starts....hare)
 
                         Pattern p = Pattern.compile(" ");
                         String[] items = p.split(begin.toString());
@@ -165,9 +180,9 @@ public class ReadCalendar
 
                         System.out.println("calendar_metting_beginyear ="+calendar_metting_beginyear);
 
-                        /* the calendar control metting-begin events Respose  sub-string (starts....ends) */
+                        // the calendar control metting-begin events Respose  sub-string (starts....ends)
 
-                        /* the calendar control metting-end events Respose  sub-string (starts....hare) */
+                        // the calendar control metting-end events Respose  sub-string (starts....hare)
 
                         Pattern p1 = Pattern.compile(" ");
                         String[] enditems = p.split(end.toString());
@@ -203,7 +218,7 @@ public class ReadCalendar
 
                         System.out.println("calendar_metting_beginyear ="+calendar_metting_endyear);
 
-                        /* the calendar control metting-end events Respose  sub-string (starts....ends) */
+                        // the calendar control metting-end events Respose  sub-string (starts....ends)
 
                         System.out.println("only date begin of events="+begin.getDate());
                         System.out.println("only begin time of events="+begin.getHours() + ":" +begin.getMinutes() + ":" +begin.getSeconds());
@@ -237,4 +252,4 @@ public class ReadCalendar
             break;
         }
     }
-}
+}*/
