@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* Views populated, Hiding the loader, Showing the main design */
         findViewById(R.id.weatherLoad).setVisibility(View.GONE);
-        findViewById(R.id.mainContainer).setVisibility(View.VISIBLE);
+        findViewById(R.id.weatherGroup).setVisibility(View.VISIBLE);
 
         if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             CalendarContentResolver calendar = new CalendarContentResolver(this);

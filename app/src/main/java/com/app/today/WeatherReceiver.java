@@ -38,7 +38,7 @@ public class WeatherReceiver extends MainActivity {
             super.onPreExecute();
             /* Showing the ProgressBar, Making the main design GONE */
             findViewById(R.id.weatherLoad).setVisibility(View.VISIBLE);
-            findViewById(R.id.mainContainer).setVisibility(View.GONE);
+            findViewById(R.id.weatherGroup).setVisibility(View.GONE);
             findViewById(R.id.weatherError).setVisibility(View.GONE);
         }
         @Override

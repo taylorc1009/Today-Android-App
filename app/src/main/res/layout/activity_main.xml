@@ -6,61 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/weatherIcon"
-        android:layout_width="78dp"
-        android:layout_height="78dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/imageDescription"
-        android:src="@drawable/info"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/weatherGroup"
+        android:layout_width="200dp"
+        android:layout_height="125dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/forecast"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/forecast"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toTopOf="@+id/weatherIcon"/>
+        <ImageView
+            android:id="@+id/weatherIcon"
+            android:layout_width="78dp"
+            android:layout_height="78dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/imageDescription"
+            android:src="@drawable/info"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/temperature"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toBottomOf="@+id/forecast"/>
+        <TextView
+            android:id="@+id/forecast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/forecast"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+            app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
 
-    <TextView
-        android:id="@+id/highsLows"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/highsLows"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toBottomOf="@+id/temperature"/>
+        <TextView
+            android:id="@+id/temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/temperature"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+            app:layout_constraintTop_toBottomOf="@+id/forecast" />
 
-    <TextView
-        android:id="@+id/windSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/windSpeed"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toBottomOf="@+id/highsLows"/>
+        <TextView
+            android:id="@+id/highsLows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/highsLows"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+            app:layout_constraintTop_toBottomOf="@+id/temperature" />
 
-    <TextView
-        android:id="@+id/lastWUpdate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/lastWUpdate"
-        app:layout_constraintStart_toStartOf="@+id/weatherIcon"
-        app:layout_constraintTop_toBottomOf="@+id/weatherIcon"/>
+        <TextView
+            android:id="@+id/windSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/windSpeed"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+            app:layout_constraintTop_toBottomOf="@+id/highsLows" />
+
+        <TextView
+            android:id="@+id/lastWUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/lastWUpdate"
+            app:layout_constraintStart_toStartOf="@+id/weatherIcon"
+            app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/weatherLoad"
