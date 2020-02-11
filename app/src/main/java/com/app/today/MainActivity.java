@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         //sunsetTxt = findViewById(R.id.sunset);
         windTxt = findViewById(R.id.windSpeed);
 
-        new WeatherReceiver.weatherTask().execute();
+        WeatherReceiver receiver = new WeatherReceiver();
+
 
         /* Populating extracted data into our views */
         //addressTxt.setText(address);
