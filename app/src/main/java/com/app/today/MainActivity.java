@@ -1,12 +1,16 @@
 package com.app.today;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.text.SimpleDateFormat;
@@ -17,8 +21,8 @@ import java.util.Locale;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-    static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 1;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2;
+    static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
+    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt;
     List<String> weatherDetails = new ArrayList<>();
     @Override
@@ -35,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         //sunsetTxt = findViewById(R.id.sunset);
         windTxt = findViewById(R.id.windSpeed);
 
-        WeatherReceiver receiver = new WeatherReceiver();
-
+        if(checkPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+            new WeatherReceiver();
 
         /* Populating extracted data into our views */
         //addressTxt.setText(address);
@@ -57,10 +61,31 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.weatherLoad).setVisibility(View.GONE);
         findViewById(R.id.weatherGroup).setVisibility(View.VISIBLE);
 
-        if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+        /*if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             CalendarContentResolver calendar = new CalendarContentResolver(this);
             Set<String> CalSet = calendar.getCalendars();
+        }*/
+    }
+    private boolean checkPermission(int p) {
+        switch (p) {
+            case MY_PERMISSIONS_REQUEST_READ_CALENDAR: //Calendar
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_CALENDAR)) {
+                    } else { ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR); }
+                } else {}
+                if (MY_PERMISSIONS_REQUEST_READ_CALENDAR == PackageManager.PERMISSION_GRANTED)
+                    return true;
+                else return false;
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: //Location (for weather)
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    } else { ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION); }
+                } else {}
+                if (MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION == PackageManager.PERMISSION_GRANTED)
+                    return true;
+                else return false;
         }
+        return false;
     }
 }
     /*public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

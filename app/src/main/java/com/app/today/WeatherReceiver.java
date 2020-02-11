@@ -11,8 +11,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import com.androdocs.httprequest.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,10 +22,6 @@ public class WeatherReceiver extends MainActivity {
     static final String API = "772b4855c9a17c457e882407a698bcf0";
     private double longitude, latitude;
     public WeatherReceiver() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else { ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION); }
-        } else {}
         longitude = 0;
         latitude = 0;
         new weatherTask().execute();

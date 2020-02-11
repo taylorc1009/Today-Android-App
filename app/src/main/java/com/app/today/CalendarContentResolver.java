@@ -26,19 +26,6 @@ public class CalendarContentResolver extends MainActivity {
     Set<String> calendars = new HashSet<>();
 
     public CalendarContentResolver(Context context) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted >>> request
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
-            }
-        } else {
-            // Permission has already been granted
-        }
         contentResolver = context.getContentResolver();
     }
 
