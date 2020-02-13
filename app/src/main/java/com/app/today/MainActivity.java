@@ -1,9 +1,9 @@
 package com.app.today;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.app.CoreComponentFactory; // --> unused but the runtime needs it
+//import androidx.core.app.CoreComponentFactory; // --> unused but the runtime needs it
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,21 +12,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
-
 import com.androdocs.httprequest.HttpRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,16 +56,8 @@ public class MainActivity extends AppCompatActivity {
             public String doInBackground(String... args) {
                 //return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh,GB&APPID=" + API);
                 final LocationListener locationListener = new LocationListener() {
-                    Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
                     @Override
                     public void onLocationChanged(Location location) {
-                        /*final String result = doSomeLongRuningOperation(location);
-                        MAIN_HANDLER.post( new Runnable() {
-                            @Override
-                            public void run() {
-                                doSomeOperationOnUIThread(result):
-                            }
-                        });*/
                         longitude = location.getLongitude();
                         latitude = location.getLatitude();
                     }
