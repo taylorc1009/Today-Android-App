@@ -1,35 +1,29 @@
 package com.app.today;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class CalendarContentResolver extends MainActivity {
-    public static final String[] FIELDS = {
+    static final String[] FIELDS = {
             CalendarContract.Calendars.NAME,
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
             CalendarContract.Calendars.CALENDAR_COLOR,
             CalendarContract.Calendars.VISIBLE
     };
-    public static final Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/calendars");
-    ContentResolver contentResolver;
-    Set<String> calendars = new HashSet<>();
+    static final Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/calendars");
+    private ContentResolver contentResolver;
+    private Set<String> calendars = new HashSet<>();
 
     public CalendarContentResolver(Context context) {
         contentResolver = context.getContentResolver();
     }
 
-    public Set<String> getCalendars() {
+    public Set<String> getCalendar() {
         Cursor cursor = contentResolver.query(CALENDAR_URI, FIELDS, null, null, null);
         try {
             if (cursor.getCount() > 0) {
@@ -40,6 +34,7 @@ public class CalendarContentResolver extends MainActivity {
                 //calendars.add(displayName);
             }
         } catch (AssertionError ex) {}
+        cursor.close();
         return calendars;
     }
 }
@@ -54,21 +49,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.DateUtils;
 
-public class ReadCalendar
+public class CalendarContentResolver
 {
     static Cursor cursor;
-
     public static void readCalendar(Context context) {
-
         ContentResolver contentResolver = context.getContentResolver();
-
         // Fetch a list of all calendars synced with the device, their display names and whether the
-
-        cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"),
-                (new String[] { "_id", "displayName", "selected"}), null, null, null);
-
-        HashSet<String> calendarIds = new HashSet<String>();
-
+        cursor = contentResolver.query(Uri.parse("content://com.android.calendar/calendars"), (new String[] { "_id", "displayName", "selected"}), null, null, null);
+        HashSet<String> calendarIds = new HashSet<>();
         try
         {
             System.out.println("Count="+cursor.getCount());
@@ -76,7 +64,6 @@ public class ReadCalendar
             {
                 System.out.println("the control is just inside of the cursor.count loop");
                 while (cursor.moveToNext()) {
-
                     String _id = cursor.getString(0);
                     String displayName = cursor.getString(1);
                     Boolean selected = !cursor.getString(2).equals("0");
@@ -184,11 +171,11 @@ public class ReadCalendar
 
 
                         String  calendar_metting_endday = scalendar_metting_endday;
-                        String  calendar_metting_endmonth = scalendar_metting_endmonth.toString().trim();
+                        String  calendar_metting_endmonth = scalendar_metting_endmonth.trim();
 
                         int  calendar_metting_enddate = Integer.parseInt(scalendar_metting_enddate.trim());
 
-                        String calendar_metting_endtime = scalendar_metting_endtime.toString().trim();
+                        String calendar_metting_endtime = scalendar_metting_endtime.trim();
                         String calendar_metting_endgmt = scalendar_metting_endgmt;
                         int calendar_metting_endyear = Integer.parseInt(scalendar_metting_endyear.trim());
 
@@ -223,14 +210,14 @@ public class ReadCalendar
                         end_time = end.getHours();
 
 
-                        CallHandlerUI.metting_begin_date.add(beg_date.toString());
+                        /*CallHandlerUI.metting_begin_date.add(beg_date.toString());
                         CallHandlerUI.metting_begin_mdate.add(mbeg_date.toString());
 
                         CallHandlerUI.metting_begin_mtime.add(calendar_metting_begintime.toString());
 
                         CallHandlerUI.metting_end_date.add(end_date.toString());
                         CallHandlerUI.metting_end_time.add(end_time.toString());
-                        CallHandlerUI.metting_end_mtime.add(calendar_metting_endtime.toString());
+                        CallHandlerUI.metting_end_mtime.add(calendar_metting_endtime.toString());//
 
                     }
                     while(eventCursor.moveToNext());

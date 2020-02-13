@@ -3,16 +3,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+import androidx.core.app.CoreComponentFactory; // --> unused but the runtime needs it
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.androdocs.httprequest.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt;
     List<String> weatherDetails = new ArrayList<>();
+    static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
+    private double longitude, latitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,85 +46,104 @@ public class MainActivity extends AppCompatActivity {
         forecastTxt = findViewById(R.id.forecast);
         highsLowsTxt = findViewById(R.id.highsLows);
         temperatureTxt = findViewById(R.id.temperature);
-        //temp_minTxt = findViewById(R.id.temp_min);
-        //temp_maxTxt = findViewById(R.id.temp_max);
-        //sunriseTxt = findViewById(R.id.sunrise);
-        //sunsetTxt = findViewById(R.id.sunset);
         windTxt = findViewById(R.id.windSpeed);
 
-        if(checkPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-            new WeatherReceiver();
+        class weatherTask extends AsyncTask<String, Void, String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                findViewById(R.id.weatherLoad).setVisibility(View.VISIBLE);
+                findViewById(R.id.weatherGroup).setVisibility(View.GONE);
+                findViewById(R.id.weatherError).setVisibility(View.GONE);
+            }
+            @Override
+            public String doInBackground(String... args) {
+                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh,GB&APPID=" + API);
+                /*final LocationListener locationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                    }
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        /* Populating extracted data into our views */
-        //addressTxt.setText(address);
-        forecastTxt.setText(weatherDetails.get(0).toUpperCase());
-        temperatureTxt.setText(weatherDetails.get(1));
-        highsLowsTxt.setText(weatherDetails.get(2));
-        windTxt.setText(weatherDetails.get(3));
-        lastWUpdateTxt.setText(weatherDetails.get(4));
+                    }
+                    @Override
+                    public void onProviderEnabled(String provider) {
 
-        //temp_minTxt.setText(tempMin);
-        //temp_maxTxt.setText(tempMax);
-        //sunriseTxt.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunrise * 1000)));
-        //sunsetTxt.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunset * 1000)));
-        //pressureTxt.setText(pressure);
-        //humidityTxt.setText(humidity);
+                    }
+                    @Override
+                    public void onProviderDisabled(String provider) {
 
-        /* Views populated, Hiding the loader, Showing the main design */
-        findViewById(R.id.weatherLoad).setVisibility(View.GONE);
-        findViewById(R.id.weatherGroup).setVisibility(View.VISIBLE);
-
-        /*if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            CalendarContentResolver calendar = new CalendarContentResolver(this);
-            Set<String> CalSet = calendar.getCalendars();
-        }*/
+                    }
+                };
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if(location != null) {
+                        //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+                        //return HttpRequest.excuteGet("https://api.darksky.net/" + API + "/" + latitude + "," + longitude);
+                        //return HttpRequest.excuteGet("https://api.darksky.net/forecast/fc7495b2595be4d034d506c6a16bcda3/37.8267,-122.4233");
+                    }
+                }
+                return null;*/
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    JSONObject jsonObj = new JSONObject(result);
+                    JSONObject main = jsonObj.getJSONObject("main");
+                    JSONObject wind = jsonObj.getJSONObject("wind");
+                    JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
+                    Long updatedAt = jsonObj.getLong("dt");
+                    weatherDetails.add(weather.getString("description"));
+                    weatherDetails.add(main.getString("temp") + "°C");
+                    weatherDetails.add(main.getString("temp_min") + "/" + main.getString("temp_max") + "°C");
+                    weatherDetails.add(wind.getString("speed"));
+                    weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
+                    if (!weatherDetails.isEmpty()) {
+                        forecastTxt.setText(weatherDetails.get(0).toUpperCase());
+                        temperatureTxt.setText(weatherDetails.get(1));
+                        highsLowsTxt.setText(weatherDetails.get(2));
+                        windTxt.setText(weatherDetails.get(3));
+                        lastWUpdateTxt.setText(weatherDetails.get(4));
+                        findViewById(R.id.weatherLoad).setVisibility(View.GONE);
+                        findViewById(R.id.weatherGroup).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.weatherLoad).setVisibility(View.GONE);
+                        findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
+                    }
+                } catch (JSONException e) {
+                    findViewById(R.id.weatherLoad).setVisibility(View.GONE);
+                    findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+            new weatherTask().execute(); //--> http request fails
+        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+            CalendarContentResolver calendar = new CalendarContentResolver(getApplicationContext());
+            Set<String> CalSet = calendar.getCalendar();
+        }
     }
-    private boolean checkPermission(int p) {
-        switch (p) {
-            case MY_PERMISSIONS_REQUEST_READ_CALENDAR: //Calendar
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_CALENDAR)) {
-                    } else { ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR); }
-                } else {}
-                if (MY_PERMISSIONS_REQUEST_READ_CALENDAR == PackageManager.PERMISSION_GRANTED)
+    private boolean reqPermission(int p) {
+        switch(p) {
+            case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
+                    } else { ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR); }
+                } else { return true; }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;
-                else return false;
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: //Location (for weather)
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    } else { ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION); }
-                } else {}
-                if (MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION == PackageManager.PERMISSION_GRANTED)
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    } else { ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION); }
+                } else { return true; }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;
-                else return false;
         }
         return false;
     }
 }
-    /*public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CALENDAR: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Toast.makeText(MainActivity.this, "Calendar permission GRANTED", Toast.LENGTH_LONG);
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Calendar permission denied...", Toast.LENGTH_LONG);
-                }
-                return;
-            }
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Location permission GRANTED", Toast.LENGTH_LONG);
-                } else {
-                    Toast.makeText(MainActivity.this, "Location permission denied...", Toast.LENGTH_LONG);
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }*/

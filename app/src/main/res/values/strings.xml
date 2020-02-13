@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">Today</string>
-    <string name="updatedAt">Updated at</string>
+    <string name="imageDescription">(display icon description)</string>
+
     <string name="forecast">Forecast</string>
     <string name="temperature">Temperature</string>
     <string name="highsLows">Highs/lows</string>
     <string name="windSpeed">Wind speed</string>
-    <string name="imageDescription">Weather forecast icon</string>
     <string name="lastWUpdate">last updated</string>
+    <string name="weatherError">Something went wrong...</string>
+
+    <string name="calTitle">Calendar | Coming up today...</string>
+    <string name="event">Event</string>
 </resources>

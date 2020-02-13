@@ -2,7 +2,7 @@
 
 package com.app.today;
 
-import android.Manifest;
+/*import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,18 +19,22 @@ import java.util.Date;
 import java.util.Locale;
 
 public class WeatherReceiver extends MainActivity {
-    static final String API = "772b4855c9a17c457e882407a698bcf0";
+
     private double longitude, latitude;
     public WeatherReceiver() {
         longitude = 0;
         latitude = 0;
-        new weatherTask().execute();
+
+        //new weatherTask().execute();
+    }
+    private String getLastUpdate() {
+
     }
     class weatherTask extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /* Showing the ProgressBar, Making the main design GONE */
+            // Showing the ProgressBar, Making the main design GONE
             findViewById(R.id.weatherLoad).setVisibility(View.VISIBLE);
             findViewById(R.id.weatherGroup).setVisibility(View.GONE);
             findViewById(R.id.weatherError).setVisibility(View.GONE);
@@ -93,8 +97,12 @@ public class WeatherReceiver extends MainActivity {
                 //Long sunset = sys.getLong("sunset");
                 String windSpeed = wind.getString("speed");
                 String weatherDescription = weather.getString("description");
-                //String address = jsonObj.getString("name") + ", " + sys.getString("country");*/
-            } catch (JSONException e) {}
+                //String address = jsonObj.getString("name") + ", " + sys.getString("country");
+            } catch (JSONException e) {
+                findViewById(R.id.weatherLoad).setVisibility(View.GONE);
+                findViewById(R.id.weatherGroup).setVisibility(View.GONE);
+                findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
+            }
         }
     }
-}
+}*/
