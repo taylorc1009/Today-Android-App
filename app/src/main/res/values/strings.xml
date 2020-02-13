@@ -9,6 +9,6 @@
     <string name="lastWUpdate">last updated</string>
     <string name="weatherError">Something went wrong...</string>
 
-    <string name="calTitle">Calendar | Coming up today...</string>
+    <string name="calTitle">Calendar | Happening today…</string>
     <string name="event">Event</string>
 </resources>
