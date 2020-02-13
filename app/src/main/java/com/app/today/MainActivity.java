@@ -12,6 +12,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -58,10 +61,18 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public String doInBackground(String... args) {
-                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh,GB&APPID=" + API);
-                /*final LocationListener locationListener = new LocationListener() {
+                //return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh,GB&APPID=" + API);
+                final LocationListener locationListener = new LocationListener() {
+                    Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
                     @Override
                     public void onLocationChanged(Location location) {
+                        /*final String result = doSomeLongRuningOperation(location);
+                        MAIN_HANDLER.post( new Runnable() {
+                            @Override
+                            public void run() {
+                                doSomeOperationOnUIThread(result):
+                            }
+                        });*/
                         longitude = location.getLongitude();
                         latitude = location.getLatitude();
                     }
@@ -81,13 +92,15 @@ public class MainActivity extends AppCompatActivity {
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if(location != null) {
-                        //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+                    HandlerThread t = new HandlerThread("handlerThread");
+                    t.start();
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
+                    if(location != null)
+                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
                         //return HttpRequest.excuteGet("https://api.darksky.net/" + API + "/" + latitude + "," + longitude);
                         //return HttpRequest.excuteGet("https://api.darksky.net/forecast/fc7495b2595be4d034d506c6a16bcda3/37.8267,-122.4233");
-                    }
                 }
-                return null;*/
+                return null;
             }
             @Override
             protected void onPostExecute(String result) {
