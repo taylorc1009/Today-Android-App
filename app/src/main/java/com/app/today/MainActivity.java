@@ -56,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
             new weatherTask().execute(); //--> http request fails
         if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
-            CalendarContentResolver calendar = new CalendarContentResolver(getApplicationContext());
-            /*CalendarContentResolver calendar = new CalendarContentResolver();
-            calendar.getCalendar(getApplicationContext());*/
+            new CalendarContentResolver(getApplicationContext());
         }
     }
     class weatherTask extends AsyncTask<String, Void, String> {

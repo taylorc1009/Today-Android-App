@@ -9,9 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CalendarContentResolver extends MainActivity {
-    public CalendarContentResolver(Context context) {
-        getCalendar(context);
-    }
+    public CalendarContentResolver(Context context) { getCalendar(context); }
     private static void getCalendar(Context context) {
         Cursor cursor = context.getContentResolver().query(Uri.parse("content://com.android.calendar/events"), new String[] { "calendar_id", "title", "description", "dtstart", "dtend", "eventLocation" }, null, null, null);
         cursor.moveToFirst();
