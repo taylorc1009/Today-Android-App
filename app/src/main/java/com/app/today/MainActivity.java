@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 import com.androdocs.httprequest.HttpRequest;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     static TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt;
+    static FloatingActionButton alarmMore;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -52,12 +55,18 @@ public class MainActivity extends AppCompatActivity {
         event1Txt = findViewById(R.id.event1txt);
         event2Txt = findViewById(R.id.event2txt);
         event3Txt = findViewById(R.id.event3txt);
+        alarmMore = findViewById(R.id.alarmMore);
 
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
             new weatherTask().execute(); //--> http request fails
         if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
             new CalendarContentResolver(getApplicationContext());
         }
+        alarmMore.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
+            }
+        });
     }
     class weatherTask extends AsyncTask<String, Void, String> {
         @Override

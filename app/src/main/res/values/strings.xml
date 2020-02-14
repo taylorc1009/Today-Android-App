@@ -11,4 +11,6 @@
 
     <string name="calTitle">Calendar | Happening today…</string>
     <string name="event">Event</string>
+
+    <string name="alarmTitle">Next alarm</string>
 </resources>
