@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 //import androidx.core.app.CoreComponentFactory; // --> unused but the runtime needs it
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,7 +20,6 @@ import android.util.Log;
 import android.widget.Toast;
 import com.androdocs.httprequest.HttpRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -64,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
         }
         alarmMore.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
+                Intent alarmActivity = new Intent(MainActivity.this, AlarmManager.class);
+                startActivity(alarmActivity);
             }
         });
     }
