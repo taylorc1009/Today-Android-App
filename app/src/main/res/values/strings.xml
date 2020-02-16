@@ -16,7 +16,7 @@
     <string name="alarmAdd">Add an alarm</string>
     <string name="hourHint">hour</string>
     <string name="minuteHint">minute</string>
-    <string name="labelHint">Label</string>
+    <string name="labelHint">Alarm label (length 100)</string>
     <string name="Mon">Monday</string>
     <string name="Tues">Tuesday</string>
     <string name="Wed">Wednesday</string>

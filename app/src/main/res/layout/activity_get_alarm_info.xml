@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddAlarm">
+    tools:context=".GetAlarmInfo">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/alarmBack"
@@ -50,11 +50,11 @@
     <EditText
         android:id="@+id/hour"
         android:layout_width="85dp"
-        android:layout_height="73dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="number"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/alarmTitle"
@@ -64,11 +64,11 @@
     <EditText
         android:id="@+id/minute"
         android:layout_width="85dp"
-        android:layout_height="73dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/hour"
@@ -144,14 +144,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_save" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
+        android:id="@+id/alarmLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/daysGroup">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/labelHint" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@id/daysGroup"
+        android:inputType="textAutoCorrect"
+        android:textSize="18sp"
+        android:hint="@string/labelHint"
+        android:autofillHints="Alarm label (length 100)" />
 </androidx.constraintlayout.widget.ConstraintLayout>

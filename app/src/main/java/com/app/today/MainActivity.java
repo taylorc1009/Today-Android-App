@@ -56,16 +56,14 @@ public class MainActivity extends AppCompatActivity {
         event2Txt = findViewById(R.id.event2txt);
         event3Txt = findViewById(R.id.event3txt);
         alarmMore = findViewById(R.id.alarmMore);
-
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-            new weatherTask().execute(); //--> http request fails
-        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+            new weatherTask().execute();
+        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
             new CalendarContentResolver(getApplicationContext());
-        }
         alarmMore.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
-                Intent alarmActivity = new Intent(MainActivity.this, AlarmManager.class);
+                Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
                 startActivity(alarmActivity);
             }
         });
@@ -100,8 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 HandlerThread t = new HandlerThread("handlerThread");
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                if(location != null)
+                if (location != null) {
+                    //t.quit();
                     return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
+                }
             }
             return null;
         }
