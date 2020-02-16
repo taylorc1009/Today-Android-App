@@ -86,7 +86,7 @@ public class GetAlarmInfo extends AlarmSystem {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                if(!(alarmLabel.getText().toString() == ""))
+                if(!(alarmLabel.getText().toString().equals("")))
                     label = alarmLabel.getText().toString();
                 //time = convertedStr;
                 if(chkMon.isChecked())
