@@ -21,10 +21,10 @@
         android:id="@+id/alarmIcon"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/imageDescription"
-        app:layout_constraintStart_toEndOf="@+id/alarmBack"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
 
@@ -32,11 +32,11 @@
         android:id="@+id/alarmTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="4dp"
         android:text="@string/alarmAdd"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/alarmIcon"
+        app:layout_constraintEnd_toStartOf="@+id/alarmIcon"
         app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -54,8 +54,10 @@
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="number"
+        android:textSize="20sp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/alarmBack"
+        app:layout_constraintTop_toBottomOf="@+id/alarmTitle"
         android:hint="@string/hourHint"
         android:autofillHints="hour" />
 
@@ -66,8 +68,10 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:textSize="20sp"
+        android:textAlignment="center"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/alarmBack"
+        app:layout_constraintTop_toTopOf="@+id/hour"
         android:hint="@string/minuteHint"
         android:autofillHints="minute" />
 
@@ -139,4 +143,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_save" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/daysGroup">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/labelHint" />
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
