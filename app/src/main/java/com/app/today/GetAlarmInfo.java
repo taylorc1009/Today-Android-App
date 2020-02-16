@@ -103,7 +103,7 @@ public class GetAlarmInfo extends AlarmSystem {
                     days.add(Calendar.SATURDAY);
                 if(chkSun.isChecked())
                     days.add(Calendar.SUNDAY);
-                //scheduleAlarm();
+                //scheduleAlarm(); //once method completes, clear all attributes required
             }
         });
     }
