@@ -31,17 +31,17 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    static TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt;
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt;
     static FloatingActionButton alarmMore;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
     private double longitude, latitude;
 
-    public static List<String> nameOfEvent = new ArrayList<>();
-    public static List<String> startDates = new ArrayList<>();
-    public static List<String> endDates = new ArrayList<>();
-    public static List<String> descriptions = new ArrayList<>();
+    protected static List<String> nameOfEvent = new ArrayList<>();
+    protected static List<String> startDates = new ArrayList<>();
+    protected static List<String> endDates = new ArrayList<>();
+    protected static List<String> descriptions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         event2Txt = findViewById(R.id.event2txt);
         event3Txt = findViewById(R.id.event3txt);
         alarmMore = findViewById(R.id.alarmMore);
+
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
             new weatherTask().execute();
         if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
@@ -98,10 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 HandlerThread t = new HandlerThread("handlerThread");
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                if (location != null) {
-                    //t.quit();
-                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
-                }
+                //t.quit();
+                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
             }
             return null;
         }
