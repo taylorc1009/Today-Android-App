@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.TextView;
 import android.util.Log;
@@ -25,18 +26,20 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt;
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt, calTitle;
     static FloatingActionButton alarmMore;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
-    private double longitude, latitude;
+
+    SparseArray<String[]> calendar = new SparseArray<>();
 
     protected static List<String> nameOfEvent = new ArrayList<>();
     protected static List<String> startDates = new ArrayList<>();
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         highsLowsTxt = findViewById(R.id.highsLows);
         temperatureTxt = findViewById(R.id.temperature);
         windTxt = findViewById(R.id.windSpeed);
+        calTitle = findViewById(R.id.calTitle);
         event1Txt = findViewById(R.id.event1txt);
         event2Txt = findViewById(R.id.event2txt);
         event3Txt = findViewById(R.id.event3txt);
@@ -59,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
             new weatherTask().execute();
-        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
+        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
             new CalendarContentResolver(getApplicationContext());
+            updateCalendar();
+        }
         alarmMore.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
@@ -70,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     class weatherTask extends AsyncTask<String, Void, String> {
+        private double longitude, latitude;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -111,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject main = jsonObj.getJSONObject("main");
                 JSONObject wind = jsonObj.getJSONObject("wind");
                 JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
-                Long updatedAt = jsonObj.getLong("dt");
+                long updatedAt = jsonObj.getLong("dt");
                 weatherDetails.add(weather.getString("description"));
                 weatherDetails.add(main.getString("temp") + "°C");
                 weatherDetails.add(main.getString("temp_min") + "°C min - " + main.getString("temp_max") + "°C max");
@@ -132,6 +139,46 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 findViewById(R.id.weatherLoad).setVisibility(View.GONE);
                 findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
+            }
+        }
+    }
+    private void updateCalendar() {
+        if(calendar.size() == 0) {
+            calTitle.setText("Couldn't retrieve calendar...");
+            findViewById(R.id.calTable).setVisibility(View.GONE);
+            Log.i("calendar Sparse 0 == ",(calendar.get(0)[0]));
+        }
+        else {
+            if (CalendarContentResolver.compareDate(calendar.get(0)[1])) {
+                calTitle.setText("Calendar | nothing today!");
+                findViewById(R.id.calTable).setVisibility(View.GONE);
+                //Log.i("startDates 0 ==", startDates.get(1));
+                event1Txt.setText(calendar.get(0)[0] + ", " + calendar.get(0)[1]);
+                //event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
+            } else {
+                calTitle.setText("Calendar | happening today…");
+                findViewById(R.id.calTable).setVisibility(View.VISIBLE);
+                event1Txt.setText(nameOfEvent.get(0) + ", " + startDates.get(0));
+                if (CalendarContentResolver.compareDate(startDates.get(1))) {
+                    findViewById(R.id.calSep2).setVisibility(View.GONE);
+                    event2Txt.setVisibility(View.GONE);
+                    findViewById(R.id.calSep3).setVisibility(View.GONE);
+                    event3Txt.setVisibility(View.GONE);
+                    //event2Txt.setText("Coming up soon: " + nameOfEvent.get(1) + ", " + startDates.get(1));
+                } else {
+                    findViewById(R.id.calSep2).setVisibility(View.GONE);
+                    event2Txt.setVisibility(View.VISIBLE);
+                    event2Txt.setText(nameOfEvent.get(1) + ", " + startDates.get(1));
+                    if (CalendarContentResolver.compareDate(startDates.get(2))) {
+                        findViewById(R.id.calSep3).setVisibility(View.GONE);
+                        event3Txt.setVisibility(View.GONE);
+                        //event3Txt.setText("Coming up soon: " + nameOfEvent.get(2) + ", " + startDates.get(2));
+                    } else {
+                        findViewById(R.id.calSep3).setVisibility(View.VISIBLE);
+                        event3Txt.setVisibility(View.VISIBLE);
+                        event3Txt.setText(nameOfEvent.get(2) + ", " + startDates.get(2));
+                    }
+                }
             }
         }
     }

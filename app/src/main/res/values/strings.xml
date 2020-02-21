@@ -9,7 +9,7 @@
     <string name="lastWUpdate">last updated</string>
     <string name="weatherError">Something went wrong…</string>
 
-    <string name="calTitle">Calendar | Happening today…</string>
+    <string name="calTitle">Calendar | happening today…</string>
     <string name="event">Event</string>
 
     <string name="alarmTitle">Alarms</string>
