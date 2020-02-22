@@ -26,21 +26,21 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import com.app.today.Event;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt, calTitle;
     static FloatingActionButton alarmMore;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
-    SparseArray<String[]> calendar = new SparseArray<>();
-
+    //List<Event> calendar = new ArrayList<>();
     protected static List<String> nameOfEvent = new ArrayList<>();
     protected static List<String> startDates = new ArrayList<>();
     protected static List<String> endDates = new ArrayList<>();
@@ -143,18 +143,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void updateCalendar() {
-        if(calendar.size() == 0) {
+        //if(calendar.isEmpty()) {
+        if(nameOfEvent.isEmpty()) {
             calTitle.setText("Couldn't retrieve calendar...");
             findViewById(R.id.calTable).setVisibility(View.GONE);
-            Log.i("calendar Sparse 0 == ",(calendar.get(0)[0]));
+            //Log.i("calendar", calendar.get(0).getTitle());
         }
         else {
-            if (CalendarContentResolver.compareDate(calendar.get(0)[1])) {
+            //if (CalendarContentResolver.compareDate(calendar.get(0).getStartDate())) {
+            if(CalendarContentResolver.compareDate(startDates.get(0))) {
                 calTitle.setText("Calendar | nothing today!");
                 findViewById(R.id.calTable).setVisibility(View.GONE);
                 //Log.i("startDates 0 ==", startDates.get(1));
-                event1Txt.setText(calendar.get(0)[0] + ", " + calendar.get(0)[1]);
-                //event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
+                event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
             } else {
                 calTitle.setText("Calendar | happening today…");
                 findViewById(R.id.calTable).setVisibility(View.VISIBLE);
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     event3Txt.setVisibility(View.GONE);
                     //event2Txt.setText("Coming up soon: " + nameOfEvent.get(1) + ", " + startDates.get(1));
                 } else {
-                    findViewById(R.id.calSep2).setVisibility(View.GONE);
+                    findViewById(R.id.calSep2).setVisibility(View.VISIBLE);
                     event2Txt.setVisibility(View.VISIBLE);
                     event2Txt.setText(nameOfEvent.get(1) + ", " + startDates.get(1));
                     if (CalendarContentResolver.compareDate(startDates.get(2))) {
