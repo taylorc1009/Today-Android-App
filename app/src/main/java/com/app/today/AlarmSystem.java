@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
@@ -46,6 +47,10 @@ public class AlarmSystem extends AppCompatActivity {
     private List<Integer> days = new ArrayList<>();
     private Long alarmTime = null;
     private String UITime = null;
+
+    AlarmManager alarmManager;
+    PendingIntent alarmSender;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,7 +164,8 @@ public class AlarmSystem extends AppCompatActivity {
                         for (int i = 0; i <= days.size(); i++)
                             scheduleAlarm(days.get(i), alarmID);
                     } else
-                        scheduleAlarm(9, alarmID); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
+                        //test range of 10 alarms
+                        scheduleAlarm(9, new Random().nextInt(10)); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
                     clearAddUI();
                 }
                 else {
@@ -213,7 +219,7 @@ public class AlarmSystem extends AppCompatActivity {
             }
         }
     }
-    private void scheduleAlarm(int dayOfWeek, int alarmID) {
+    private void scheduleAlarm(int dayOfWeek, Integer alarmID) {
 
         /* perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
         * day has come, pull the alarm matching the ID we want from the database and check if it is due
@@ -229,21 +235,52 @@ public class AlarmSystem extends AppCompatActivity {
         }*/
 
         // Set this to whatever you were planning to do at the given time
-        Intent alarmIntent = new Intent(getApplicationContext(), AlarmActivity.class);
+        Intent alarmIntent = new Intent(this, AlarmRing.class);
         alarmIntent.putExtra("alarmID", alarmID);
         alarmIntent.setAction("com.app.today.FireAlarm");
-        PendingIntent alarmSender = PendingIntent.getActivity(getApplicationContext(), alarmID, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), alarmID, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
         //upon ring, transition to alarm activity
         //perhaps pull an id and ring the alarm matching that id, alarms could be stored
         //in a database, plus it might be easier to view and delete them this way?
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
         //already exist
     }
+
+    /* Possible alarm operators
+
+    public void cancelPeriodicSchedule(PendingIntent sender) {
+        if (am != null) {
+            if (sender != null) {
+                am.cancel(sender);
+                sender.cancel();
+            }
+        }
+        // Deactivate Broadcast Receiver to stop receiving broadcasts
+        deactivateBroadcastreceiver();
+    }
+
+    private void activateBroadcastReceiver() {
+        PackageManager pm = context.getPackageManager();
+        ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        Toast.makeText(context, "activated", Toast.LENGTH_LONG).show();
+    }
+
+    private void deactivateBroadcastreceiver() {
+        // TODO Auto-generated method stub
+
+        PackageManager pm = context.getPackageManager();
+        ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
+        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        Toast.makeText(context, "cancelled", Toast.LENGTH_LONG).show();
+
+    }*/
+
     private void clearAddUI() {
         addGroup.setVisibility(View.GONE);
         //hour.getText().clear();

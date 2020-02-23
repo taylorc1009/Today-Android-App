@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt, calTitle;
     static FloatingActionButton alarmMore;
-    protected Resources resources = this.getResources();
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -146,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateCalendar() {
         //if(calendar.isEmpty()) {
+        Resources resources = this.getResources();
         if(nameOfEvent.isEmpty()) {
             calTitle.setText(resources.getString(R.string.calError));
             findViewById(R.id.calTable).setVisibility(View.GONE);
