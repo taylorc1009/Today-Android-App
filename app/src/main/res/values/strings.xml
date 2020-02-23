@@ -27,4 +27,7 @@
     <string name="Fri">Friday</string>
     <string name="Sat">Saturday</string>
     <string name="Sun">Sunday</string>
+
+    <string name="alarmLabel">Alarm label</string>
+    <string name="alarmTime">00:00</string>
 </resources>

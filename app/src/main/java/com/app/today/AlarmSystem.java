@@ -32,6 +32,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static android.app.PendingIntent.FLAG_ONE_SHOT;
+
 public class AlarmSystem extends AppCompatActivity {
     static FloatingActionButton alarmBack, alarmAdd, alarmSave;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
@@ -214,14 +216,17 @@ public class AlarmSystem extends AppCompatActivity {
     private void scheduleAlarm(int dayOfWeek, int alarmID) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-        // Check we aren't setting it in the past which would trigger it to fire instantly
+
+        /* Check we aren't setting it in the past which would trigger it to fire instantly
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 7);
-        }
+        }*/
         // Set this to whatever you were planning to do at the given time
-        PendingIntent alarmIntent = null;// <-- upon ring, transition to alarm activity
+
+        PendingIntent alarmIntent = PendingIntent.getActivity(getApplicationContext(), alarmID, AlarmRing.this, FLAG_ONE_SHOT);// <-- upon ring, transition to alarm activity
         //perhaps pull an id and ring the alarm matching that id, alarms could be stored
         //in a database, plus it might be easier to view and delete them this way?
+
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY * 7, alarmIntent);
     }

@@ -8,16 +8,63 @@
     tools:context=".AlarmRing">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/alarmIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:contentDescription="@string/imageDescription"
-        android:maxWidth="50dp"
-        android:maxHeight="50dp"
-        android:scaleType="fitCenter"
+        android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/alarm-clocks-computer-icons-black-and-white-png-clip-art" />
+        app:srcCompat="@drawable/alarmwhite" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/stopAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        app:backgroundTint="#12A0A0A0"
+        app:layout_constraintStart_toEndOf="@+id/alarmIcon"
+        app:layout_constraintTop_toTopOf="@+id/alarmIcon"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/snoozeAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="44dp"
+        android:clickable="true"
+        app:backgroundTint="#12A0A0A0"
+        app:layout_constraintEnd_toStartOf="@+id/alarmIcon"
+        app:layout_constraintTop_toTopOf="@+id/alarmIcon"
+        app:srcCompat="@android:drawable/ic_popup_sync" />
+
+    <TextView
+        android:id="@+id/alarmLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="@string/alarmLabel"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
+        app:layout_constraintHorizontal_bias="0.519"
+        app:layout_constraintStart_toStartOf="@+id/alarmIcon"
+        app:layout_constraintTop_toBottomOf="@+id/alarmIcon" />
+
+    <TextView
+        android:id="@+id/alarmTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="@string/alarmTime"
+        android:textSize="50sp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/alarmIcon"
+        app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
+        app:layout_constraintHorizontal_bias="0.568"
+        app:layout_constraintStart_toStartOf="@+id/alarmIcon" />
 </androidx.constraintlayout.widget.ConstraintLayout>
