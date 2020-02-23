@@ -73,7 +73,6 @@
             android:id="@+id/alarmLoad"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:progressTint="#E91E63"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

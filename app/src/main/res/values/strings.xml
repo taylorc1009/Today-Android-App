@@ -10,6 +10,8 @@
     <string name="weatherError">Something went wrong…</string>
 
     <string name="calTitle">Calendar | happening today…</string>
+    <string name="calError">"Couldn't retrieve calendar…"</string>
+    <string name="calEmpty">Calendar | nothing today!</string>
     <string name="event">Event</string>
 
     <string name="alarmTitle">Alarms</string>

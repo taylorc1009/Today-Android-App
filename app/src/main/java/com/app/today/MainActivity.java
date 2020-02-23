@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt, calTitle;
     static FloatingActionButton alarmMore;
+    protected Resources resources = this.getResources();
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -145,19 +147,19 @@ public class MainActivity extends AppCompatActivity {
     private void updateCalendar() {
         //if(calendar.isEmpty()) {
         if(nameOfEvent.isEmpty()) {
-            calTitle.setText("Couldn't retrieve calendar...");
+            calTitle.setText(resources.getString(R.string.calError));
             findViewById(R.id.calTable).setVisibility(View.GONE);
             //Log.i("calendar", calendar.get(0).getTitle());
         }
         else {
             //if (CalendarContentResolver.compareDate(calendar.get(0).getStartDate())) {
             if(CalendarContentResolver.compareDate(startDates.get(0))) {
-                calTitle.setText("Calendar | nothing today!");
+                calTitle.setText(resources.getString(R.string.calEmpty));
                 findViewById(R.id.calTable).setVisibility(View.GONE);
                 //Log.i("startDates 0 ==", startDates.get(1));
-                event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
+                //event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
             } else {
-                calTitle.setText("Calendar | happening today…");
+                calTitle.setText(resources.getString(R.string.calTitle));
                 findViewById(R.id.calTable).setVisibility(View.VISIBLE);
                 event1Txt.setText(nameOfEvent.get(0) + ", " + startDates.get(0));
                 if (CalendarContentResolver.compareDate(startDates.get(1))) {
