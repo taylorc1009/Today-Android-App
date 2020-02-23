@@ -8,6 +8,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
@@ -37,10 +40,11 @@ public class AlarmSystem extends AppCompatActivity {
     ProgressBar alarmLoad;
     ConstraintLayout addGroup;
     TableLayout alarmTable;
-    //protected SimpleDateFormat time = new SimpleDateFormat("HH:mm");
-    protected Date time = new Date();
-    protected String label;
-    protected List<Integer> days = new ArrayList<>();
+    private Date time = null;
+    private String label = null;
+    private List<Integer> days = new ArrayList<>();
+    private Long alarmTime = null;
+    private String UITime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +74,7 @@ public class AlarmSystem extends AppCompatActivity {
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
+                new alarmRetrieve().cancel(true);
                 Intent mainReturn = new Intent(AlarmSystem.this, MainActivity.class);
                 startActivity(mainReturn);
             }
@@ -122,34 +127,82 @@ public class AlarmSystem extends AppCompatActivity {
         });
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                String timeStr = hour.getText() + ":" + minute.getText();
-                //Date convertedStr = new Date();
-                try { time = sdf.parse(timeStr); }
-                catch (ParseException e) { e.printStackTrace(); }
-                if(!(alarmLabel.getText().toString().equals("")))
-                    label = alarmLabel.getText().toString();
-                //time = convertedStr;
-                if(chkMon.isChecked())
-                    days.add(java.util.Calendar.MONDAY);
-                if(chkTues.isChecked())
-                    days.add(java.util.Calendar.TUESDAY);
-                if(chkWed.isChecked())
-                    days.add(java.util.Calendar.WEDNESDAY);
-                if(chkThurs.isChecked())
-                    days.add(java.util.Calendar.THURSDAY);
-                if(chkFri.isChecked())
-                    days.add(java.util.Calendar.FRIDAY);
-                if(chkSat.isChecked())
-                    days.add(java.util.Calendar.SATURDAY);
-                if(chkSun.isChecked())
-                    days.add(Calendar.SUNDAY);
-                new alarmRetrieve().execute();
-                //scheduleAlarm(); //once method completes, clear all attributes required
+                if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
+                    final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                    UITime = hour.getText() + ":" + minute.getText();
+                    try {
+                        time = formatter.parse(UITime);
+                        alarmTime = time.getTime();
+                    } catch (ParseException e) {
+                        Log.e("Failed to parse UITime (time string)", e.toString());
+                    } catch (NullPointerException e) {
+                        Log.e("Date time == null", e.toString());
+                    }
+                    Calendar validationDate = Calendar.getInstance();
+                    validationDate.setTime(new Date());
+                    validationDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour.getText().toString()));
+                    validationDate.set(Calendar.MINUTE, Integer.parseInt(minute.getText().toString()));
+                    validationDate.set(Calendar.SECOND, 0);
+                    Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
+                    Log.i("Date == ", validationDate.getTime().toString());
+                    if(System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
+                        Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (!(alarmLabel.getText().toString().equals("")))
+                            label = alarmLabel.getText().toString();
+                        if (chkMon.isChecked())
+                            days.add(Calendar.MONDAY);
+                        if (chkTues.isChecked())
+                            days.add(Calendar.TUESDAY);
+                        if (chkWed.isChecked())
+                            days.add(Calendar.WEDNESDAY);
+                        if (chkThurs.isChecked())
+                            days.add(Calendar.THURSDAY);
+                        if (chkFri.isChecked())
+                            days.add(Calendar.FRIDAY);
+                        if (chkSat.isChecked())
+                            days.add(Calendar.SATURDAY);
+                        if (chkSun.isChecked())
+                            days.add(Calendar.SUNDAY);
+                        //hour.setText(null);
+                        //minute.setText(null);
+                        new alarmRetrieve().execute();
+                        new alarmRetrieve().cancel(true);
+                        //scheduleAlarm(); //once method completes, clear all attributes required
+                    }
+                }
+                else {
+                    if(hour.getText().toString().equals(""))
+                        hour.setHintTextColor(Color.RED);
+                    if(minute.getText().toString().equals(""))
+                        minute.setHintTextColor(Color.RED);
+                    Toast.makeText(getApplicationContext(), "Both Hour and Minute must be defined...", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
     class alarmRetrieve extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onCancelled() {
+            addGroup.setVisibility(View.GONE);
+            //hour.getText().clear();
+            //minute.getText().clear();
+            if(chkMon.isChecked())
+                chkMon.toggle();
+            if(chkTues.isChecked())
+                chkTues.toggle();
+            if(chkWed.isChecked())
+                chkWed.toggle();
+            if(chkThurs.isChecked())
+                chkThurs.toggle();
+            if(chkFri.isChecked())
+                chkFri.toggle();
+            if(chkSat.isChecked())
+                chkSat.toggle();
+            if(chkSun.isChecked())
+                chkSun.toggle();
+            alarmLabel.getText().clear();
+        }
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -169,31 +222,17 @@ public class AlarmSystem extends AppCompatActivity {
             if(time != null) {
                 alarmEmpty.setVisibility(View.GONE);
                 alarmTable.setVisibility(View.VISIBLE);
-                TableLayout table = new TableLayout(getParent());
+                //TableLayout table = new TableLayout(getParent());
                 // Create a new row to be added.
-                TableRow alarm = new TableRow(getParent());
+                TableRow alarm = new TableRow(getApplicationContext());
                 alarm.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                TextView timeTxt = new TextView(getParent());
+                TextView timeTxt = new TextView(getApplicationContext());
                 timeTxt.setText(time.toString());
                 timeTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                 alarm.addView(timeTxt);
-                /*ConstraintSet constraintSet = new ConstraintSet();
-                constraintSet.clone();
-                constraintSet.connect(R.id.imageView,ConstraintSet.RIGHT,R.id.check_answer1,ConstraintSet.RIGHT,0);
-                constraintSet.connect(R.id.imageView,ConstraintSet.TOP,R.id.check_answer1,ConstraintSet.TOP,0);
-                constraintSet.applyTo(constraintLayout);*/
 
-                /* //Create a Button to be the row-content.
-                TextView b = new TextView(this);
-                b.setText("Dynamic Button");
-                b.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                // Add Button to row.
-                tr.addView(b);*/
-
-                // Add row to TableLayout.
-                alarm.setBackgroundResource(R.drawable.info);
                 alarmTable.addView(alarm, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                getParent().setContentView(alarmTable);
+                //getParent().setContentView(alarmTable);
             }
             else {
                 alarmTable.setVisibility(View.GONE);

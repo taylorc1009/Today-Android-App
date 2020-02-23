@@ -31,7 +31,6 @@ public class CalendarContentResolver extends MainActivity {
                 //endDates.add(getDate(Long.parseLong(cursor.getString(4))));
                 descriptions.add(cursor.getString(2));
 
-
                 /*Event event = new Event(cursor.getString(1), getDate(Long.parseLong(cursor.getString(3))), "", cursor.getString(2));
                 Log.i("new event title", event.getTitle());
                 calendar.add(event);*/
@@ -55,7 +54,7 @@ public class CalendarContentResolver extends MainActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (new Date().after(strDate)) //strDate.getTime())
+        if (new Date().after(strDate))
             return true;
         return false;
     }
