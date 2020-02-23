@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FF9D00"
-    tools:context=".AlarmRing">
+    tools:context=".AlarmActivity">
 
     <ImageView
         android:id="@+id/alarmIcon"

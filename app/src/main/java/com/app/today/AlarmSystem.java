@@ -214,8 +214,14 @@ public class AlarmSystem extends AppCompatActivity {
         }
     }
     private void scheduleAlarm(int dayOfWeek, int alarmID) {
+
+        /* perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
+        * day has come, pull the alarm matching the ID we want from the database and check if it is due
+        * to ring on the current day. */
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+        calendar.setTimeInMillis(alarmTime);
 
         /* Check we aren't setting it in the past which would trigger it to fire instantly
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
@@ -228,7 +234,7 @@ public class AlarmSystem extends AppCompatActivity {
         //in a database, plus it might be easier to view and delete them this way?
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY * 7, alarmIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY * 7, alarmIntent);
     }
     private void clearAddUI() {
         addGroup.setVisibility(View.GONE);
