@@ -47,10 +47,14 @@ public class CalendarContentResolver extends MainActivity {
         return formatter.format(calendar.getTime());
     }
     protected static boolean compareDate(String date) { // --> method to determine if a calendar event is happening on the current date
+        /*java.util.Calendar validationDate = java.util.Calendar.getInstance();
+        validationDate.setTime(new Date());
+        validationDate.set(*/
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date strDate = new Date();
+        //date = sdf.format(date);
         try {
-            strDate = sdf.parse(date);
+            strDate = sdf.parse(date); //unparsable date (date and time is included)
         } catch (ParseException e) {
             e.printStackTrace();
         }

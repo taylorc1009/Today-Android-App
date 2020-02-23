@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,11 +27,20 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm = findViewById(R.id.stopAlarm);
         alarmTime = findViewById(R.id.alarmTime);
         alarmLabel = findViewById(R.id.alarmLabel);
-
+        Log.i("AlarmActivity started !!!", "what now?");
         //animate alarm icon to scale in and out
 
-        MediaPlayer ringtone = MediaPlayer.create(this, R.raw.alarmheaven);
+        final MediaPlayer ringtone = MediaPlayer.create(this, R.raw.alarmheaven);
         ringtone.start();
+
+        stopAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent alarmActivity = new Intent(AlarmActivity.this, MainActivity.class);
+                startActivity(alarmActivity);
+                ringtone.stop();
+            }
+        });
 
         /* If the alarm has been set, cancel it.
         if (alarmMgr!= null) {

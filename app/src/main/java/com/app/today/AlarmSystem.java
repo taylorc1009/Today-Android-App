@@ -242,6 +242,9 @@ public class AlarmSystem extends AppCompatActivity {
         //upon ring, transition to alarm activity
         //perhaps pull an id and ring the alarm matching that id, alarms could be stored
         //in a database, plus it might be easier to view and delete them this way?
+
+
+
         Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal

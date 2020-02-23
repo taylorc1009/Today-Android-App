@@ -7,18 +7,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class AlarmRing extends BroadcastReceiver {
-
-    int pendingIntentID; //same as alarmID
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("Intent received !!!", String.valueOf(intent.getExtras().getInt("alarmID")));
         if (intent.hasExtra("alarmID")) {
-            pendingIntentID = intent.getExtras().getInt("alarmID");
             Intent sendAlarmIntent = new Intent(context, AlarmActivity.class);
-            sendAlarmIntent.putExtra("pendingIntentID", pendingIntentID);
-            Log.i("AlarmRing has been called", String.valueOf(intent.getExtras().getInt("alarmID")));
-            context.startService(sendAlarmIntent);
+            sendAlarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            sendAlarmIntent.putExtra("alarmID", intent.getExtras().getInt("alarmID"));
+            Log.i("Attempting to start AlarmActivity with ID", String.valueOf(intent.getExtras().getInt("alarmID")));
+            context.startActivity(sendAlarmIntent);
         }
         /*StringBuilder sb = new StringBuilder();
         sb.append("Action: " + intent.getAction() + "\n");

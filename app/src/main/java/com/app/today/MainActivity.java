@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     protected static List<String> endDates = new ArrayList<>();
     protected static List<String> descriptions = new ArrayList<>();
 
+    Button AlarmTest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         event2Txt = findViewById(R.id.event2txt);
         event3Txt = findViewById(R.id.event3txt);
         alarmMore = findViewById(R.id.alarmMore);
+
+        AlarmTest = findViewById(R.id.button);
+        AlarmTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent alarmActivity = new Intent(MainActivity.this, AlarmActivity.class);
+                startActivity(alarmActivity);
+            }
+        });
 
         if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
             new weatherTask().execute();
