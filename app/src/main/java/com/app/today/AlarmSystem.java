@@ -227,14 +227,22 @@ public class AlarmSystem extends AppCompatActivity {
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 7);
         }*/
-        // Set this to whatever you were planning to do at the given time
 
-        PendingIntent alarmIntent = PendingIntent.getActivity(getApplicationContext(), alarmID, AlarmRing.this, FLAG_ONE_SHOT);// <-- upon ring, transition to alarm activity
+        // Set this to whatever you were planning to do at the given time
+        Intent alarmIntent = new Intent(getApplicationContext(), AlarmActivity.class);
+        alarmIntent.putExtra("alarmID", alarmID);
+        alarmIntent.setAction("com.app.today.FireAlarm");
+        PendingIntent alarmSender = PendingIntent.getActivity(getApplicationContext(), alarmID, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        //upon ring, transition to alarm activity
         //perhaps pull an id and ring the alarm matching that id, alarms could be stored
         //in a database, plus it might be easier to view and delete them this way?
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY * 7, alarmIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+        //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
+        //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
+        //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
+        //already exist
     }
     private void clearAddUI() {
         addGroup.setVisibility(View.GONE);

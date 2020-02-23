@@ -7,11 +7,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class AlarmRing extends BroadcastReceiver {
-    private static final String TAG = "AlarmRing";
+    int pendingIntentID;
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            // Set the alarm here.
+        if (intent.hasExtra("alarmID")) {
+            pendingIntentID = intent.getExtras().getInt("scheduledMessageID");
+            Intent sendAlarmIntent = new Intent(context, AlarmActivity.class);
+            sendAlarmIntent.putExtra("pendingIntentID", pendingIntentID);
+            context.startService(sendAlarmIntent);
         }
         /*StringBuilder sb = new StringBuilder();
         sb.append("Action: " + intent.getAction() + "\n");
