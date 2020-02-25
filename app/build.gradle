@@ -10,6 +10,8 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,6 +22,10 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -27,7 +33,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'com.github.androdocs:Simple-HTTP-Request:v1.0'
     implementation 'com.google.android.material:material:1.1.0'
+
+    //Weather
+    implementation 'com.github.androdocs:Simple-HTTP-Request:v1.0'
+
+    //Firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+
+    //Calendar
+    implementation 'com.google.api-client:google-api-client:1.23.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    implementation 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 }

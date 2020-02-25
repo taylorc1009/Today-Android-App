@@ -2,6 +2,11 @@
     <string name="app_name">Today</string>
     <string name="imageDescription">(display icon description)</string>
 
+    <string name="emailHint">Email</string>
+    <string name="passwordHint">Password</string>
+    <string name="registerBtn">Register</string>
+    <string name="signInBtn">Sign In</string>
+
     <string name="forecast">Forecast</string>
     <string name="temperature">Temperature</string>
     <string name="highsLows">Highs/lows</string>

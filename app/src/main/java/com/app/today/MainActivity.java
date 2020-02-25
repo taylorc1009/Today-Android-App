@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import com.app.today.Event;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -87,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(alarmActivity);
             }
         });
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
     }
     class weatherTask extends AsyncTask<String, Void, String> {
         private double longitude, latitude;
