@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected static List<String> endDates = new ArrayList<>();
     protected static List<String> descriptions = new ArrayList<>();
 
-    Button AlarmTest;
+    Button AlarmTest, signInTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +73,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent alarmActivity = new Intent(MainActivity.this, AlarmActivity.class);
+                startActivity(alarmActivity);
+            }
+        });
+        signInTest = findViewById(R.id.button2);
+        signInTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
                 startActivity(alarmActivity);
             }
         });
