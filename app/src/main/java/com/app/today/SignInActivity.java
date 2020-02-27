@@ -41,7 +41,7 @@ public class SignInActivity extends AppCompatActivity {
     ConstraintLayout registerExpand, registerGroup;
     ImageView rExArrow;
 
-    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    //private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     private String emailStr = "";
     private String passStr = "";
@@ -83,6 +83,10 @@ public class SignInActivity extends AppCompatActivity {
                 passStr = password.getText().toString().trim();
                 if(!passStr.equals("") && isValidPassword(passStr)) {
                     if(!emailStr.equals("") && isValidEmail(emailStr)) {
+                        if(registerGroup.getVisibility() == View.VISIBLE)
+                            createAccount();
+                        else
+                            signIn();
                         //signIn();
                     } else
                         Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_LONG).show();
@@ -152,7 +156,6 @@ public class SignInActivity extends AppCompatActivity {
         if(registerGroup.getVisibility() != View.GONE) {
             registerGroup.setVisibility(View.GONE);
             pName.getText().clear();
-            //rotate arrow
             rExArrow.setRotation(0);
             registerGroup.setAlpha(0);
             signIn.setText(R.string.signInBtn);

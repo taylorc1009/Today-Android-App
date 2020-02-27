@@ -8,6 +8,8 @@
     <string name="signInBtn">Sign In</string>
     <string name="registerExpand">Register</string>
     <string name="pName">Your name</string>
+    <string name="authSign">Signing in…</string>
+    <string name="authReg">Registering you…</string>
 
     <string name="forecast">Forecast</string>
     <string name="temperature">Temperature</string>
