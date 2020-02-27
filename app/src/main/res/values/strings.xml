@@ -6,6 +6,8 @@
     <string name="passwordHint">Password</string>
     <string name="registerBtn">Register</string>
     <string name="signInBtn">Sign In</string>
+    <string name="registerExpand">Register</string>
+    <string name="pName">Your name</string>
 
     <string name="forecast">Forecast</string>
     <string name="temperature">Temperature</string>

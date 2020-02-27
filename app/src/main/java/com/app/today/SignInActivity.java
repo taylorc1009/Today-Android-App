@@ -66,8 +66,8 @@ public class SignInActivity extends AppCompatActivity {
                     Toast.makeText(SignInActivity.this, "Please enter your password", Toast.LENGTH_LONG).show();
             }
         });
-        /*assert emailStr != null;
-        assert passStr != null;
+    }
+    private void createAccount() {
         mAuth.createUserWithEmailAndPassword(emailStr, passStr).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -86,7 +86,8 @@ public class SignInActivity extends AppCompatActivity {
                 // ...
             }
         });
-
+    }
+    private void signIn() {
         mAuth.signInWithEmailAndPassword(emailStr, passStr).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -104,7 +105,7 @@ public class SignInActivity extends AppCompatActivity {
 
                 // ...
             }
-        });*/
+        });
     }
     public boolean isSignedIn() {
         // Check if user is signed in (non-null) and update UI accordingly.
