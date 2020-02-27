@@ -24,8 +24,9 @@
     <string name="alarmTitle">Alarms</string>
     <string name="alarmAdd">Add an alarm</string>
     <string name="alarmEmpty">No alarms…</string>
-    <string name="hourHint">hour</string>
-    <string name="minuteHint">minute</string>
+    <string name="hourHint">23</string>
+    <string name="timeSep">:</string>
+    <string name="minuteHint">59</string>
     <string name="labelHint">Alarm label (length 100)</string>
     <string name="Mon">Monday</string>
     <string name="Tues">Tuesday</string>

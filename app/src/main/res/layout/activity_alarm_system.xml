@@ -126,6 +126,16 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="@+id/addSep" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timeSep"
+            android:textSize="30sp"
+            app:layout_constraintStart_toEndOf="@id/hour"
+            app:layout_constraintEnd_toStartOf="@id/minute"
+            app:layout_constraintTop_toTopOf="@id/hour"
+            app:layout_constraintBottom_toBottomOf="@id/hour"/>
+
         <EditText
             android:id="@+id/minute"
             android:layout_width="85dp"
