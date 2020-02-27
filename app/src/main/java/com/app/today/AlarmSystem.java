@@ -105,7 +105,6 @@ public class AlarmSystem extends AppCompatActivity {
                     hr = Integer.parseInt(s.toString());
                     if(!(hr >= 0 && hr <= 23 && s.length() <= 2)) {
                         if(s.length() != 0)
-                            //hour.getText().delete(hour.getText().length() - 1, hour.getText().length());
                             hour.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         else
                             hour.getText().clear();
@@ -127,7 +126,6 @@ public class AlarmSystem extends AppCompatActivity {
                     min = Integer.parseInt(s.toString());
                     if(!(min >= 0 && min <= 59 && s.length() <= 2)) {
                         if(s.length() != 0)
-                            //minute.getText().delete(minute.getText().length() - 1, minute.getText().length());
                             minute.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         else
                             minute.getText().clear();

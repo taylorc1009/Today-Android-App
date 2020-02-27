@@ -68,6 +68,7 @@ public class SignInActivity extends AppCompatActivity {
                     rExArrow.animate().rotation(180);
                     registerGroup.setVisibility(View.VISIBLE);
                     registerGroup.animate().alpha(1);
+                    signIn.setText(R.string.registerBtn);
                 }
                 else {
                     rExArrow.animate().rotation(0);
@@ -153,6 +154,8 @@ public class SignInActivity extends AppCompatActivity {
             pName.getText().clear();
             //rotate arrow
             rExArrow.setRotation(0);
+            registerGroup.setAlpha(0);
+            signIn.setText(R.string.signInBtn);
         }
         return null;
     }

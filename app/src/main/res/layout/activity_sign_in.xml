@@ -55,7 +55,7 @@
         android:id="@+id/registerExpand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="@id/password"
         app:layout_constraintTop_toBottomOf="@+id/password">
 
@@ -83,7 +83,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/registerGroup"
-        android:layout_width="213dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:visibility="gone"
@@ -96,16 +96,16 @@
             android:id="@+id/pName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autofillHints="@string/pName"
+            android:backgroundTint="@color/white"
             android:ems="10"
+            android:hint="@string/pName"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
-            android:backgroundTint="@color/white"
-            android:autofillHints="@string/pName"
-            android:hint="@string/pName"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
