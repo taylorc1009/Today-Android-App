@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -95,25 +96,45 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
         hour.addTextChangedListener(new TextWatcher() {
+            int hr;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int hr = Integer.parseInt(s.toString());
-                if(!(hr >= 0 && hr <= 23 && s.length() <= 2))
-                    hour.getText().delete(hour.getText().length() - 1, hour.getText().length());
+                if(s.length() > 0) {
+                    hr = Integer.parseInt(s.toString());
+                    if(!(hr >= 0 && hr <= 23 && s.length() <= 2)) {
+                        if(s.length() != 0)
+                            //hour.getText().delete(hour.getText().length() - 1, hour.getText().length());
+                            hour.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+                        else
+                            hour.getText().clear();
+                }
+                else
+                    hr = 0;
+                }
             }
             @Override
             public void afterTextChanged(Editable s) {}
         });
         minute.addTextChangedListener(new TextWatcher() {
+            int min;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int hr = Integer.parseInt(s.toString());
-                if(!(hr >= 0 && hr <= 59 && s.length() <= 2))
-                    minute.getText().delete(minute.getText().length() - 1, minute.getText().length());
+                if(s.length() > 0) {
+                    min = Integer.parseInt(s.toString());
+                    if(!(min >= 0 && min <= 59 && s.length() <= 2)) {
+                        if(s.length() != 0)
+                            //minute.getText().delete(minute.getText().length() - 1, minute.getText().length());
+                            minute.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+                        else
+                            minute.getText().clear();
+                    }
+                }
+                else
+                    min = 0;
             }
             @Override
             public void afterTextChanged(Editable s) {}
@@ -123,8 +144,10 @@ public class AlarmSystem extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() > 100)
-                    alarmLabel.getText().delete(alarmLabel.getText().length() - 1, alarmLabel.getText().length());
+                if(s.length() > 100) {
+                    alarmLabel.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+                    Toast.makeText(AlarmSystem.this, "Label may consist of 100 characters max", Toast.LENGTH_SHORT).show();
+                }
             }
             @Override
             public void afterTextChanged(Editable s) {}
@@ -137,14 +160,14 @@ public class AlarmSystem extends AppCompatActivity {
                     validationDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour.getText().toString()));
                     validationDate.set(Calendar.MINUTE, Integer.parseInt(minute.getText().toString()));
                     validationDate.set(Calendar.SECOND, 0);
-                        Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
-                        Log.i("Date == ", validationDate.getTime().toString());
+                    Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
+                    Log.i("Date == ", validationDate.getTime().toString());
                     UITime = hour.getText() + ":" + minute.getText();
                     alarmTime = validationDate.getTimeInMillis();
                     int alarmID = 0; //generate an alarm ID based on what already exists in the database
-                    if(System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
+                    if (System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
-                    } else if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
+                    } else if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
                         if (!(alarmLabel.getText().toString().equals("")))
                             label = alarmLabel.getText().toString();
                         if (chkMon.isChecked())
@@ -163,10 +186,12 @@ public class AlarmSystem extends AppCompatActivity {
                             days.add(Calendar.SUNDAY);
                         for (int i = 0; i <= days.size(); i++)
                             scheduleAlarm(days.get(i), alarmID);
-                    } else
-                        //test range of 10 alarms
+                        clearAddUI();
+                    } else {
+                        //set the test amount of alarms allowed to 10?
                         scheduleAlarm(9, new Random().nextInt(10)); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
-                    clearAddUI();
+                        clearAddUI();
+                    }
                 }
                 else {
                     if(hour.getText().toString().equals(""))
@@ -266,28 +291,23 @@ public class AlarmSystem extends AppCompatActivity {
         // Deactivate Broadcast Receiver to stop receiving broadcasts
         deactivateBroadcastreceiver();
     }
-
     private void activateBroadcastReceiver() {
         PackageManager pm = context.getPackageManager();
         ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
         pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         Toast.makeText(context, "activated", Toast.LENGTH_LONG).show();
     }
-
     private void deactivateBroadcastreceiver() {
-        // TODO Auto-generated method stub
-
         PackageManager pm = context.getPackageManager();
         ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
         pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         Toast.makeText(context, "cancelled", Toast.LENGTH_LONG).show();
-
     }*/
 
     private void clearAddUI() {
         addGroup.setVisibility(View.GONE);
-        //hour.getText().clear();
-        //minute.getText().clear();
+        hour.getText().clear();
+        minute.getText().clear();
         if(chkMon.isChecked())
             chkMon.toggle();
         if(chkTues.isChecked())
