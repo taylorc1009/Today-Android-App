@@ -2,6 +2,7 @@ package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,9 +10,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.BaseInputConnection;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +26,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.mortbay.jetty.security.Constraint;
+
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +36,10 @@ import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    EditText email, password;
-    Button register, signIn;
+    EditText email, password, pName;
+    Button signIn;
+    ConstraintLayout registerExpand, registerGroup;
+    ImageView rExArrow;
 
     private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
@@ -41,25 +52,37 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
-        register = findViewById(R.id.registerBtn);
+        rExArrow = findViewById(R.id.rExArrow);
+        registerExpand = findViewById(R.id.registerExpand);
+        registerGroup = findViewById(R.id.registerGroup);
+        pName = findViewById(R.id.pName);
         signIn = findViewById(R.id.signInBtn);
-
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        register.setOnClickListener(new View.OnClickListener() {
+        cleanView();
+
+        registerExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if(isValidEmail(emailStr)) <-- copy email in EditText to register page?
+                if(registerGroup.getVisibility() == View.GONE) {
+                    rExArrow.animate().rotation(180);
+                    registerGroup.setVisibility(View.VISIBLE);
+                    registerGroup.animate().alpha(1);
+                }
+                else {
+                    rExArrow.animate().rotation(0);
+                    registerGroup.animate().alpha(0).setDuration(1).withEndAction(cleanView()); // doesn't fade out then clear
+                }
             }
         });
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emailStr = email.getText().toString();
-                passStr = password.getText().toString();
+                emailStr = email.getText().toString().trim();
+                passStr = password.getText().toString().trim();
                 if(!passStr.equals("") && isValidPassword(passStr)) {
                     if(!emailStr.equals("") && isValidEmail(emailStr)) {
-                        //attempt sign in
+                        //signIn();
                     } else
                         Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_LONG).show();
                 } else
@@ -122,6 +145,15 @@ public class SignInActivity extends AppCompatActivity {
         return true;
     }
     private boolean isValidChar(char c) {
-        return c != '(' && c != ')' && c != '\"' && c != '=' && c != '\'' && c != '\\';
+        return c != '(' && c != ')' && c != '\"' && c != '=' && c != '\'' && c != '\\' && c != ' ';
+    }
+    private Runnable cleanView() {
+        if(registerGroup.getVisibility() != View.GONE) {
+            registerGroup.setVisibility(View.GONE);
+            pName.getText().clear();
+            //rotate arrow
+            rExArrow.setRotation(0);
+        }
+        return null;
     }
 }

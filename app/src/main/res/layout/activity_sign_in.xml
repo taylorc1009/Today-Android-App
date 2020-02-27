@@ -53,28 +53,31 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/registerExpand"
-        android:layout_width="213dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/password"
         app:layout_constraintTop_toBottomOf="@+id/password">
 
         <TextView
-            android:id="@+id/registerExTxt"
+            android:id="@+id/rExTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/registerExpand"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/rExArrow"
             android:layout_width="wrap_content"
             android:layout_height="18dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/imageDescription"
+            android:interpolator="@android:anim/linear_interpolator"
+            app:layout_constraintBottom_toBottomOf="@id/rExTxt"
+            app:layout_constraintStart_toEndOf="@id/rExTxt"
+            app:layout_constraintTop_toTopOf="@id/rExTxt"
             app:srcCompat="@android:drawable/arrow_down_float" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -84,12 +87,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:visibility="gone"
+        android:alpha="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerExpand">
 
         <EditText
-            android:id="@+id/forename"
+            android:id="@+id/pName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -112,7 +116,7 @@
         android:text="@string/signInBtn"
         android:background="#00FFFFFF"
         android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="@+id/registerExpand"
+        app:layout_constraintEnd_toEndOf="@+id/password"
         app:layout_constraintTop_toBottomOf="@+id/registerGroup" />
 
     <!--<Button
