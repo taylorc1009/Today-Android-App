@@ -2,6 +2,7 @@
 *   Fix calendar date.parse exception and improve output UI
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   Match the users real name to their login in Firebase
+*   Add alarm icon scale animation in AlarmActivity
 *  */
 
 package com.app.today;
