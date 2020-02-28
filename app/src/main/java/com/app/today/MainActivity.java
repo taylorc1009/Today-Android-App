@@ -15,7 +15,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
-import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -51,68 +51,80 @@ public class MainActivity extends AppCompatActivity {
     protected static List<String> endDates = new ArrayList<>();
     protected static List<String> descriptions = new ArrayList<>();
 
-    Button AlarmTest, signInTest;
+    Button logOut;
+
+    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    protected FirebaseUser user;
+
+    private boolean isHome = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        lastWUpdateTxt = findViewById(R.id.lastWUpdate);
-        forecastTxt = findViewById(R.id.forecast);
-        highsLowsTxt = findViewById(R.id.highsLows);
-        temperatureTxt = findViewById(R.id.temperature);
-        windTxt = findViewById(R.id.windSpeed);
-        calTitle = findViewById(R.id.calTitle);
-        event1Txt = findViewById(R.id.event1txt);
-        event2Txt = findViewById(R.id.event2txt);
-        event3Txt = findViewById(R.id.event3txt);
-        alarmMore = findViewById(R.id.alarmMore);
-
-        AlarmTest = findViewById(R.id.button);
-        AlarmTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent alarmActivity = new Intent(MainActivity.this, AlarmActivity.class);
-                startActivity(alarmActivity);
+        user = mAuth.getCurrentUser();
+        if(user == null) {
+            Log.i("user is NOT signed in", String.valueOf(isHome));
+            Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(alarmActivity);
+            finish();
+        } else {
+            Log.i("user is signed in", "");
+            lastWUpdateTxt = findViewById(R.id.lastWUpdate);
+            forecastTxt = findViewById(R.id.forecast);
+            highsLowsTxt = findViewById(R.id.highsLows);
+            temperatureTxt = findViewById(R.id.temperature);
+            windTxt = findViewById(R.id.windSpeed);
+            calTitle = findViewById(R.id.calTitle);
+            event1Txt = findViewById(R.id.event1txt);
+            event2Txt = findViewById(R.id.event2txt);
+            event3Txt = findViewById(R.id.event3txt);
+            alarmMore = findViewById(R.id.alarmMore);
+            if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+                new weatherTask().execute();
+            if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+                new CalendarContentResolver(getApplicationContext());
+                updateCalendar();
             }
-        });
-        signInTest = findViewById(R.id.button2);
-        signInTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
-                startActivity(alarmActivity);
-            }
-        });
-
-        if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-            new weatherTask().execute();
-        if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
-            new CalendarContentResolver(getApplicationContext());
-            updateCalendar();
+            alarmMore.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
+                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+                    startActivity(alarmActivity);
+                    finish();
+                }
+            });
         }
-        alarmMore.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
-                //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-                startActivity(alarmActivity);
-                finish();
-            }
-        });
     }
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onResume() {
+        super.onResume();
+        isHome = true;
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isHome = false;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logOut:
+                mAuth.signOut();
+                Intent signIn = new Intent(MainActivity.this, SignInActivity.class);
+                startActivity(signIn);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     class weatherTask extends AsyncTask<String, Void, String> {
         private double longitude, latitude;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            findViewById(R.id.weatherLoad).setVisibility(View.VISIBLE);
-            findViewById(R.id.weatherGroup).setVisibility(View.GONE);
-            findViewById(R.id.weatherError).setVisibility(View.GONE);
+            updateWeather(View.VISIBLE, View.GONE, View.GONE);
         }
         @Override
         public String doInBackground(String... args) {
@@ -136,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 HandlerThread t = new HandlerThread("handlerThread");
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                //t.quit();
+                t.quit();
                 return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
             }
             return null;
@@ -154,23 +166,24 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(main.getString("temp_min") + "°C min - " + main.getString("temp_max") + "°C max");
                 weatherDetails.add(wind.getString("speed") + " mph winds");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
-                if (!weatherDetails.isEmpty()) {
+                if(!weatherDetails.isEmpty()) {
                     forecastTxt.setText(weatherDetails.get(0).toUpperCase());
                     temperatureTxt.setText(weatherDetails.get(1));
                     highsLowsTxt.setText(weatherDetails.get(2));
                     windTxt.setText(weatherDetails.get(3));
                     lastWUpdateTxt.setText(weatherDetails.get(4));
-                    findViewById(R.id.weatherLoad).setVisibility(View.GONE);
-                    findViewById(R.id.weatherGroup).setVisibility(View.VISIBLE);
-                } else {
-                    findViewById(R.id.weatherLoad).setVisibility(View.GONE);
-                    findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
-                }
+                    updateWeather(View.GONE, View.VISIBLE, View.GONE);
+                } else
+                    updateWeather(View.GONE, View.GONE, View.VISIBLE);
             } catch (JSONException e) {
-                findViewById(R.id.weatherLoad).setVisibility(View.GONE);
-                findViewById(R.id.weatherError).setVisibility(View.VISIBLE);
+                updateWeather(View.GONE, View.GONE, View.VISIBLE);
             }
         }
+    }
+    private void updateWeather(int load, int group, int error) {
+        findViewById(R.id.weatherLoad).setVisibility(load);
+        findViewById(R.id.weatherGroup).setVisibility(group);
+        findViewById(R.id.weatherError).setVisibility(error);
     }
     private void updateCalendar() {
         //if(calendar.isEmpty()) {

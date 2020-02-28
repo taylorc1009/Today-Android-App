@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
     EditText email, password, pName;
     Button signIn;
     ConstraintLayout credentialsGroup, registerExpand, registerGroup, authenticating;
@@ -30,6 +29,8 @@ public class SignInActivity extends AppCompatActivity {
     TextView authTxt;
 
     //private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+    protected static FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String emailStr = "";
     private String passStr = "";
@@ -51,8 +52,6 @@ public class SignInActivity extends AppCompatActivity {
         authTxt = findViewById(R.id.authTxt);
         pName = findViewById(R.id.pName);
         signIn = findViewById(R.id.signInBtn);
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
         cleanView();
 
         registerExpand.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +104,7 @@ public class SignInActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Log.w("Firebase Register", "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                     authenticating.setVisibility(View.GONE);
                     credentialsGroup.setVisibility(View.VISIBLE);
                 }
@@ -128,7 +127,7 @@ public class SignInActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Log.w("Firebase Login", "signInWithEmail:failure", task.getException());
-                    Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                     authenticating.setVisibility(View.GONE);
                     credentialsGroup.setVisibility(View.VISIBLE);
                 }
@@ -137,11 +136,14 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
-    public boolean isSignedIn() {
+    /*public static boolean isSignedIn() {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser user = mAuth.getCurrentUser();
         return user != null;
     }
+    public static FirebaseUser getSignIn() {
+        return mAuth.getCurrentUser();
+    }*/
     private boolean isValidEmail(String str) {
         return EMAIL_ADDRESS.matcher(str).matches();
     }
