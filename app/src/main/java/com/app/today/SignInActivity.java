@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +19,7 @@ import android.view.inputmethod.BaseInputConnection;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,13 +40,16 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     EditText email, password, pName;
     Button signIn;
-    ConstraintLayout registerExpand, registerGroup;
+    ConstraintLayout credentialsGroup, registerExpand, registerGroup, authenticating;
     ImageView rExArrow;
+    ProgressBar authLoad;
 
     //private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     private String emailStr = "";
     private String passStr = "";
+    private String realName = "";
+    private boolean isRegistering = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,11 @@ public class SignInActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         rExArrow = findViewById(R.id.rExArrow);
+        credentialsGroup = findViewById(R.id.credentialsGroup);
         registerExpand = findViewById(R.id.registerExpand);
         registerGroup = findViewById(R.id.registerGroup);
+        authenticating = findViewById(R.id.authenticating);
+        authLoad = findViewById(R.id.authLoad);
         pName = findViewById(R.id.pName);
         signIn = findViewById(R.id.signInBtn);
         // Initialize Firebase Auth
@@ -64,7 +72,9 @@ public class SignInActivity extends AppCompatActivity {
         registerExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(registerGroup.getVisibility() == View.GONE) {
+                //if(registerGroup.getVisibility() == View.GONE) {
+                if(!isRegistering) {
+                    isRegistering = true;
                     rExArrow.animate().rotation(180);
                     registerGroup.setVisibility(View.VISIBLE);
                     registerGroup.animate().alpha(1);
@@ -79,17 +89,19 @@ public class SignInActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emailStr = email.getText().toString().trim();
-                passStr = password.getText().toString().trim();
-                if(!passStr.equals("") && isValidPassword(passStr)) {
-                    if(!emailStr.equals("") && isValidEmail(emailStr)) {
-                        if(registerGroup.getVisibility() == View.VISIBLE)
+                if(!password.getText().toString().trim().equals("") && isValidPassword(password.getText().toString().trim())) {
+                    if(!email.getText().toString().trim().equals("") && isValidEmail(email.getText().toString().trim())) {
+                        emailStr = email.getText().toString().trim();
+                        passStr = password.getText().toString().trim();
+                        credentialsGroup.setVisibility(View.GONE);
+                        authenticating.setVisibility(View.VISIBLE);
+                        /*if(isRegistering)
                             createAccount();
                         else
-                            signIn();
-                        //signIn();
-                    } else
+                            signIn();*/
+                    } else {
                         Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_LONG).show();
+                    }
                 } else
                     Toast.makeText(SignInActivity.this, "Please enter your password", Toast.LENGTH_LONG).show();
             }
@@ -153,7 +165,9 @@ public class SignInActivity extends AppCompatActivity {
         return c != '(' && c != ')' && c != '\"' && c != '=' && c != '\'' && c != '\\' && c != ' ';
     }
     private Runnable cleanView() {
-        if(registerGroup.getVisibility() != View.GONE) {
+        //if(registerGroup.getVisibility() != View.GONE) {
+        if(isRegistering) {
+            isRegistering = false;
             registerGroup.setVisibility(View.GONE);
             pName.getText().clear();
             rExArrow.setRotation(0);
