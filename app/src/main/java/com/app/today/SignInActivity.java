@@ -3,37 +3,21 @@ package com.app.today;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.graphics.PorterDuff;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
-import android.view.inputmethod.BaseInputConnection;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.mortbay.jetty.security.Constraint;
-
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
@@ -43,6 +27,7 @@ public class SignInActivity extends AppCompatActivity {
     ConstraintLayout credentialsGroup, registerExpand, registerGroup, authenticating;
     ImageView rExArrow;
     ProgressBar authLoad;
+    TextView authTxt;
 
     //private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
@@ -63,6 +48,7 @@ public class SignInActivity extends AppCompatActivity {
         registerGroup = findViewById(R.id.registerGroup);
         authenticating = findViewById(R.id.authenticating);
         authLoad = findViewById(R.id.authLoad);
+        authTxt = findViewById(R.id.authTxt);
         pName = findViewById(R.id.pName);
         signIn = findViewById(R.id.signInBtn);
         // Initialize Firebase Auth
@@ -72,7 +58,6 @@ public class SignInActivity extends AppCompatActivity {
         registerExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if(registerGroup.getVisibility() == View.GONE) {
                 if(!isRegistering) {
                     isRegistering = true;
                     rExArrow.animate().rotation(180);
@@ -95,32 +80,34 @@ public class SignInActivity extends AppCompatActivity {
                         passStr = password.getText().toString().trim();
                         credentialsGroup.setVisibility(View.GONE);
                         authenticating.setVisibility(View.VISIBLE);
-                        /*if(isRegistering)
+                        if(isRegistering)
                             createAccount();
                         else
-                            signIn();*/
-                    } else {
+                            signIn();
+                    } else
                         Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_LONG).show();
-                    }
                 } else
                     Toast.makeText(SignInActivity.this, "Please enter your password", Toast.LENGTH_LONG).show();
             }
         });
     }
     private void createAccount() {
+        authTxt.setText(R.string.authReg);
         mAuth.createUserWithEmailAndPassword(emailStr, passStr).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("Firebase Login", "createUserWithEmail:success");
+                if(task.isSuccessful()) {
+                    Log.d("Firebase Register", "createUserWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
-                    //updateUI(user); // <-- display login in UI
+                    Intent alarmActivity = new Intent(SignInActivity.this, MainActivity.class);
+                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+                    startActivity(alarmActivity);
+                    finish();
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("Firebase Login", "createUserWithEmail:failure", task.getException());
+                    Log.w("Firebase Register", "createUserWithEmail:failure", task.getException());
                     Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    //updateUI(null); // <-- display login in UI
+                    authenticating.setVisibility(View.GONE);
+                    credentialsGroup.setVisibility(View.VISIBLE);
                 }
 
                 // ...
@@ -128,19 +115,22 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
     private void signIn() {
+        authTxt.setText(R.string.authSign);
         mAuth.signInWithEmailAndPassword(emailStr, passStr).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("FIrebase Login", "signInWithEmail:success");
+                if(task.isSuccessful()) {
+                    Log.d("Firebase Login", "signInWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
-                    //updateUI(user);
+                    Intent alarmActivity = new Intent(SignInActivity.this, MainActivity.class);
+                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+                    startActivity(alarmActivity);
+                    finish();
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("FIrebase Login", "signInWithEmail:failure", task.getException());
+                    Log.w("Firebase Login", "signInWithEmail:failure", task.getException());
                     Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    //updateUI(null);
+                    authenticating.setVisibility(View.GONE);
+                    credentialsGroup.setVisibility(View.VISIBLE);
                 }
 
                 // ...
@@ -165,7 +155,6 @@ public class SignInActivity extends AppCompatActivity {
         return c != '(' && c != ')' && c != '\"' && c != '=' && c != '\'' && c != '\\' && c != ' ';
     }
     private Runnable cleanView() {
-        //if(registerGroup.getVisibility() != View.GONE) {
         if(isRegistering) {
             isRegistering = false;
             registerGroup.setVisibility(View.GONE);

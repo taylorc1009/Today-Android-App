@@ -93,9 +93,10 @@ public class MainActivity extends AppCompatActivity {
         }
         alarmMore.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_LONG).show();
                 Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
+                //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
                 startActivity(alarmActivity);
+                finish();
             }
         });
     }

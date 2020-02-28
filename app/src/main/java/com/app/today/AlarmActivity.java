@@ -36,9 +36,10 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent alarmActivity = new Intent(AlarmActivity.this, MainActivity.class);
-                startActivity(alarmActivity);
+                Intent mainActivity = new Intent(AlarmActivity.this, MainActivity.class);
+                startActivity(mainActivity);
                 ringtone.stop();
+                finish();
             }
         });
 

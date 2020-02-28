@@ -83,7 +83,9 @@ public class AlarmSystem extends AppCompatActivity {
             public void onClick(View v) {
                 clearAddUI();
                 Intent mainReturn = new Intent(AlarmSystem.this, MainActivity.class);
+                //mainReturn.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
                 startActivity(mainReturn);
+                finish();
             }
         });
         alarmAdd.setOnClickListener(new View.OnClickListener() {
