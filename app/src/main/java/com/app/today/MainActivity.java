@@ -15,12 +15,16 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
+import android.widget.Toolbar;
+
 import com.androdocs.httprequest.HttpRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.json.JSONException;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(alarmActivity);
             finish();
         } else {
+            Toolbar toolbar = findViewById(R.id.action_logOut);
+            setActionBar(toolbar);
             Log.i("user is signed in", "");
             lastWUpdateTxt = findViewById(R.id.lastWUpdate);
             forecastTxt = findViewById(R.id.forecast);
@@ -80,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
             event2Txt = findViewById(R.id.event2txt);
             event3Txt = findViewById(R.id.event3txt);
             alarmMore = findViewById(R.id.alarmMore);
-            if (reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+            if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
-            if (reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+            if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
                 new CalendarContentResolver(getApplicationContext());
                 updateCalendar();
             }
@@ -107,6 +113,12 @@ public class MainActivity extends AppCompatActivity {
         isHome = false;
     }
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logOut:
@@ -115,6 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(signIn);
                 finish();
                 return true;
+            case R.id.action_refreshWeather:
+                if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
+                    new weatherTask().execute();
+                    Toast.makeText(MainActivity.this, "If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -3,6 +3,7 @@
     <string name="imageDescription">(display icon description)</string>
 
     <string name="menuLogOut">Log out</string>
+    <string name="refreshWeather">Update weather</string>
 
     <string name="emailHint">Email</string>
     <string name="passwordHint">Password</string>
