@@ -1,3 +1,9 @@
+/* TODO
+*   Fix calendar date.parse exception and improve output UI
+*   Add the users alarm data to a database and display it in the AlarmSystem table
+*   Match the users real name to their login in Firebase
+*  */
+
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,7 +41,6 @@ import java.util.Date;
 import com.app.today.Event;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import java.util.List;
 import java.util.Locale;
 
