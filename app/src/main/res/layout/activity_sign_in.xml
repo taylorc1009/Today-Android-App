@@ -126,17 +126,6 @@
             android:textColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="@+id/password"
             app:layout_constraintTop_toBottomOf="@+id/registerGroup" />
-
-        <!--<Button
-            android:id="@+id/registerBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="#00FFFFFF"
-            android:text="@string/registerBtn"
-            android:textColor="#FFFFFF"
-            app:layout_constraintStart_toStartOf="@+id/password"
-            app:layout_constraintTop_toBottomOf="@+id/password" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -161,17 +150,6 @@
             android:indeterminate="true"
             android:indeterminateTintMode="src_in"
             android:indeterminateTint="@color/white"/>
-
-        <!--<ProgressBar
-            android:id="@+id/authLoad"
-            android:layout_width="78dp"
-            android:layout_height="78dp"
-            android:background="@color/white"
-            android:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />-->
 
         <TextView
             android:id="@+id/authTxt"

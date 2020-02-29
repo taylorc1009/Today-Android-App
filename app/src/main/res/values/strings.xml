@@ -11,7 +11,7 @@
     <string name="registerBtn">Register</string>
     <string name="signInBtn">Sign In</string>
     <string name="registerExpand">Register</string>
-    <string name="pName">Your name</string>
+    <string name="pName">First name</string>
     <string name="authSign">Signing in…</string>
     <string name="authReg">Registering you…</string>
 

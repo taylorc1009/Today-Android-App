@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
@@ -27,8 +29,6 @@ public class SignInActivity extends AppCompatActivity {
     ImageView rExArrow;
     ProgressBar authLoad;
     TextView authTxt;
-
-    //private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     protected static FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -75,18 +75,27 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!password.getText().toString().trim().equals("") && isValidPassword(password.getText().toString().trim())) {
                     if(!email.getText().toString().trim().equals("") && isValidEmail(email.getText().toString().trim())) {
-                        emailStr = email.getText().toString().trim();
-                        passStr = password.getText().toString().trim();
-                        credentialsGroup.setVisibility(View.GONE);
-                        authenticating.setVisibility(View.VISIBLE);
-                        if(isRegistering)
-                            createAccount();
-                        else
+                        if(isRegistering) {
+                            if(!pName.getText().toString().trim().equals("") && isValidName(pName.getText().toString().trim())) {
+                                emailStr = email.getText().toString().trim();
+                                passStr = password.getText().toString().trim();
+                                realName = pName.getText().toString().trim();
+                                credentialsGroup.setVisibility(View.GONE);
+                                authenticating.setVisibility(View.VISIBLE);
+                                createAccount();
+                            } else
+                                Toast.makeText(SignInActivity.this, "Invalid name (we only need your first name)", Toast.LENGTH_SHORT).show();
+                        } else {
+                            emailStr = email.getText().toString().trim();
+                            passStr = password.getText().toString().trim();
+                            credentialsGroup.setVisibility(View.GONE);
+                            authenticating.setVisibility(View.VISIBLE);
                             signIn();
+                        }
                     } else
-                        Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignInActivity.this, "Invalid email, please re-enter", Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(SignInActivity.this, "Please enter your password", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignInActivity.this, "Invalid password, please re-enter", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -98,9 +107,11 @@ public class SignInActivity extends AppCompatActivity {
                 if(task.isSuccessful()) {
                     Log.d("Firebase Register", "createUserWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
-                    Intent alarmActivity = new Intent(SignInActivity.this, MainActivity.class);
-                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-                    startActivity(alarmActivity);
+                    UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setDisplayName(realName).build();
+                    assert user != null;
+                    user.updateProfile(request);
+                    Intent mainActivity = new Intent(SignInActivity.this, MainActivity.class);
+                    startActivity(mainActivity);
                     finish();
                 } else {
                     Log.w("Firebase Register", "createUserWithEmail:failure", task.getException());
@@ -108,8 +119,6 @@ public class SignInActivity extends AppCompatActivity {
                     authenticating.setVisibility(View.GONE);
                     credentialsGroup.setVisibility(View.VISIBLE);
                 }
-
-                // ...
             }
         });
     }
@@ -120,10 +129,8 @@ public class SignInActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
                     Log.d("Firebase Login", "signInWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    Intent alarmActivity = new Intent(SignInActivity.this, MainActivity.class);
-                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-                    startActivity(alarmActivity);
+                    Intent mainActivity = new Intent(SignInActivity.this, MainActivity.class);
+                    startActivity(mainActivity);
                     finish();
                 } else {
                     Log.w("Firebase Login", "signInWithEmail:failure", task.getException());
@@ -131,19 +138,9 @@ public class SignInActivity extends AppCompatActivity {
                     authenticating.setVisibility(View.GONE);
                     credentialsGroup.setVisibility(View.VISIBLE);
                 }
-
-                // ...
             }
         });
     }
-    /*public static boolean isSignedIn() {
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser user = mAuth.getCurrentUser();
-        return user != null;
-    }
-    public static FirebaseUser getSignIn() {
-        return mAuth.getCurrentUser();
-    }*/
     private boolean isValidEmail(String str) {
         return EMAIL_ADDRESS.matcher(str).matches();
     }
@@ -155,6 +152,14 @@ public class SignInActivity extends AppCompatActivity {
     }
     private boolean isValidChar(char c) {
         return c != '(' && c != ')' && c != '\"' && c != '=' && c != '\'' && c != '\\' && c != ' ';
+    }
+    private boolean isValidName(String str) {
+        boolean result = true;
+        String[] indexes;
+        indexes = str.split(" ");
+        if(indexes.length != 1 || !str.matches("[A-Za-z]+"))
+            result = false;
+        return result;
     }
     private Runnable cleanView() {
         if(isRegistering) {
