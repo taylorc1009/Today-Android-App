@@ -197,6 +197,7 @@ public class AlarmSystem extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            alarmTable.removeAllViews();
             updateAlarms(View.GONE, View.VISIBLE, View.GONE);
         }
         @Override

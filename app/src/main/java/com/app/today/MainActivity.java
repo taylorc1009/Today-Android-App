@@ -2,7 +2,6 @@
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   Add alarm icon scale animation in AlarmActivity
 *   Add CardView and/or ScrollingActivity?
-*   Remove alarm TableLayout instances on retrieval (doInBackground/onPreExecute)
 *   Fix SignInActivity EditText marker colour
 *  */
 
