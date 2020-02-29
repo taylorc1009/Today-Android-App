@@ -4,39 +4,19 @@ import android.icu.util.Calendar;
 
 class Event {
     private String title;
-    private Calendar startDate;
-    private String startDateStr;
-    private String endDateStr;
-    private String description;
+    //private Calendar startDate;
+    private String startTimeStr;
+    private String endTimeStr;
 
-    Event(String title, String description, Calendar startDate, String startDateStr, String endDateStr) {
+    Event(String title, String startTimeStr, String endTimeStr) {
         this.title = title;
-        this.description = description;
-        this.startDate = startDate;
-        this.startDateStr = startDateStr;
-        this.endDateStr = endDateStr;
-    }
-    Event(String title, Calendar startDate, String startDateStr) {
-        this.title = title;
-        this.startDate = startDate;
-        this.startDateStr = startDateStr;
-    }
-    Event(String title, Calendar startDate, String startDateStr, String endDateStr) {
-        this.title = title;
-        this.startDate = startDate;
-        this.startDateStr = startDateStr;
-        this.endDateStr = endDateStr;
-    }
-    Event(String title, String description, Calendar startDate, String startDateStr) {
-        this.title = title;
-        this.description = description;
-        this.startDate = startDate;
-        this.startDateStr = startDateStr;
+        //this.startDate = startDate;
+        this.startTimeStr = startTimeStr;
+        this.endTimeStr = endTimeStr;
     }
 
     String getTitle() { return title; }
-    Calendar getStartDate() { return startDate; }
-    String getStartDateStr() { return startDateStr; }
-    String getEndDateStr() { return endDateStr; }
-    String getDescription() { return description; }
+    //Calendar getStartDate() { return startDate; }
+    String getStartTimeStr() { return startTimeStr; }
+    String getEndTimeStr() { return endTimeStr; }
 }

@@ -17,7 +17,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -42,11 +40,11 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import com.app.today.Event;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
@@ -72,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         user = mAuth.getCurrentUser();
         if(user == null) {
-            Log.i("user is NOT signed in", String.valueOf(isHome));
+            Log.i("! user is NOT signed in, on home page true or false?", String.valueOf(isHome));
             Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(alarmActivity);
             finish();
         } else {
             Toolbar toolbar = findViewById(R.id.action_logOut);
             setActionBar(toolbar);
-            Log.i("user is signed in", "");
+            Log.i("! user is signed in", Objects.requireNonNull(user.getEmail()));
             lastWUpdateTxt = findViewById(R.id.lastWUpdate);
             forecastTxt = findViewById(R.id.forecast);
             highsLowsTxt = findViewById(R.id.highsLows);
@@ -132,7 +130,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
             case R.id.action_refreshCalendar:
-                updateCalendar();
+                if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+                    updateCalendar();
+                    Toast.makeText(MainActivity.this, "The calendar query will not return repeating events, it will only return the day it ends on", Toast.LENGTH_LONG).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 HandlerThread t = new HandlerThread("handlerThread");
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                t.quit();
+                //t.quit(); <-- causes a dead thread warning, critical?
                 return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
             }
             return null;
@@ -209,29 +210,29 @@ public class MainActivity extends AppCompatActivity {
         CalendarContentResolver resolver = new CalendarContentResolver();
         calendar = resolver.getCalendar(this);
         if(calendar != null) {
-            //move this to content resolver - you don't need to return the whole calendar if your only showing events for today
-            for(int i = 0; i < calendar.size(); i++) {
-                Event event = calendar.get(i);
-                if(resolver.compareDate(event.getStartDate(), event.getTitle())) {
+            if(!calendar.isEmpty()) {
+                //move this to content resolver - you don't need to return the whole calendar if your only showing events for today
+                for(int i = 0; i < calendar.size(); i++) {
+                    Event event = calendar.get(i);
                     TableRow eventRow = new TableRow(getApplicationContext());
                     eventRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                     TextView timeTxt = new TextView(getApplicationContext());
-                    /*if(has end date (and description?)
-                        output = title + description + end date
-                    else*/
-                        //String output = event.getTitle() + ", " + event.getDescription();
-                    timeTxt.setText(event.getTitle());
+                    String output;
+                    if(event.getEndTimeStr() == null)
+                        output = event.getTitle() + ", " + event.getStartTimeStr();
+                    else
+                        output = event.getTitle() + ", " + event.getStartTimeStr() + "-" + event.getEndTimeStr();
+                    timeTxt.setText(output);
                     timeTxt.setTextSize(14);
                     TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
                     params.setMargins(30, 15, 0, 8);
                     timeTxt.setLayoutParams(params);
-                    eventRow.addView(timeTxt);
 
+                    eventRow.addView(timeTxt);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                } else if(i == 0)
-                    calTitle.setText(R.string.calEmpty);
-                //else break;
-            }
+                }
+            } else// if(i == 0)
+                calTitle.setText(R.string.calEmpty);
         }
         else
             calTitle.setText(R.string.calError);

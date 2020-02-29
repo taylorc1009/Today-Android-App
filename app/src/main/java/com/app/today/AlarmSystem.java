@@ -29,7 +29,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import android.icu.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -155,11 +155,11 @@ public class AlarmSystem extends AppCompatActivity {
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
-                    Calendar validationDate = Calendar.getInstance();
-                    validationDate.setTime(new Date());
+                    Calendar validationDate = dateUtils.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
+                    /*validationDate.setTime(new Date());
                     validationDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour.getText().toString()));
                     validationDate.set(Calendar.MINUTE, Integer.parseInt(minute.getText().toString()));
-                    validationDate.set(Calendar.SECOND, 0);
+                    validationDate.set(Calendar.SECOND, 0);*/
                     Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
                     Log.i("Date == ", validationDate.getTime().toString());
                     UITime = hour.getText() + ":" + minute.getText();
