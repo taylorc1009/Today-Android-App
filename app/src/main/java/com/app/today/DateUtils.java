@@ -2,7 +2,7 @@ package com.app.today;
 
 import android.icu.util.Calendar;
 
-class dateUtils {
+class DateUtils {
     static Calendar buildTime(int hour, int minute, int second) {
         Calendar day = Calendar.getInstance();
         day.setTimeInMillis(System.currentTimeMillis());

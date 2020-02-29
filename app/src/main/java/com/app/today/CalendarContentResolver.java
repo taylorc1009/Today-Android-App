@@ -48,8 +48,8 @@ public class CalendarContentResolver {
     }*/
     private Cursor queryCalendar(Context context) {
         //used to get the start and end times of of today in milliseconds
-        Calendar dayStart = dateUtils.buildTime(0, 0, 0);
-        Calendar dayEnd = dateUtils.buildTime(23, 59, 59);
+        Calendar dayStart = DateUtils.buildTime(0, 0, 0);
+        Calendar dayEnd = DateUtils.buildTime(23, 59, 59);
         String WHERE = "dtstart >= '" + dayStart.getTimeInMillis() + "' AND dtstart <= '" + dayEnd.getTimeInMillis() + "'";
         return context.getContentResolver().query(Uri.parse("content://com.android.calendar/events"), new String[] { "title", "dtstart", "dtend" }, WHERE, null, "dtstart DESC");
     }

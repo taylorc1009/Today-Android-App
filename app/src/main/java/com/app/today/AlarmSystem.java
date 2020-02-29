@@ -146,7 +146,7 @@ public class AlarmSystem extends AppCompatActivity {
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
-                    Calendar validationDate = dateUtils.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
+                    Calendar validationDate = DateUtils.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
 
                     Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
                     Log.i("Date == ", validationDate.getTime().toString());
