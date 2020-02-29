@@ -60,10 +60,6 @@ public class MainActivity extends AppCompatActivity {
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
     List<Event> calendar = new ArrayList<>();
-    /*protected static List<String> nameOfEvent = new ArrayList<>();
-    protected static List<String> startDates = new ArrayList<>();
-    protected static List<String> endDates = new ArrayList<>();
-    protected static List<String> descriptions = new ArrayList<>();*/
 
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
@@ -91,9 +87,6 @@ public class MainActivity extends AppCompatActivity {
             windTxt = findViewById(R.id.windSpeed);
             calTitle = findViewById(R.id.calTitle);
             calTable = findViewById(R.id.calTable);
-            /*event1Txt = findViewById(R.id.event1txt);
-            event2Txt = findViewById(R.id.event2txt);
-            event3Txt = findViewById(R.id.event3txt);*/
             alarmMore = findViewById(R.id.alarmMore);
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
@@ -138,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
                     new weatherTask().execute();
                     Toast.makeText(MainActivity.this, "If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
+            case R.id.action_refreshCalendar:
+                updateCalendar();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -214,10 +209,10 @@ public class MainActivity extends AppCompatActivity {
         CalendarContentResolver resolver = new CalendarContentResolver();
         calendar = resolver.getCalendar(this);
         if(calendar != null) {
-            //if(resolver.compareDate(calendar.get(0).getStartDate()))
+            //move this to content resolver - you don't need to return the whole calendar if your only showing events for today
             for(int i = 0; i < calendar.size(); i++) {
                 Event event = calendar.get(i);
-                if(resolver.compareDate(event.getStartDate())) {
+                if(resolver.compareDate(event.getStartDate(), event.getTitle())) {
                     TableRow eventRow = new TableRow(getApplicationContext());
                     eventRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                     TextView timeTxt = new TextView(getApplicationContext());
@@ -235,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 } else if(i == 0)
                     calTitle.setText(R.string.calEmpty);
-                else break;
+                //else break;
             }
         }
         else

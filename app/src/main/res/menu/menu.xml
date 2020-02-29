@@ -8,6 +8,12 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_refreshCalendar"
+        android:title="@string/refreshCalendar"
+        android:iconTint="@color/white"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_logOut"
         android:title="@string/menuLogOut"
         android:iconTint="@color/white"

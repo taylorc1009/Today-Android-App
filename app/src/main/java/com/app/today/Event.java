@@ -1,36 +1,42 @@
 package com.app.today;
 
-public class Event {
+import android.icu.util.Calendar;
+
+class Event {
     private String title;
-    private String startDate;
-    private String endDate;
+    private Calendar startDate;
+    private String startDateStr;
+    private String endDateStr;
     private String description;
 
-    public Event(String title, String startDate, String endDate, String description) {
+    Event(String title, String description, Calendar startDate, String startDateStr, String endDateStr) {
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.startDateStr = startDateStr;
+        this.endDateStr = endDateStr;
+    }
+    Event(String title, Calendar startDate, String startDateStr) {
         this.title = title;
         this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDateStr = startDateStr;
+    }
+    Event(String title, Calendar startDate, String startDateStr, String endDateStr) {
+        this.title = title;
+        this.startDate = startDate;
+        this.startDateStr = startDateStr;
+        this.endDateStr = endDateStr;
+    }
+    Event(String title, String description, Calendar startDate, String startDateStr) {
+        this.title = title;
         this.description = description;
+        this.startDate = startDate;
+        this.startDateStr = startDateStr;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String toString() {
-        return title + ", " + startDate + ", " + endDate + ", " + description;
-    }
+    String getTitle() { return title; }
+    Calendar getStartDate() { return startDate; }
+    String getStartDateStr() { return startDateStr; }
+    String getEndDateStr() { return endDateStr; }
+    String getDescription() { return description; }
 }
