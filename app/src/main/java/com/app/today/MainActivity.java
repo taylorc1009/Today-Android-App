@@ -3,6 +3,8 @@
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   Match the users real name to their login in Firebase
 *   Add alarm icon scale animation in AlarmActivity
+*   Add CardView and/or ScrollingActivity?
+*   Remove alarm TableLayout instances on retrieval (doInBackground/onPreExecute)
 *  */
 
 package com.app.today;
@@ -27,11 +29,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 import android.widget.Toolbar;
-
 import com.androdocs.httprequest.HttpRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.json.JSONException;
@@ -49,19 +52,18 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, event1Txt, event2Txt, event3Txt, calTitle;
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle; //event1Txt, event2Txt, event3Txt,
     static FloatingActionButton alarmMore;
+    TableLayout calTable;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
-    //List<Event> calendar = new ArrayList<>();
-    protected static List<String> nameOfEvent = new ArrayList<>();
+    List<Event> calendar = new ArrayList<>();
+    /*protected static List<String> nameOfEvent = new ArrayList<>();
     protected static List<String> startDates = new ArrayList<>();
     protected static List<String> endDates = new ArrayList<>();
-    protected static List<String> descriptions = new ArrayList<>();
-
-    Button logOut;
+    protected static List<String> descriptions = new ArrayList<>();*/
 
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
@@ -88,22 +90,20 @@ public class MainActivity extends AppCompatActivity {
             temperatureTxt = findViewById(R.id.temperature);
             windTxt = findViewById(R.id.windSpeed);
             calTitle = findViewById(R.id.calTitle);
-            event1Txt = findViewById(R.id.event1txt);
+            calTable = findViewById(R.id.calTable);
+            /*event1Txt = findViewById(R.id.event1txt);
             event2Txt = findViewById(R.id.event2txt);
-            event3Txt = findViewById(R.id.event3txt);
+            event3Txt = findViewById(R.id.event3txt);*/
             alarmMore = findViewById(R.id.alarmMore);
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
-            if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
-                new CalendarContentResolver(getApplicationContext());
+            if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendar();
-            }
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
                     //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
                     startActivity(alarmActivity);
-                    finish();
                 }
             });
         }
@@ -209,7 +209,38 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.weatherError).setVisibility(error);
     }
     private void updateCalendar() {
-        //if(calendar.isEmpty()) {
+        calTable.removeAllViews();
+        calendar.clear();
+        CalendarContentResolver resolver = new CalendarContentResolver();
+        calendar = resolver.getCalendar(this);
+        if(calendar != null) {
+            //if(resolver.compareDate(calendar.get(0).getStartDate()))
+            for(int i = 0; i < calendar.size(); i++) {
+                Event event = calendar.get(i);
+                if(resolver.compareDate(event.getStartDate())) {
+                    TableRow eventRow = new TableRow(getApplicationContext());
+                    eventRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+                    TextView timeTxt = new TextView(getApplicationContext());
+                    /*if(has end date (and description?)
+                        output = title + description + end date
+                    else*/
+                        //String output = event.getTitle() + ", " + event.getDescription();
+                    timeTxt.setText(event.getTitle());
+                    timeTxt.setTextSize(14);
+                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(30, 15, 0, 8);
+                    timeTxt.setLayoutParams(params);
+                    eventRow.addView(timeTxt);
+
+                    calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                } else if(i == 0)
+                    calTitle.setText(R.string.calEmpty);
+                else break;
+            }
+        }
+        else
+            calTitle.setText(R.string.calError);
+        /*//if(calendar.isEmpty()) {
         Resources resources = this.getResources();
         if(nameOfEvent.isEmpty()) {
             calTitle.setText(resources.getString(R.string.calError));
@@ -248,21 +279,23 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        }
+        }*/
     }
     private boolean reqPermission(int p) {
         switch(p) {
             case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
-                    } else { ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR); }
+                    /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
+                    } else { */
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
                 } else { return true; }
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    } else { ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION); }
+                    /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    } else { */
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                 } else { return true; }
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;

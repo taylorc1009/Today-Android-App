@@ -136,7 +136,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp">
 
-            <View
+            <!--<View
                 android:id="@+id/calSep1"
                 android:layout_height="2dp"
                 android:background="#FF909090"
@@ -228,7 +228,7 @@
                     app:layout_constraintTop_toTopOf="@+id/event3icon" />
             </TableRow>
 
-            <!--<View
+            <View
                 android:id="@+id/calSep4"
                 android:layout_height="2dp"
                 android:background="#FF909090"

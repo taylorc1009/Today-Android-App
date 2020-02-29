@@ -236,7 +236,6 @@ public class AlarmSystem extends AppCompatActivity {
                 alarm.addView(timeTxt);
 
                 alarmTable.addView(alarm, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                //getParent().setContentView(alarmTable);
             }
             else {
                 alarmTable.setVisibility(View.GONE);
