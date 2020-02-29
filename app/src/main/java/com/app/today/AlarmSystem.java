@@ -2,8 +2,6 @@ package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,18 +21,11 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
-
-import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
 public class AlarmSystem extends AppCompatActivity {
     static FloatingActionButton alarmBack, alarmAdd, alarmSave;
@@ -156,40 +147,39 @@ public class AlarmSystem extends AppCompatActivity {
             public void onClick(View v) {
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
                     Calendar validationDate = dateUtils.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
-                    /*validationDate.setTime(new Date());
-                    validationDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour.getText().toString()));
-                    validationDate.set(Calendar.MINUTE, Integer.parseInt(minute.getText().toString()));
-                    validationDate.set(Calendar.SECOND, 0);*/
+
                     Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
                     Log.i("Date == ", validationDate.getTime().toString());
+
                     UITime = hour.getText() + ":" + minute.getText();
                     alarmTime = validationDate.getTimeInMillis();
                     int alarmID = 0; //generate an alarm ID based on what already exists in the database
+
                     if (System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
-                    } else if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
-                        if (!(alarmLabel.getText().toString().equals("")))
-                            label = alarmLabel.getText().toString();
-                        if (chkMon.isChecked())
-                            days.add(Calendar.MONDAY);
-                        if (chkTues.isChecked())
-                            days.add(Calendar.TUESDAY);
-                        if (chkWed.isChecked())
-                            days.add(Calendar.WEDNESDAY);
-                        if (chkThurs.isChecked())
-                            days.add(Calendar.THURSDAY);
-                        if (chkFri.isChecked())
-                            days.add(Calendar.FRIDAY);
-                        if (chkSat.isChecked())
-                            days.add(Calendar.SATURDAY);
-                        if (chkSun.isChecked())
-                            days.add(Calendar.SUNDAY);
-                        for (int i = 0; i <= days.size(); i++)
-                            scheduleAlarm(days.get(i), alarmID);
-                        clearAddUI();
                     } else {
-                        //set the test amount of alarms allowed to 10?
-                        scheduleAlarm(9, new Random().nextInt(10)); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
+                        if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
+                            if (!(alarmLabel.getText().toString().equals("")))
+                                label = alarmLabel.getText().toString();
+                            if (chkMon.isChecked())
+                                days.add(Calendar.MONDAY);
+                            if (chkTues.isChecked())
+                                days.add(Calendar.TUESDAY);
+                            if (chkWed.isChecked())
+                                days.add(Calendar.WEDNESDAY);
+                            if (chkThurs.isChecked())
+                                days.add(Calendar.THURSDAY);
+                            if (chkFri.isChecked())
+                                days.add(Calendar.FRIDAY);
+                            if (chkSat.isChecked())
+                                days.add(Calendar.SATURDAY);
+                            if (chkSun.isChecked())
+                                days.add(Calendar.SUNDAY);
+                            for (int i = 0; i <= days.size(); i++)
+                                scheduleAlarm(days.get(i), alarmID);
+                        } else
+                            //set the test amount of alarms allowed to 10?
+                            scheduleAlarm(9, new Random().nextInt(10)); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
                         clearAddUI();
                     }
                 }
@@ -207,9 +197,7 @@ public class AlarmSystem extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            alarmTable.setVisibility(View.GONE);
-            alarmEmpty.setVisibility(View.GONE);
-            alarmLoad.setVisibility(View.VISIBLE);
+            updateAlarms(View.GONE, View.VISIBLE, View.GONE);
         }
         @Override
         protected String doInBackground(String... strings) {
@@ -219,10 +207,8 @@ public class AlarmSystem extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            alarmLoad.setVisibility(View.GONE);
             if(alarmTime != null) {
-                alarmEmpty.setVisibility(View.GONE);
-                alarmTable.setVisibility(View.VISIBLE);
+                updateAlarms(View.VISIBLE, View.GONE, View.GONE);
 
                 TableRow alarm = new TableRow(getApplicationContext());
                 alarm.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -237,11 +223,34 @@ public class AlarmSystem extends AppCompatActivity {
 
                 alarmTable.addView(alarm, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             }
-            else {
-                alarmTable.setVisibility(View.GONE);
-                alarmEmpty.setVisibility(View.VISIBLE);
-            }
+            else
+                updateAlarms(View.GONE, View.GONE, View.VISIBLE);
         }
+    }
+    private void updateAlarms(int table, int load, int error) {
+        alarmLoad.setVisibility(load);
+        alarmTable.setVisibility(table);
+        alarmEmpty.setVisibility(error);
+    }
+    private void clearAddUI() {
+        addGroup.setVisibility(View.GONE);
+        hour.getText().clear();
+        minute.getText().clear();
+        if(chkMon.isChecked())
+            chkMon.toggle();
+        if(chkTues.isChecked())
+            chkTues.toggle();
+        if(chkWed.isChecked())
+            chkWed.toggle();
+        if(chkThurs.isChecked())
+            chkThurs.toggle();
+        if(chkFri.isChecked())
+            chkFri.toggle();
+        if(chkSat.isChecked())
+            chkSat.toggle();
+        if(chkSun.isChecked())
+            chkSun.toggle();
+        alarmLabel.getText().clear();
     }
     private void scheduleAlarm(int dayOfWeek, Integer alarmID) {
 
@@ -271,6 +280,7 @@ public class AlarmSystem extends AppCompatActivity {
 
         Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        assert alarmManager != null;
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
@@ -302,25 +312,4 @@ public class AlarmSystem extends AppCompatActivity {
         pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         Toast.makeText(context, "cancelled", Toast.LENGTH_LONG).show();
     }*/
-
-    private void clearAddUI() {
-        addGroup.setVisibility(View.GONE);
-        hour.getText().clear();
-        minute.getText().clear();
-        if(chkMon.isChecked())
-            chkMon.toggle();
-        if(chkTues.isChecked())
-            chkTues.toggle();
-        if(chkWed.isChecked())
-            chkWed.toggle();
-        if(chkThurs.isChecked())
-            chkThurs.toggle();
-        if(chkFri.isChecked())
-            chkFri.toggle();
-        if(chkSat.isChecked())
-            chkSat.toggle();
-        if(chkSun.isChecked())
-            chkSun.toggle();
-        alarmLabel.getText().clear();
-    }
 }

@@ -1,5 +1,4 @@
 /* TODO
-*   Fix calendar date.parse exception and improve output UI
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   Match the users real name to their login in Firebase
 *   Add alarm icon scale animation in AlarmActivity
@@ -12,7 +11,6 @@ package com.app.today;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-//import androidx.core.app.CoreComponentFactory; // --> unused but the runtime needs it
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle; //event1Txt, event2Txt, event3Txt,
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle;
     static FloatingActionButton alarmMore;
     TableLayout calTable;
 
@@ -127,12 +125,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_refreshWeather:
                 if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
                     new weatherTask().execute();
-                    Toast.makeText(MainActivity.this, "If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "!INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
             case R.id.action_refreshCalendar:
                 if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
                     updateCalendar();
-                    Toast.makeText(MainActivity.this, "The calendar query will not return repeating events, it will only return the day it ends on", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "!INFO: Query cannot retrieve repeating instances of an event, it will only return the the last day it occurs on", Toast.LENGTH_LONG).show();
                 }
             default:
                 return super.onOptionsItemSelected(item);
@@ -161,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onProviderDisabled(String provider) {}
             };
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 HandlerThread t = new HandlerThread("handlerThread");
@@ -211,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
         calendar = resolver.getCalendar(this);
         if(calendar != null) {
             if(!calendar.isEmpty()) {
-                //move this to content resolver - you don't need to return the whole calendar if your only showing events for today
                 for(int i = 0; i < calendar.size(); i++) {
                     Event event = calendar.get(i);
                     TableRow eventRow = new TableRow(getApplicationContext());
@@ -228,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
                     params.setMargins(30, 15, 0, 8);
                     timeTxt.setLayoutParams(params);
 
+                    calTitle.setText(R.string.calTitle);
                     eventRow.addView(timeTxt);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
@@ -236,46 +234,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             calTitle.setText(R.string.calError);
-        /*//if(calendar.isEmpty()) {
-        Resources resources = this.getResources();
-        if(nameOfEvent.isEmpty()) {
-            calTitle.setText(resources.getString(R.string.calError));
-            findViewById(R.id.calTable).setVisibility(View.GONE);
-            //Log.i("calendar", calendar.get(0).getTitle());
-        }
-        else {
-            //if (CalendarContentResolver.compareDate(calendar.get(0).getStartDate())) {
-            if(CalendarContentResolver.compareDate(startDates.get(0))) {
-                calTitle.setText(resources.getString(R.string.calEmpty));
-                findViewById(R.id.calTable).setVisibility(View.GONE);
-                //Log.i("startDates 0 ==", startDates.get(1));
-                //event1Txt.setText("Coming up soon: " + nameOfEvent.get(0) + ", " + startDates.get(0));
-            } else {
-                calTitle.setText(resources.getString(R.string.calTitle));
-                findViewById(R.id.calTable).setVisibility(View.VISIBLE);
-                event1Txt.setText(nameOfEvent.get(0) + ", " + startDates.get(0));
-                if (CalendarContentResolver.compareDate(startDates.get(1))) {
-                    findViewById(R.id.calSep2).setVisibility(View.GONE);
-                    event2Txt.setVisibility(View.GONE);
-                    findViewById(R.id.calSep3).setVisibility(View.GONE);
-                    event3Txt.setVisibility(View.GONE);
-                    //event2Txt.setText("Coming up soon: " + nameOfEvent.get(1) + ", " + startDates.get(1));
-                } else {
-                    findViewById(R.id.calSep2).setVisibility(View.VISIBLE);
-                    event2Txt.setVisibility(View.VISIBLE);
-                    event2Txt.setText(nameOfEvent.get(1) + ", " + startDates.get(1));
-                    if (CalendarContentResolver.compareDate(startDates.get(2))) {
-                        findViewById(R.id.calSep3).setVisibility(View.GONE);
-                        event3Txt.setVisibility(View.GONE);
-                        //event3Txt.setText("Coming up soon: " + nameOfEvent.get(2) + ", " + startDates.get(2));
-                    } else {
-                        findViewById(R.id.calSep3).setVisibility(View.VISIBLE);
-                        event3Txt.setVisibility(View.VISIBLE);
-                        event3Txt.setText(nameOfEvent.get(2) + ", " + startDates.get(2));
-                    }
-                }
-            }
-        }*/
     }
     private boolean reqPermission(int p) {
         switch(p) {
