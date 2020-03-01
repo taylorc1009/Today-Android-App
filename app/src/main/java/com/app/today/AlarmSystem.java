@@ -158,9 +158,10 @@ public class AlarmSystem extends AppCompatActivity {
                     if (System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
+                        Log.i("valid", "??????????????");
+                        if (!(alarmLabel.getText().toString().equals("")))
+                            label = alarmLabel.getText().toString();
                         if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
-                            if (!(alarmLabel.getText().toString().equals("")))
-                                label = alarmLabel.getText().toString();
                             if (chkMon.isChecked())
                                 days.add(Calendar.MONDAY);
                             if (chkTues.isChecked())

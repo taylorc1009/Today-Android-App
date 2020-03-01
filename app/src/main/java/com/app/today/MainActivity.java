@@ -1,5 +1,6 @@
 /* TODO
 *   Add the users alarm data to a database and display it in the AlarmSystem table
+*   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?)
 *   Add alarm icon scale animation in AlarmActivity
 *   Add CardView and/or ScrollingActivity?
 *   Fix SignInActivity EditText marker colour
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle;
     static FloatingActionButton alarmMore;
     TableLayout calTable;
+    Button button;
 
     List<String> weatherDetails = new ArrayList<>();
     static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -92,6 +95,16 @@ public class MainActivity extends AppCompatActivity {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
                     //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
                     startActivity(alarmActivity);
+                }
+            });
+
+            button = findViewById(R.id.button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent alarmActivity = new Intent(MainActivity.this, AlarmActivity.class);
+                    startActivity(alarmActivity);
+                    finish();
                 }
             });
         }

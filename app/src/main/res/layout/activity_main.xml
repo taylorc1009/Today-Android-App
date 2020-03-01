@@ -80,6 +80,15 @@
                     android:text="@string/lastWUpdate"
                     app:layout_constraintStart_toStartOf="@+id/weatherIcon"
                     app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="run alarm"
+                    android:clickable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ProgressBar
@@ -285,5 +294,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:drawable/ic_menu_add" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
