@@ -1,22 +1,32 @@
 package com.app.today;
 
-import android.icu.util.Calendar;
+import java.util.Date;
 
-class Event {
+public class Event {
     private String title;
-    //private Calendar startDate;
-    private String startTimeStr;
-    private String endTimeStr;
+    private Date begin;
+    private Date end;
+    private boolean allDay;
 
-    Event(String title, String startTimeStr, String endTimeStr) {
+    Event(String title, Date begin, Date end, boolean allDay) {
         this.title = title;
-        //this.startDate = startDate;
-        this.startTimeStr = startTimeStr;
-        this.endTimeStr = endTimeStr;
+        this.begin = begin;
+        this.end = end;
+        this.allDay = !allDay;
     }
 
     String getTitle() { return title; }
-    //Calendar getStartDate() { return startDate; }
-    String getStartTimeStr() { return startTimeStr; }
-    String getEndTimeStr() { return endTimeStr; }
+    Date getBegin() { return begin; }
+    Date getEnd() { return end; }
+    boolean isAllDay() { return allDay; }
+
+    @Override
+    public String toString() {
+        return "Event2{" +
+                "title='" + title + '\'' +
+                ", begin=" + begin +
+                ", end=" + end +
+                ", allDay=" + allDay +
+                '}';
+    }
 }

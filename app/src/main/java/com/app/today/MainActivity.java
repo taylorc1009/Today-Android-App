@@ -227,10 +227,10 @@ public class MainActivity extends AppCompatActivity {
                     eventRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                     TextView timeTxt = new TextView(getApplicationContext());
                     String output;
-                    if(event.getEndTimeStr() == null)
-                        output = event.getTitle() + ", " + event.getStartTimeStr();
+                    if(!event.isAllDay())
+                        output = event.getTitle() + " | " + resolver.getTimeString(event.getBegin().getTime()) + "-" + resolver.getTimeString(event.getEnd().getTime());
                     else
-                        output = event.getTitle() + ", " + event.getStartTimeStr() + "-" + event.getEndTimeStr();
+                        output = event.getTitle() + " | All day";
                     timeTxt.setText(output);
                     timeTxt.setTextSize(14);
                     TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
