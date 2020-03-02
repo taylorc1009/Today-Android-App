@@ -140,10 +140,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "!INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
             case R.id.action_refreshCalendar:
-                if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR)) {
+                if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                     updateCalendar();
-                    Toast.makeText(MainActivity.this, "!INFO: Query cannot retrieve repeating instances of an event, it will only return the the last day it occurs on", Toast.LENGTH_LONG).show();
-                }
             default:
                 return super.onOptionsItemSelected(item);
         }
