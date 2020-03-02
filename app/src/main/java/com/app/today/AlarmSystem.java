@@ -22,6 +22,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
 import java.util.List;
@@ -42,6 +44,9 @@ public class AlarmSystem extends AppCompatActivity {
 
     AlarmManager alarmManager;
     PendingIntent alarmSender;
+
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,19 +151,18 @@ public class AlarmSystem extends AppCompatActivity {
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
-                    Calendar validationDate = DateUtils.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
+                    Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0); //Calendar.getInstance();
 
                     Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
                     Log.i("Date == ", validationDate.getTime().toString());
 
                     UITime = hour.getText() + ":" + minute.getText();
                     alarmTime = validationDate.getTimeInMillis();
-                    int alarmID = 0; //generate an alarm ID based on what already exists in the database
+                    int alarmID = new Random().nextInt(10);
 
                     if (System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        Log.i("valid", "??????????????");
                         if (!(alarmLabel.getText().toString().equals("")))
                             label = alarmLabel.getText().toString();
                         if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
@@ -180,7 +184,7 @@ public class AlarmSystem extends AppCompatActivity {
                                 scheduleAlarm(days.get(i), alarmID);
                         } else
                             //set the test amount of alarms allowed to 10?
-                            scheduleAlarm(9, new Random().nextInt(10)); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
+                            scheduleAlarm(9, alarmID); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
                         clearAddUI();
                     }
                 }
@@ -203,7 +207,8 @@ public class AlarmSystem extends AppCompatActivity {
         }
         @Override
         protected String doInBackground(String... strings) {
-            //get stored alarms
+            /*// Read from the database
+            */
             return null;
         }
         @Override
@@ -282,8 +287,8 @@ public class AlarmSystem extends AppCompatActivity {
 
         Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        assert alarmManager != null;
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+        //assert alarmManager != null;
+        //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't

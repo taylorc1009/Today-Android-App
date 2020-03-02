@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
 import java.util.Objects;
 
 public class AlarmActivity extends AppCompatActivity {
@@ -33,6 +34,11 @@ public class AlarmActivity extends AppCompatActivity {
         alarmLabel = findViewById(R.id.alarmLabel);
 
         Log.i("! AlarmActivity started", "post ID here");
+
+        Calendar time = Calendar.getInstance();
+        time.setTimeInMillis(System.currentTimeMillis());
+        String timeStr = time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE);
+        alarmTime.setText(timeStr);
 
         Objects.requireNonNull(getSupportActionBar()).hide();
         animateIcon();

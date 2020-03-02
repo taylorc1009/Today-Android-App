@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     eventRow.addView(timeTxt);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
-            } else// if(i == 0)
+            } else
                 calTitle.setText(R.string.calEmpty);
         }
         else
