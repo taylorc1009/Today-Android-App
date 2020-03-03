@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context=".MainActivity"
     android:scrollbars="none">
 
@@ -11,289 +12,233 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/weatherParent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/weatherCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardCornerRadius="8dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/weatherGroup"
+                android:id="@+id/weatherParent"
                 android:layout_width="match_parent"
-                android:layout_height="125dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/weatherIcon"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/weatherGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="78dp"
+                        android:layout_height="78dp"
+                        android:contentDescription="@string/imageDescription"
+                        android:src="@drawable/info"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/forecast"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/forecast"
+                        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+                        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
+
+                    <TextView
+                        android:id="@+id/temperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/temperature"
+                        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/forecast" />
+
+                    <TextView
+                        android:id="@+id/highsLows"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/highsLows"
+                        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/temperature" />
+
+                    <TextView
+                        android:id="@+id/windSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/windSpeed"
+                        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/highsLows" />
+
+                    <TextView
+                        android:id="@+id/lastWUpdate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/lastWUpdate"
+                        app:layout_constraintStart_toStartOf="@+id/weatherIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ProgressBar
+                    android:id="@+id/weatherLoad"
                     android:layout_width="78dp"
                     android:layout_height="78dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:contentDescription="@string/imageDescription"
-                    android:src="@drawable/info"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/forecast"
+                    android:id="@+id/weatherError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/weatherError"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/calendarCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/weatherCard"
+            app:cardCornerRadius="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/calendarGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/weatherParent">
+
+                <ImageView
+                    android:id="@+id/calIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/imageDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@android:drawable/ic_menu_today" />
+
+                <TextView
+                    android:id="@+id/calTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/forecast"
-                    app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                    app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
+                    android:layout_marginTop="5dp"
+                    android:text="@string/calTitle"
+                    app:layout_constraintStart_toEndOf="@+id/calIcon"
+                    app:layout_constraintTop_toTopOf="@+id/calIcon" />
+
+                <TableLayout
+                    android:id="@+id/calTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/calIcon"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/alarmCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/calendarCard"
+            app:cardCornerRadius="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/alarmGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/calendarGroup">
+
+                <ImageView
+                    android:id="@+id/alarmIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/imageDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
 
                 <TextView
-                    android:id="@+id/temperature"
+                    android:id="@+id/alarmTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/temperature"
-                    app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/forecast" />
+                    android:layout_marginTop="5dp"
+                    android:text="@string/alarmTitle"
+                    app:layout_constraintStart_toEndOf="@+id/alarmIcon"
+                    app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
 
-                <TextView
-                    android:id="@+id/highsLows"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/highsLows"
-                    app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/temperature" />
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/alarmMore"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:backgroundTint="#00FFFFFF"
+                    app:fabCustomSize="32dp"
+                    app:fabSize="auto"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/alarmIcon"
+                    app:srcCompat="@android:drawable/ic_menu_add" />
 
-                <TextView
-                    android:id="@+id/windSpeed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/windSpeed"
-                    app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/highsLows" />
-
-                <TextView
-                    android:id="@+id/lastWUpdate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/lastWUpdate"
-                    app:layout_constraintStart_toStartOf="@+id/weatherIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
 
                 <Button
                     android:id="@+id/button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="run alarm"
                     android:clickable="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="run alarm"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/alarmIcon" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ProgressBar
-                android:id="@+id/weatherLoad"
-                android:layout_width="78dp"
-                android:layout_height="78dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/weatherError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/weatherError"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/calendarGroup"
-            android:layout_width="400dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/weatherParent">
-
-            <ImageView
-                android:id="@+id/calIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="20dp"
-                android:contentDescription="@string/imageDescription"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_today" />
-
-            <TextView
-                android:id="@+id/calTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/calTitle"
-                app:layout_constraintStart_toEndOf="@+id/calIcon"
-                app:layout_constraintTop_toTopOf="@+id/calIcon" />
-
-            <TableLayout
-                android:id="@+id/calTable"
-                android:layout_width="410dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/calIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="8dp">
-
-                <!--<View
-                    android:id="@+id/calSep1"
-                    android:layout_height="2dp"
-                    android:background="#FF909090"
-                    android:layout_marginBottom="8dp"/>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/event1icon"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="16dp"
-                        android:contentDescription="@string/imageDescription"
-                        android:src="@drawable/info"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/event1txt"
-                        android:layout_width="326dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/event"
-                        app:layout_constraintStart_toEndOf="@+id/event1icon"
-                        app:layout_constraintTop_toTopOf="@+id/event1icon" />
-                </TableRow>
-
-                <View
-                    android:id="@+id/calSep2"
-                    android:layout_height="2dp"
-                    android:background="#FF909090"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp" />
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/event2icon"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="16dp"
-                        android:contentDescription="@string/imageDescription"
-                        android:src="@drawable/info"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/event2txt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/event"
-                        app:layout_constraintStart_toEndOf="@+id/event2icon"
-                        app:layout_constraintTop_toTopOf="@+id/event2icon" />
-                </TableRow>
-
-                <View
-                    android:id="@+id/calSep3"
-                    android:layout_height="2dp"
-                    android:background="#FF909090"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp" />
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/event3icon"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="16dp"
-                        android:contentDescription="@string/imageDescription"
-                        android:src="@drawable/info"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/event3txt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/event"
-                        app:layout_constraintStart_toEndOf="@+id/event3icon"
-                        app:layout_constraintTop_toTopOf="@+id/event3icon" />
-                </TableRow>
-
-                <View
-                    android:id="@+id/calSep4"
-                    android:layout_height="2dp"
-                    android:background="#FF909090"
-                    android:layout_marginTop="8dp" />-->
-            </TableLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/alarmGroup"
-            android:layout_width="400dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/calendarGroup">
-
-            <ImageView
-                android:id="@+id/alarmIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="20dp"
-                android:contentDescription="@string/imageDescription"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
-
-            <TextView
-                android:id="@+id/alarmTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/alarmTitle"
-                app:layout_constraintStart_toEndOf="@+id/alarmIcon"
-                app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/alarmMore"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="#00FFFFFF"
-                android:clickable="true"
-                android:focusable="true"
-                app:backgroundTint="#00FFFFFF"
-                app:fabCustomSize="32dp"
-                app:fabSize="auto"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_add" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
