@@ -190,6 +190,7 @@ public class AlarmSystem extends AppCompatActivity {
                             //set the test amount of alarms allowed to 10?
                             scheduleAlarm(9, alarmID); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
                         clearAddUI();
+                        new alarmRetrieve().execute();
                     }
                 }
                 else {
@@ -226,9 +227,9 @@ public class AlarmSystem extends AppCompatActivity {
                 TextView timeTxt = new TextView(getApplicationContext());
 
                 timeTxt.setText(UITime);
-                timeTxt.setTextSize(30);
+                timeTxt.setTextSize(20);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                params.setMargins(30, 15, 0, 8);
+                //params.setMargins(30, 15, 0, 8);
                 timeTxt.setLayoutParams(params);
                 alarm.addView(timeTxt);
 
@@ -244,7 +245,6 @@ public class AlarmSystem extends AppCompatActivity {
         alarmEmpty.setVisibility(error);
     }
     private void clearAddUI() {
-        alarmsCard.setVisibility(View.GONE);
         hour.getText().clear();
         minute.getText().clear();
         if(chkMon.isChecked())
@@ -262,6 +262,7 @@ public class AlarmSystem extends AppCompatActivity {
         if(chkSun.isChecked())
             chkSun.toggle();
         alarmLabel.getText().clear();
+        addCard.setVisibility(View.GONE);
     }
     private void scheduleAlarm(int dayOfWeek, Integer alarmID) {
 

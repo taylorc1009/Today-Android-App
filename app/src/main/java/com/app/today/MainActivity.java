@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateWeather(View.VISIBLE, View.GONE, View.GONE);
+            updateWeather(View.VISIBLE, View.GONE, View.GONE, View.GONE);
         }
         @Override
         public String doInBackground(String... args) {
@@ -199,17 +199,18 @@ public class MainActivity extends AppCompatActivity {
                     highsLowsTxt.setText(weatherDetails.get(2));
                     windTxt.setText(weatherDetails.get(3));
                     lastWUpdateTxt.setText(weatherDetails.get(4));
-                    updateWeather(View.GONE, View.VISIBLE, View.GONE);
+                    updateWeather(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
                 } else
-                    updateWeather(View.GONE, View.GONE, View.VISIBLE);
+                    updateWeather(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
             } catch (JSONException e) {
-                updateWeather(View.GONE, View.GONE, View.VISIBLE);
+                updateWeather(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
             }
         }
     }
-    private void updateWeather(int load, int group, int error) {
+    private void updateWeather(int load, int card, int group, int error ) {
         findViewById(R.id.weatherLoad).setVisibility(load);
-        findViewById(R.id.weatherGroup).setVisibility(group);
+        findViewById(R.id.weatherCard).setVisibility(card);
+        findViewById(R.id.weatherStats).setVisibility(group);
         findViewById(R.id.weatherError).setVisibility(error);
     }
     private void updateCalendar() {
