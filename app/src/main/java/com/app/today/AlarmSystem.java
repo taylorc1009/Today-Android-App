@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Random;
 
 public class AlarmSystem extends AppCompatActivity {
-    static FloatingActionButton alarmBack, alarmAdd, alarmSave;
+    ImageView alarmBack, alarmAdd, alarmSave;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
     EditText hour, minute, alarmLabel;
     TextView alarmEmpty;
@@ -46,7 +47,7 @@ public class AlarmSystem extends AppCompatActivity {
     PendingIntent alarmSender;
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this);
+    //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,6 @@ public class AlarmSystem extends AppCompatActivity {
         alarmTable = findViewById(R.id.alarmTable);
         alarmEmpty = findViewById(R.id.alarmEmpty);
         alarmLoad = findViewById(R.id.alarmLoad);
-        alarmBack = findViewById(R.id.alarmBack);
         alarmSave = findViewById(R.id.alarmSave);
         addGroup = findViewById(R.id.addGroup);
         chkMon = findViewById(R.id.chkMon);
@@ -288,7 +288,8 @@ public class AlarmSystem extends AppCompatActivity {
         Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         //assert alarmManager != null;
-        //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+        //sets alarm -> alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't

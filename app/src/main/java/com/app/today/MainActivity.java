@@ -3,7 +3,7 @@
 *   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?)
 *   Add alarm icon scale animation in AlarmActivity
 *   Add CardView and/or ScrollingActivity?
-*   Fix SignInActivity EditText marker colour
+*   Fix SignInActivity EditText cursor and handle colour
 *  */
 
 package com.app.today;

@@ -4,20 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AlarmSystem">
+    tools:context=".AlarmSystem"
+    android:background="@color/colorAccent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageView
         android:id="@+id/alarmBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:contentDescription="@string/imageDescription"
         android:clickable="true"
-        android:focusable="true"
-        app:backgroundTint="#00FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable" />
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        android:tint="@color/white"
+        android:focusable="true" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageView
+        android:id="@+id/alarmAdd"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:contentDescription="@string/imageDescription"
+        android:focusable="true"
+        android:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/alarmAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,9 +40,9 @@
         app:backgroundTint="#00FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@android:drawable/ic_menu_add" />-->
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/alarmIcon"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -37,18 +51,19 @@
         app:layout_constraintBottom_toBottomOf="@+id/alarmBack"
         app:layout_constraintStart_toEndOf="@+id/alarmBack"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
+        app:srcCompat="@android:drawable/ic_lock_idle_alarm" />-->
 
     <TextView
         android:id="@+id/alarmTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="@string/alarmTitle"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/alarmIcon"
-        app:layout_constraintStart_toEndOf="@+id/alarmIcon"
-        app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/alarmBack"
+        app:layout_constraintBottom_toBottomOf="@+id/alarmBack"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/alarmGroup"
