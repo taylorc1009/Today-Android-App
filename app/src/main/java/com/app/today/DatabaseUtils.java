@@ -14,7 +14,7 @@ public class DatabaseUtils extends SQLiteOpenHelper {
     private static final String COLUMN_THREE = "label";
     private static final String COLUMN_FOUR = "time";
 
-    public DatabaseUtils(Context context) {
+    DatabaseUtils(Context context) {
         super(context, NAME, null, 1);
         SQLiteDatabase db = this.getWritableDatabase();
     }

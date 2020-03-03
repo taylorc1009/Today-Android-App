@@ -225,19 +225,19 @@
                     app:layout_constraintStart_toEndOf="@+id/alarmIcon"
                     app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                <ImageView
                     android:id="@+id/alarmMore"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:backgroundTint="#00FFFFFF"
                     android:clickable="true"
                     android:focusable="true"
-                    app:backgroundTint="#00FFFFFF"
+                    android:tint="@color/colorPrimaryDark"
                     app:fabCustomSize="32dp"
                     app:fabSize="auto"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/alarmIcon"
-                    app:srcCompat="@android:drawable/ic_menu_add" />
+                    app:srcCompat="@android:drawable/ic_input_add" />
 
 
                 <Button
@@ -245,7 +245,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:text="run alarm"
+                    android:text="debug run alarm"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/alarmIcon" />
             </androidx.constraintlayout.widget.ConstraintLayout>

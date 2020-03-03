@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle;
-    static FloatingActionButton alarmMore;
+    ImageView alarmMore;
     TableLayout calTable;
     Button button;
 
