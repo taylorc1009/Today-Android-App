@@ -1,6 +1,7 @@
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -32,6 +33,7 @@ import java.util.Random;
 
 public class AlarmSystem extends AppCompatActivity {
     ImageView alarmBack, alarmAdd, alarmSave;
+    CardView alarmsCard, addCard;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
     EditText hour, minute, alarmLabel;
     TextView alarmEmpty;
@@ -53,6 +55,8 @@ public class AlarmSystem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_system);
+        alarmsCard = findViewById(R.id.alarmsCard);
+        addCard = findViewById(R.id.addCard);
         alarmBack = findViewById(R.id.alarmBack);
         alarmAdd = findViewById(R.id.alarmAdd);
         alarmTable = findViewById(R.id.alarmTable);
@@ -86,11 +90,11 @@ public class AlarmSystem extends AppCompatActivity {
         });
         alarmAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(addGroup.getVisibility() == View.GONE)
-                    addGroup.setVisibility(View.VISIBLE);
+                if(addCard.getVisibility() == View.GONE)
+                    addCard.setVisibility(View.VISIBLE);
                     //change add button image to close/X
                 else
-                    addGroup.setVisibility(View.GONE);
+                    addCard.setVisibility(View.GONE);
             }
         });
         hour.addTextChangedListener(new TextWatcher() {
@@ -236,11 +240,11 @@ public class AlarmSystem extends AppCompatActivity {
     }
     private void updateAlarms(int table, int load, int error) {
         alarmLoad.setVisibility(load);
-        alarmTable.setVisibility(table);
+        alarmsCard.setVisibility(table);
         alarmEmpty.setVisibility(error);
     }
     private void clearAddUI() {
-        addGroup.setVisibility(View.GONE);
+        alarmsCard.setVisibility(View.GONE);
         hour.getText().clear();
         minute.getText().clear();
         if(chkMon.isChecked())
