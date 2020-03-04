@@ -42,6 +42,7 @@ dependencies {
     implementation 'com.github.androdocs:Simple-HTTP-Request:v1.0'
 
     //Firebase
+    implementation 'com.google.firebase:firebase-database:19.2.1'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     //implementation 'com.google.firebase:firebase-admin:5.5.0'

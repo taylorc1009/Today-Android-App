@@ -39,16 +39,13 @@ public class AlarmSystem extends AppCompatActivity {
     ProgressBar alarmLoad;
     ConstraintLayout addGroup;
     TableLayout alarmTable;
-    private String label = null;
-    private List<Integer> days = new ArrayList<>();
-    private Long alarmTime = null;
-    private String UITime = null;
 
     AlarmManager alarmManager;
     PendingIntent alarmSender;
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this);
+    DatabaseUtils alarms = new DatabaseUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +70,10 @@ public class AlarmSystem extends AppCompatActivity {
         hour = findViewById(R.id.hour);
         minute = findViewById(R.id.minute);
         alarmLabel = findViewById(R.id.alarmLabel);
-        alarmTime = null;
+        /*alarmTime = null;
         UITime = null;
         label = null;
-        days.clear();
+        days.clear();*/
         new alarmRetrieve().execute();
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -155,39 +152,18 @@ public class AlarmSystem extends AppCompatActivity {
             public void onClick(View v) {
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
                     Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0); //Calendar.getInstance();
+                    long alarmTime = validationDate.getTimeInMillis();
+                    long now = System.currentTimeMillis();
 
-                    Log.i("Time comparison", "is " + System.currentTimeMillis() + " > " + validationDate.getTimeInMillis() + "?");
-                    Log.i("Date == ", validationDate.getTime().toString());
+                    Log.i("? time comparison", "is " + now + " > " + alarmTime + "?");
+                    Log.i("? date == ", validationDate.getTime().toString());
 
-                    UITime = hour.getText() + ":" + minute.getText();
-                    alarmTime = validationDate.getTimeInMillis();
-                    int alarmID = new Random().nextInt(10);
-
-                    if (System.currentTimeMillis() > validationDate.getTimeInMillis() && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
+                    if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        if (!(alarmLabel.getText().toString().equals("")))
-                            label = alarmLabel.getText().toString();
-                        if (chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
-                            if (chkMon.isChecked())
-                                days.add(Calendar.MONDAY);
-                            if (chkTues.isChecked())
-                                days.add(Calendar.TUESDAY);
-                            if (chkWed.isChecked())
-                                days.add(Calendar.WEDNESDAY);
-                            if (chkThurs.isChecked())
-                                days.add(Calendar.THURSDAY);
-                            if (chkFri.isChecked())
-                                days.add(Calendar.FRIDAY);
-                            if (chkSat.isChecked())
-                                days.add(Calendar.SATURDAY);
-                            if (chkSun.isChecked())
-                                days.add(Calendar.SUNDAY);
-                            for (int i = 0; i <= days.size(); i++)
-                                scheduleAlarm(days.get(i), alarmID);
-                        } else
-                            //set the test amount of alarms allowed to 10?
-                            scheduleAlarm(9, alarmID); //make 9 our equivalent of null, 0 might be used as Sunday in some instances?
+                        //UITime = hour.getText() + ":" + minute.getText();
+                        Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
+                        scheduleAlarm(alarm, alarmTime);
                         clearAddUI();
                         new alarmRetrieve().execute();
                     }
@@ -218,6 +194,7 @@ public class AlarmSystem extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            Object alarmTime = null;
             if(alarmTime != null) {
                 updateAlarms(View.VISIBLE, View.GONE, View.GONE);
 
@@ -225,7 +202,7 @@ public class AlarmSystem extends AppCompatActivity {
                 alarm.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                 TextView timeTxt = new TextView(getApplicationContext());
 
-                timeTxt.setText(UITime);
+                //timeTxt.setText(UITime);
                 timeTxt.setTextSize(20);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
                 //params.setMargins(30, 15, 0, 8);
@@ -242,6 +219,38 @@ public class AlarmSystem extends AppCompatActivity {
         alarmLoad.setVisibility(load);
         alarmsCard.setVisibility(table);
         alarmEmpty.setVisibility(error);
+    }
+    private Alarm createAlarm(String hour, String minute, String label) {
+        /*while(true) {
+            int id = new Random().nextInt(10);
+            if(!alarms.has(id))
+                break;
+        }*/
+        List<Integer> days = new ArrayList<>();
+        String UITime = hour + ":" + minute;
+        String id = alarms.newKey();
+        if (!(alarmLabel.getText().toString().equals("")))
+            label = alarmLabel.getText().toString();
+        if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
+            if (chkMon.isChecked())
+                days.add(Calendar.MONDAY);
+            if (chkTues.isChecked())
+                days.add(Calendar.TUESDAY);
+            if (chkWed.isChecked())
+                days.add(Calendar.WEDNESDAY);
+            if (chkThurs.isChecked())
+                days.add(Calendar.THURSDAY);
+            if (chkFri.isChecked())
+                days.add(Calendar.FRIDAY);
+            if (chkSat.isChecked())
+                days.add(Calendar.SATURDAY);
+            if (chkSun.isChecked())
+                days.add(Calendar.SUNDAY);
+            //for (int i = 0; i <= days.size(); i++)
+            //    scheduleAlarm(days.get(i), alarmID);
+        }
+        Alarm alarm = new Alarm(id, days, label, UITime);
+        return alarm;
     }
     private void clearAddUI() {
         hour.getText().clear();
@@ -263,41 +272,43 @@ public class AlarmSystem extends AppCompatActivity {
         alarmLabel.getText().clear();
         addCard.setVisibility(View.GONE);
     }
-    private void scheduleAlarm(int dayOfWeek, Integer alarmID) {
+    private void scheduleAlarm(Alarm alarm, long alarmTime) {
 
         /* perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
         * day has come, pull the alarm matching the ID we want from the database and check if it is due
         * to ring on the current day. */
 
-        Calendar calendar = Calendar.getInstance();
+        /*Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-        calendar.setTimeInMillis(alarmTime);
-
+        calendar.setTimeInMillis(alarmTime);*/
         /* Check we aren't setting it in the past which would trigger it to fire instantly
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 7);
         }*/
 
         // Set this to whatever you were planning to do at the given time
+        String id = alarm.getId();
         Intent alarmIntent = new Intent(this, AlarmRing.class);
-        alarmIntent.putExtra("alarmID", alarmID);
+        alarmIntent.putExtra("alarmID", id);
         alarmIntent.setAction("com.app.today.FireAlarm");
-        alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), alarmID, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
         //upon ring, transition to alarm activity
         //perhaps pull an id and ring the alarm matching that id, alarms could be stored
         //in a database, plus it might be easier to view and delete them this way?
 
 
 
-        Log.i("Attempted to invoke AlarmManager system", alarmID.toString());
+        Log.i("? attempted to invoke AlarmManager with ID", String.valueOf(id));
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        //assert alarmManager != null;
+        assert alarmManager != null;
         //sets alarm -> alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
 
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
         //already exist
+
+        alarms.store(alarm);
     }
 
     /* Possible alarm operators

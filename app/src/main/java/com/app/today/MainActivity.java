@@ -34,7 +34,6 @@ import android.util.Log;
 import android.widget.Toast;
 import android.widget.Toolbar;
 import com.androdocs.httprequest.HttpRequest;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -64,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     protected FirebaseUser user;
 
     private boolean isHome = false;
+
+    DatabaseUtils alarms = new DatabaseUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(alarmActivity);
                 }
             });
-
             button = findViewById(R.id.button);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
