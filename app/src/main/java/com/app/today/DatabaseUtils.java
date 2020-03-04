@@ -41,11 +41,10 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
         return myRef.push().getKey();
     }
     List<Alarm> get() {
-        //alarms.clear();
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //alarms.clear();
+                alarms.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Alarm alarm = snapshot.getValue(Alarm.class);
                     alarms.add(alarm);
@@ -53,7 +52,7 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                //alarms.clear();
+                alarms.clear();
                 Log.e("? database pull cancelled", "alarms retrieved before cancellation = " + alarms.size(), databaseError.toException());
             }
         });
