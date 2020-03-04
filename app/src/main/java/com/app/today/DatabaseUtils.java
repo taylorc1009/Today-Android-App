@@ -1,43 +1,38 @@
 package com.app.today;
 
-import android.content.Context;
+/*import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteOpenHelper;*/
 import android.util.Log;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 class DatabaseUtils { //extends SQLiteOpenHelper {
-
-    // Write a message to the database
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference("alarms");
+
+    private List<Alarm> alarms = new ArrayList<>();
+    private boolean found = false;
 
     void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                Alarm value = dataSnapshot.getValue(Alarm.class);
-                assert value != null;
-                Log.d("! Firebase success", "Value is: " + myRef.getKey() + ", " + value.toString());
+                Alarm alarmS = dataSnapshot.getValue(Alarm.class);
+                assert alarmS != null;
+                Log.d("! Firebase success", "Value is: " + myRef.getKey() + ", " + alarmS.toString());
             }
-
             @Override
             public void onCancelled(DatabaseError error) {
-                // Failed to read value
                 Log.w("? Firebase database", "Failed to read value.", error.toException());
             }
         });
@@ -45,11 +40,41 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
     String newKey() {
         return myRef.push().getKey();
     }
-    ArrayList<Alarm> get() {
-        return null;
+    List<Alarm> get() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //alarms.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Alarm alarm = snapshot.getValue(Alarm.class);
+                    alarms.add(alarm);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //alarms.clear();
+                Log.e("? database pull cancelled", "alarms retrieved before cancellation = " + alarms.size(), databaseError.toException());
+            }
+        });
+        if(!alarms.isEmpty())
+            return alarms;
+        else
+            return null;
     }
-    boolean has(int id) {
-        return false;
+    boolean has(String id) {
+        myRef.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Alarm alarm = dataSnapshot.getValue(Alarm.class);
+                Log.i("? alarm found?", String.valueOf(alarm) + " (null = no/false)");
+                found = alarm != null;
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                found = false;
+            }
+        });
+        return found;
     }
     void delete() {
 

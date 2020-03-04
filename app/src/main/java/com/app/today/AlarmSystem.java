@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,12 +24,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 public class AlarmSystem extends AppCompatActivity {
     ImageView alarmBack, alarmAdd, alarmSave;
@@ -40,12 +38,15 @@ public class AlarmSystem extends AppCompatActivity {
     ConstraintLayout addGroup;
     TableLayout alarmTable;
 
+    Button button;
+
     AlarmManager alarmManager;
     PendingIntent alarmSender;
 
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this);
+    //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this); //SQLite
     DatabaseUtils alarms = new DatabaseUtils();
+    List<Alarm> alarmList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +71,14 @@ public class AlarmSystem extends AppCompatActivity {
         hour = findViewById(R.id.hour);
         minute = findViewById(R.id.minute);
         alarmLabel = findViewById(R.id.alarmLabel);
-        /*alarmTime = null;
-        UITime = null;
-        label = null;
-        days.clear();*/
+
+        button = findViewById(R.id.button2);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                new alarmRetrieve().execute();
+            }
+        });
+
         new alarmRetrieve().execute();
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -165,7 +170,6 @@ public class AlarmSystem extends AppCompatActivity {
                         Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         clearAddUI();
-                        new alarmRetrieve().execute();
                     }
                 }
                 else {
@@ -187,29 +191,27 @@ public class AlarmSystem extends AppCompatActivity {
         }
         @Override
         protected String doInBackground(String... strings) {
-            /*// Read from the database
-            */
+            alarmList = alarms.get();
             return null;
         }
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Object alarmTime = null;
-            if(alarmTime != null) {
+            if(alarmList != null) {
+                for(Alarm alarm : alarmList) {
+                    TableRow alarmRow = new TableRow(getApplicationContext());
+                    alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+                    TextView timeTxt = new TextView(getApplicationContext());
+                    timeTxt.setText(alarm.getTime());
+                    timeTxt.setTextSize(20);
+                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    //params.setMargins(30, 15, 0, 8);
+                    timeTxt.setLayoutParams(params);
+                    alarmRow.addView(timeTxt);
+                    //createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                }
                 updateAlarms(View.VISIBLE, View.GONE, View.GONE);
-
-                TableRow alarm = new TableRow(getApplicationContext());
-                alarm.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                TextView timeTxt = new TextView(getApplicationContext());
-
-                //timeTxt.setText(UITime);
-                timeTxt.setTextSize(20);
-                TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                //params.setMargins(30, 15, 0, 8);
-                timeTxt.setLayoutParams(params);
-                alarm.addView(timeTxt);
-
-                alarmTable.addView(alarm, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             }
             else
                 updateAlarms(View.GONE, View.GONE, View.VISIBLE);
@@ -226,31 +228,28 @@ public class AlarmSystem extends AppCompatActivity {
             if(!alarms.has(id))
                 break;
         }*/
-        List<Integer> days = new ArrayList<>();
+        String days = "";
         String UITime = hour + ":" + minute;
         String id = alarms.newKey();
         if (!(alarmLabel.getText().toString().equals("")))
             label = alarmLabel.getText().toString();
         if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
             if (chkMon.isChecked())
-                days.add(Calendar.MONDAY);
+                days = days + "," + Calendar.MONDAY;
             if (chkTues.isChecked())
-                days.add(Calendar.TUESDAY);
+                days = days + "," + Calendar.TUESDAY;
             if (chkWed.isChecked())
-                days.add(Calendar.WEDNESDAY);
+                days = days + "," + Calendar.WEDNESDAY;
             if (chkThurs.isChecked())
-                days.add(Calendar.THURSDAY);
+                days = days + "," + Calendar.THURSDAY;
             if (chkFri.isChecked())
-                days.add(Calendar.FRIDAY);
+                days = days + "," + Calendar.FRIDAY;
             if (chkSat.isChecked())
-                days.add(Calendar.SATURDAY);
+                days = days + "," + Calendar.SATURDAY;
             if (chkSun.isChecked())
-                days.add(Calendar.SUNDAY);
-            //for (int i = 0; i <= days.size(); i++)
-            //    scheduleAlarm(days.get(i), alarmID);
+                days = days + "," + Calendar.SUNDAY;
         }
-        Alarm alarm = new Alarm(id, days, label, UITime);
-        return alarm;
+        return new Alarm(id, days, label, UITime);
     }
     private void clearAddUI() {
         hour.getText().clear();
@@ -309,6 +308,7 @@ public class AlarmSystem extends AppCompatActivity {
         //already exist
 
         alarms.store(alarm);
+        new alarmRetrieve().execute();
     }
 
     /* Possible alarm operators
