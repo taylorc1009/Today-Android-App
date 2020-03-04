@@ -175,6 +175,7 @@ public class AlarmSystem extends AppCompatActivity {
                         Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         clearAddUI();
+                        new alarmRetrieve().execute();
                     }
                 }
                 else {
@@ -203,16 +204,7 @@ public class AlarmSystem extends AppCompatActivity {
             super.onPostExecute(s);
             if(s != null) {
                 for(Alarm alarm : s) {
-                    TableRow alarmRow = new TableRow(getApplicationContext());
-                    alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                    TextView timeTxt = new TextView(getApplicationContext());
-                    timeTxt.setText(alarm.getTime());
-                    timeTxt.setTextSize(20);
-                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                    //params.setMargins(30, 15, 0, 8);
-                    timeTxt.setLayoutParams(params);
-                    alarmRow.addView(timeTxt);
-                    //createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                     alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
                 updateAlarms(View.VISIBLE, View.GONE, View.GONE);
@@ -254,6 +246,18 @@ public class AlarmSystem extends AppCompatActivity {
                 days = days + "," + Calendar.SUNDAY;
         }
         return new Alarm(id, days, label, UITime);
+    }
+    TableRow createRow(String time, String label, String days) {
+        TableRow alarmRow = new TableRow(getApplicationContext());
+        alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        TextView timeTxt = new TextView(getApplicationContext());
+        timeTxt.setText(time);
+        timeTxt.setTextSize(20);
+        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+        //params.setMargins(30, 15, 0, 8);
+        timeTxt.setLayoutParams(params);
+        alarmRow.addView(timeTxt);
+        return alarmRow;
     }
     private void clearAddUI() {
         hour.getText().clear();
@@ -312,7 +316,6 @@ public class AlarmSystem extends AppCompatActivity {
         //already exist
 
         alarms.store(alarm);
-        new alarmRetrieve().execute();
     }
 
     /* Possible alarm operators

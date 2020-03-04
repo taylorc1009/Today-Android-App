@@ -41,6 +41,7 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
         return myRef.push().getKey();
     }
     List<Alarm> get() {
+        //alarms.clear();
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
