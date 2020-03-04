@@ -246,18 +246,19 @@ public class AlarmSystem extends AppCompatActivity {
     }
     TableRow createRow(String time, String label, String days) {
         TableRow alarmRow = new TableRow(getApplicationContext());
+        //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        alarmRow.setLayoutParams(params);
 
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
+        //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         ConstraintSet setLayout = new ConstraintSet();
         setLayout.clone(rowLayout);
+        setLayout.constrainDefaultWidth(alarmRow.getId(), alarmRow.getWidth());
 
         TextView timeTxt = new TextView(getApplicationContext());
         timeTxt.setText(time);
         timeTxt.setTextSize(30);
-        timeTxt.setLayoutParams(params);
+        timeTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, rowLayout.getId(), ConstraintSet.LEFT, 0);
         setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
@@ -283,13 +284,15 @@ public class AlarmSystem extends AppCompatActivity {
         }
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
-        daysTxt.setLayoutParams(params);
+        daysTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
         //params.setMargins(30, 15, 0, 8);
         setLayout.applyTo(rowLayout);
-        alarmRow.addView(timeTxt);
+        rowLayout.addView(timeTxt);
+        rowLayout.addView(daysTxt);
+        alarmRow.addView(rowLayout);
         return alarmRow;
     }
     private void clearAddUI() {
