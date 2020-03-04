@@ -3,6 +3,8 @@ package com.app.today;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -219,30 +221,25 @@ public class AlarmSystem extends AppCompatActivity {
         alarmEmpty.setVisibility(error);
     }
     private Alarm createAlarm(String hour, String minute, String label) {
-        /*while(true) {
-            int id = new Random().nextInt(10);
-            if(!alarms.has(id))
-                break;
-        }*/
         String days = "";
         String UITime = hour + ":" + minute;
         String id = alarms.newKey();
         if (!(alarmLabel.getText().toString().equals("")))
             label = alarmLabel.getText().toString();
         if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
-            if (chkMon.isChecked())
+            if(chkMon.isChecked()) //TODO maybe try a space as the token instead? So we can use trim() to remove the extra index
                 days = days + "," + Calendar.MONDAY;
-            if (chkTues.isChecked())
+            if(chkTues.isChecked())
                 days = days + "," + Calendar.TUESDAY;
-            if (chkWed.isChecked())
+            if(chkWed.isChecked())
                 days = days + "," + Calendar.WEDNESDAY;
-            if (chkThurs.isChecked())
+            if(chkThurs.isChecked())
                 days = days + "," + Calendar.THURSDAY;
-            if (chkFri.isChecked())
+            if(chkFri.isChecked())
                 days = days + "," + Calendar.FRIDAY;
-            if (chkSat.isChecked())
+            if(chkSat.isChecked())
                 days = days + "," + Calendar.SATURDAY;
-            if (chkSun.isChecked())
+            if(chkSun.isChecked())
                 days = days + "," + Calendar.SUNDAY;
         }
         return new Alarm(id, days, label, UITime);
@@ -250,12 +247,48 @@ public class AlarmSystem extends AppCompatActivity {
     TableRow createRow(String time, String label, String days) {
         TableRow alarmRow = new TableRow(getApplicationContext());
         alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+        alarmRow.setLayoutParams(params);
+
+        ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
+        ConstraintSet setLayout = new ConstraintSet();
+        setLayout.clone(rowLayout);
+
         TextView timeTxt = new TextView(getApplicationContext());
         timeTxt.setText(time);
-        timeTxt.setTextSize(20);
-        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        //params.setMargins(30, 15, 0, 8);
+        timeTxt.setTextSize(30);
         timeTxt.setLayoutParams(params);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, rowLayout.getId(), ConstraintSet.LEFT, 0);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+
+        TextView daysTxt = new TextView(getApplicationContext());
+        StringBuilder daysOutput = new StringBuilder("Days:");
+        String[] tokenized = days.split(",");
+        for(int i = 1; i < tokenized.length; i++) { //starts at 1 because index 0 in the array will be empty (refer to how the days string is stored)
+            int d = Integer.parseInt(tokenized[i]);
+            if(d == Calendar.MONDAY)
+                daysOutput.append(" MON");
+            if(d == Calendar.TUESDAY)
+                daysOutput.append(" TUE");
+            if(d == Calendar.WEDNESDAY)
+                daysOutput.append(" WED");
+            if(d == Calendar.THURSDAY)
+                daysOutput.append(" THUR");
+            if(d == Calendar.FRIDAY)
+                daysOutput.append(" FRI");
+            if(d == Calendar.SATURDAY)
+                daysOutput.append(" SAT");
+            if(d == Calendar.SUNDAY)
+                daysOutput.append(" SUN");
+        }
+        daysTxt.setText(daysOutput);
+        daysTxt.setTextSize(12);
+        daysTxt.setLayoutParams(params);
+        setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
+        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+
+        //params.setMargins(30, 15, 0, 8);
+        setLayout.applyTo(rowLayout);
         alarmRow.addView(timeTxt);
         return alarmRow;
     }
