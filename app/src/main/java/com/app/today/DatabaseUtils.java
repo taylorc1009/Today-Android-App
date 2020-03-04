@@ -76,8 +76,8 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
         });
         return found;
     }
-    void delete() {
-
+    void delete(String id) {
+        myRef.child(id).removeValue();
     }
     /*private static final String NAME = "alarm.db";
     private static final String TABLE = "alarms";

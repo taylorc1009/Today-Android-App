@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class AlarmSystem extends AppCompatActivity {
     ImageView alarmBack, alarmAdd, alarmSave;
@@ -79,7 +80,11 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
 
-        new alarmRetrieve().execute();
+        try {
+            new alarmRetrieve().execute().get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clearAddUI();
@@ -182,7 +187,7 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
     }
-    class alarmRetrieve extends AsyncTask<String, Void, String> {
+    class alarmRetrieve extends AsyncTask<String, Void, List<Alarm>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -190,15 +195,14 @@ public class AlarmSystem extends AppCompatActivity {
             updateAlarms(View.GONE, View.VISIBLE, View.GONE);
         }
         @Override
-        protected String doInBackground(String... strings) {
-            alarmList = alarms.get();
-            return null;
+        protected List<Alarm> doInBackground(String... strings) {
+            return alarms.get();
         }
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(List<Alarm> s) {
             super.onPostExecute(s);
-            if(alarmList != null) {
-                for(Alarm alarm : alarmList) {
+            if(s != null) {
+                for(Alarm alarm : s) {
                     TableRow alarmRow = new TableRow(getApplicationContext());
                     alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                     TextView timeTxt = new TextView(getApplicationContext());
