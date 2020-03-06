@@ -1,9 +1,9 @@
 /* TODO
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?)
+*   - Alarm data won't display in the TableLayout properly
+*   - Data isn't pulled as soon as alarm activity is opened (looks like onPostExecute completes before doInBackground)
 *   Add alarm icon scale animation in AlarmActivity
-*   Add CardView and/or ScrollingActivity?
-*   Fix SignInActivity EditText cursor and handle colour
 *  */
 
 package com.app.today;

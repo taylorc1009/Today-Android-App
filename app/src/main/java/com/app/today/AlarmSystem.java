@@ -92,6 +92,7 @@ public class AlarmSystem extends AppCompatActivity {
                 clearAddUI();
                 Intent mainReturn = new Intent(AlarmSystem.this, MainActivity.class);
                 //mainReturn.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+                mainReturn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainReturn);
                 finish();
             }
@@ -247,10 +248,11 @@ public class AlarmSystem extends AppCompatActivity {
     TableRow createRow(String time, String label, String days) {
         TableRow alarmRow = new TableRow(getApplicationContext());
         //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
-        //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        rowLayout.setBackgroundColor(R.color.colorAccent); //only using for debug to check the dimensions of the constraint
+        //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT));
         ConstraintSet setLayout = new ConstraintSet();
         setLayout.clone(rowLayout);
         setLayout.constrainDefaultWidth(alarmRow.getId(), alarmRow.getWidth());
