@@ -5,6 +5,7 @@
 *   - Data isn't pulled as soon as alarm activity is opened (looks like onPostExecute completes before doInBackground)
 *   Add alarm icon scale animation in AlarmActivity
 *   Add 3-layer architecture
+*   Fix weather temp and wind speed
 *  */
 
 package com.app.today;
@@ -95,11 +96,10 @@ public class MainActivity extends AppCompatActivity {
                 new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendar();
-            new HeadlineReceiver.headlineReciever().execute();
+
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
-                    //alarmActivity.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
                     startActivity(alarmActivity);
                 }
             });
@@ -160,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public String doInBackground(String... args) {
-            //return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh,GB&APPID=" + API);
             final LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    private void updateWeather(int load, int card, int group, int error ) {
+    private void updateWeather(int load, int card, int group, int error) {
         findViewById(R.id.weatherLoad).setVisibility(load);
         findViewById(R.id.weatherCard).setVisibility(card);
         findViewById(R.id.weatherStats).setVisibility(group);
@@ -250,6 +249,25 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             calTitle.setText(R.string.calError);
+    }
+    class headlineReceiver extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+    }
+    private void updateNews(int load, int card, int table) {
+        findViewById(R.id.newsLoad).setVisibility(load);
+        findViewById(R.id.newsCard).setVisibility(card);
+        findViewById(R.id.newsTable).setVisibility(table);
     }
     private boolean reqPermission(int p) {
         switch(p) {
