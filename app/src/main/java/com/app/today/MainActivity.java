@@ -4,6 +4,7 @@
 *   - Alarm data won't display in the TableLayout properly
 *   - Data isn't pulled as soon as alarm activity is opened (looks like onPostExecute completes before doInBackground)
 *   Add alarm icon scale animation in AlarmActivity
+*   Add 3-layer architecture
 *  */
 
 package com.app.today;
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseUtils alarms = new DatabaseUtils();
 
+    HeadlineReceiver headlineReceiver = new HeadlineReceiver();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendar();
+            new HeadlineReceiver.headlineReciever().execute();
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);

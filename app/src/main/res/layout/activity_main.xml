@@ -168,10 +168,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="5dp"
                     android:text="@string/calTitle"
                     app:layout_constraintStart_toEndOf="@+id/calIcon"
-                    app:layout_constraintTop_toTopOf="@+id/calIcon" />
+                    app:layout_constraintTop_toTopOf="@+id/calIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/calIcon"/>
 
                 <TableLayout
                     android:id="@+id/calTable"
@@ -179,6 +179,58 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/calIcon"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/newsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/calendarCard"
+            app:cardCornerRadius="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/newsGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/weatherParent">
+
+                <ImageView
+                    android:id="@+id/newsIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/imageDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/news"/>
+
+                <TextView
+                    android:id="@+id/newsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/newsTitle"
+                    app:layout_constraintStart_toEndOf="@+id/newsIcon"
+                    app:layout_constraintTop_toTopOf="@+id/newsIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
+
+                <TableLayout
+                    android:id="@+id/newsTable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/newsIcon"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -191,7 +243,7 @@
             android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/calendarCard"
+            app:layout_constraintTop_toBottomOf="@id/newsCard"
             app:cardCornerRadius="8dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -220,10 +272,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="5dp"
                     android:text="@string/alarmTitle"
                     app:layout_constraintStart_toEndOf="@+id/alarmIcon"
-                    app:layout_constraintTop_toTopOf="@+id/alarmIcon" />
+                    app:layout_constraintTop_toTopOf="@+id/alarmIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/alarmIcon"/>
 
                 <ImageView
                     android:id="@+id/alarmMore"

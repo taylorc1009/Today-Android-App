@@ -27,6 +27,8 @@
     <string name="calEmpty">Calendar | nothing today!</string>
     <string name="event">Event</string>
 
+    <string name="newsTitle">News | headlines…</string>
+
     <string name="alarmTitle">Alarms</string>
     <string name="alarmAdd">Add an alarm</string>
     <string name="alarmEmpty">No alarms…</string>
