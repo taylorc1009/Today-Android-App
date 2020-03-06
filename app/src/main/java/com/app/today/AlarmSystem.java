@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -251,7 +252,7 @@ public class AlarmSystem extends AppCompatActivity {
         alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
-        rowLayout.setBackgroundColor(R.color.colorAccent); //only using for debug to check the dimensions of the constraint
+        rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debug to check the dimensions of the constraint
         //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT));
         ConstraintSet setLayout = new ConstraintSet();
         setLayout.clone(rowLayout);

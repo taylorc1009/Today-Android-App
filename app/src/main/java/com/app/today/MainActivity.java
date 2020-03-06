@@ -11,12 +11,15 @@
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -51,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle;
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle;
     ImageView alarmMore;
-    TableLayout calTable;
+    TableLayout calTable, newsTable;
     Button button;
 
     List<String> weatherDetails = new ArrayList<>();
@@ -92,11 +95,13 @@ public class MainActivity extends AppCompatActivity {
             calTitle = findViewById(R.id.calTitle);
             calTable = findViewById(R.id.calTable);
             alarmMore = findViewById(R.id.alarmMore);
+            newsTitle = findViewById(R.id.newsTitle);
+            newsTable = findViewById(R.id.newsTable);
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendar();
-
+            new headlineReceiver().execute();
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
@@ -250,24 +255,72 @@ public class MainActivity extends AppCompatActivity {
         else
             calTitle.setText(R.string.calError);
     }
-    class headlineReceiver extends AsyncTask<String, Void, String> {
+    class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            updateNews(View.VISIBLE, View.GONE, View.GONE);
         }
         @Override
-        protected String doInBackground(String... strings) {
-            return null;
+        protected List<Headline> doInBackground(String... strings) {
+            List<Headline> headlines = new ArrayList<>();
+            headlines = headlineReceiver.getHeadlines();
+            return headlines;
         }
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(List<Headline> result) {
+            if(result != null) {
+                for(int i = 0; i < result.size(); i++) {
+                    TableRow newsRow = new TableRow(getApplicationContext());
+                    //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    newsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
+                    /*ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
+                    //rowLayout.setBackgroundColor(R.color.colorAccent); //only using for debug to check the dimensions of the constraint
+                    //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT));
+                    ConstraintSet setLayout = new ConstraintSet();
+                    setLayout.clone(rowLayout);
+                    //setLayout.constrainDefaultWidth(newsRow.getId(), alarmRow.getWidth());*/
+
+                    TextView titleTxt = new TextView(getApplicationContext());
+                    String output = i+1 + ". " + result.get(i).getTitle();
+                    titleTxt.setText(output);
+                    titleTxt.setTextSize(14);
+                    titleTxt.setPadding(0, 12, 0, 0);
+                    titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
+                    /*titleTxt.setMaxWidth(rowLayout.getMaxWidth());
+                    titleTxt.setMaxHeight(ConstraintLayout.LayoutParams.WRAP_CONTENT);*/
+                    //titleTxt.connect(titleTxt.getId(), ConstraintSet.LEFT, rowLayout.getId(), ConstraintSet.LEFT, 0);
+                    //setLayout.connect(titleTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+
+                    /*TextView categoryTxt = new TextView(getApplicationContext());
+                    String daysOutput = "";
+                    categoryTxt.setText(daysOutput);
+                    categoryTxt.setTextSize(12);
+                    categoryTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+                    setLayout.connect(categoryTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
+                    setLayout.connect(categoryTxt.getId(), ConstraintSet.TOP, titleTxt.getId(), ConstraintSet.BOTTOM, 0);*/
+
+                    //params.setMargins(30, 15, 0, 8);
+                    //setLayout.applyTo(rowLayout);
+                    //rowLayout.addView(titleTxt);
+                    //rowLayout.addView(categoryTxt);
+                    newsRow.addView(titleTxt);
+                    newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                    //new TableLayout.LayoutParams(1, 1)
+                }
+                newsTitle.setText(R.string.newsTitle);
+                updateNews(View.GONE, View.VISIBLE, View.VISIBLE);
+            } else {
+                newsTitle.setText(R.string.newsError);
+                updateNews(View.GONE, View.VISIBLE, View.GONE);
+            }
         }
     }
     private void updateNews(int load, int card, int table) {
         findViewById(R.id.newsLoad).setVisibility(load);
         findViewById(R.id.newsCard).setVisibility(card);
-        findViewById(R.id.newsTable).setVisibility(table);
+        newsTable.setVisibility(table);
     }
     private boolean reqPermission(int p) {
         switch(p) {

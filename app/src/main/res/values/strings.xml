@@ -28,6 +28,7 @@
     <string name="event">Event</string>
 
     <string name="newsTitle">News | headlines…</string>
+    <string name="newsError">"Couldn't retrieve headlines…"</string>
 
     <string name="alarmTitle">Alarms</string>
     <string name="alarmAdd">Add an alarm</string>

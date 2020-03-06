@@ -1,22 +1,22 @@
 package com.app.today;
 
-public class Headline {
+class Headline {
     private String title;
-    private String category;
+    //private String category;
     private String link;
 
-    Headline(String title, String category, String link) {
+    Headline(String title, String link) {//, String category
         this.title = title;
-        this.category = category;
+        //this.category = category;
         this.link = link;
     }
 
     String getTitle() {
         return title;
     }
-    String getCategory() {
+    /*String getCategory() {
         return category;
-    }
+    }*/
     String getLink() {
         return link;
     }

@@ -21,7 +21,7 @@ class HeadlineReceiver {
                 JSONObject jsonObj = resultsArray.getJSONObject(i);
                 Log.i("? results obj " + i, String.valueOf(jsonObj));
 
-                Headline headline = new Headline(jsonObj.getString("webTitle"), jsonObj.getString("sectionName"), jsonObj.getString("webUrl"));
+                Headline headline = new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"));//, jsonObj.getString("sectionName")
                 headlines.add(headline);
             }
         } catch (JSONException e) {
@@ -31,6 +31,6 @@ class HeadlineReceiver {
         return headlines;
     }
     private String makeRequest() {
-        return HttpRequest.excuteGet("https://content.guardianapis.com/search?api-key=" + API);
+        return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=news&api-key=" + API);
     }
 }
