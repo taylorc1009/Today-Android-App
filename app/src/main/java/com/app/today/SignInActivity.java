@@ -53,7 +53,6 @@ public class SignInActivity extends AppCompatActivity {
         pName = findViewById(R.id.pName);
         signIn = findViewById(R.id.signInBtn);
         cleanView();
-
         registerExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

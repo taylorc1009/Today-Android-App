@@ -224,7 +224,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateCalendar() {
         calTable.removeAllViews();
-        calendar.clear();
+        if(calendar != null)
+            calendar.clear();
         CalendarContentResolver resolver = new CalendarContentResolver();
         calendar = resolver.getCalendar(this);
         if(calendar != null) {
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                     timeTxt.setText(output);
                     timeTxt.setTextSize(14);
                     TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(30, 15, 0, 8);
+                    params.setMargins(0, 12, 0, 8);
                     timeTxt.setLayoutParams(params);
 
                     calTitle.setText(R.string.calTitle);
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 for(int i = 0; i < result.size(); i++) {
                     TableRow newsRow = new TableRow(getApplicationContext());
                     //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                    newsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+                    //newsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
                     /*ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
                     //rowLayout.setBackgroundColor(R.color.colorAccent); //only using for debug to check the dimensions of the constraint
