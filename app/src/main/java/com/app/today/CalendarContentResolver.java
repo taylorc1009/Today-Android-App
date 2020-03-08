@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-public class CalendarContentResolver {
+class CalendarContentResolver {
     List<Event> getCalendar(Context context) {
         List<Event> events = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();

@@ -1,5 +1,6 @@
 package com.app.today;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -29,8 +30,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 public class AlarmSystem extends AppCompatActivity {
     ImageView alarmBack, alarmAdd, alarmSave;
@@ -49,7 +58,7 @@ public class AlarmSystem extends AppCompatActivity {
 
     //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this); //SQLite
-    DatabaseUtils alarms = new DatabaseUtils();
+    DatabaseUtilities alarms = new DatabaseUtilities();
     List<Alarm> alarmList = new ArrayList<>();
 
     @Override
@@ -80,6 +89,7 @@ public class AlarmSystem extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 new alarmRetrieve().execute();
+                //alarms.has
             }
         });
 
@@ -177,6 +187,7 @@ public class AlarmSystem extends AppCompatActivity {
                     } else {
                         Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
+                        Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
                         clearAddUI();
                         new alarmRetrieve().execute();
                     }
@@ -191,7 +202,7 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
     }
-    class alarmRetrieve extends AsyncTask<String, Void, List<Alarm>> {
+    class alarmRetrieve extends AsyncTask<String, Void, Task<DataSnapshot>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -199,14 +210,26 @@ public class AlarmSystem extends AppCompatActivity {
             updateAlarms(View.GONE, View.VISIBLE, View.GONE);
         }
         @Override
-        protected List<Alarm> doInBackground(String... strings) {
-            return alarms.get();
+        protected Task<DataSnapshot> doInBackground(String... strings) {
+            alarmList.clear();
+            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
+            final Task<DataSnapshot> load = firebaseQuery.start();
+            return load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    super.onComplete(task);
+                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
+                        alarmList.add(snapshot.getValue(Alarm.class));
+                    }
+                }
+            });
         }
         @Override
-        protected void onPostExecute(List<Alarm> s) {
+        protected void onPostExecute(Task<DataSnapshot> s) {
             super.onPostExecute(s);
+            Log.i("wHy Tf ArE yOu PrOcEsSiNg?", "BVGJH");
             if(s != null) {
-                for(Alarm alarm : s) {
+                for(Alarm alarm : alarmList) {
                     createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                     //TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                     //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
@@ -328,15 +351,6 @@ public class AlarmSystem extends AppCompatActivity {
         * day has come, pull the alarm matching the ID we want from the database and check if it is due
         * to ring on the current day. */
 
-        /*Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-        calendar.setTimeInMillis(alarmTime);*/
-        /* Check we aren't setting it in the past which would trigger it to fire instantly
-        if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 7);
-        }*/
-
-        // Set this to whatever you were planning to do at the given time
         String id = alarm.getId();
         Intent alarmIntent = new Intent(this, AlarmRing.class);
         alarmIntent.putExtra("alarmID", id);
@@ -358,7 +372,7 @@ public class AlarmSystem extends AppCompatActivity {
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
         //already exist
 
-        //alarms.store(alarm);
+        alarms.store(alarm);
     }
 
     /* Possible alarm operators

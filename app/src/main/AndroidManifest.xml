@@ -26,7 +26,6 @@
 
         <activity android:name=".AlarmActivity" />
         <activity android:name=".AlarmSystem" />
-        <activity android:name=".CalendarContentResolver" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

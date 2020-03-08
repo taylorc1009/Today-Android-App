@@ -23,7 +23,6 @@ public class AlarmActivity extends AppCompatActivity {
     FloatingActionButton snoozeAlarm, stopAlarm;
     TextView alarmTime, alarmLabel;
     boolean ring = false;
-    DatabaseUtils alarms = new DatabaseUtils();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,27 +33,36 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm = findViewById(R.id.stopAlarm);
         alarmTime = findViewById(R.id.alarmTime);
         alarmLabel = findViewById(R.id.alarmLabel);
-
-        Log.i("! AlarmActivity started", "post ID here");
-
+        DatabaseUtilities alarms = new DatabaseUtilities();
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             String id = extras.getString("alarmID");
-            Alarm alarm = alarms.get(id);
-            Calendar time = Calendar.getInstance();
-            String[] tokenized = alarm.getDays().split(",");
-
-            if(alarm.getDays().equals(""))
-                ring = true;
-                //delete alarm from database
-            else
-                for (int i = 1; i < tokenized.length; i++)
-                    if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(tokenized[i]))
-                        ring = true;
-            if(ring)
-                displayAlarm(alarm.getTime(), alarm.getLabel());
-        } else
+            if(alarms.has(id)) {
+                assert id != null;
+                Log.i("! AlarmActivity started with ID", id);
+                Alarm alarm = alarms.get(id);
+                Log.i("? days", alarm.getTime() + ", " + alarm.getDays());
+                if (alarm.getDays() == null) {
+                    ring = true;
+                    alarms.delete(id);
+                } else {
+                    String[] tokenized = alarm.getDays().split(",");
+                    Calendar time = Calendar.getInstance();
+                    for (int i = 1; i < tokenized.length; i++)
+                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(tokenized[i]))
+                            ring = true;
+                }
+                if (ring)
+                    displayAlarm(alarm.getTime(), alarm.getLabel());
+            } else {
+                assert id != null;
+                Log.e("? alarms.has id = false", id);
+                goHome();
+            }
+        } else {
             Log.e("? AlarmActivity extras = null", String.valueOf(getIntent().getExtras()));
+            goHome();
+        }
     }
     private void displayAlarm(String time, String label) {
         alarmTime.setText(time);
@@ -66,12 +74,15 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent mainActivity = new Intent(AlarmActivity.this, MainActivity.class);
-                startActivity(mainActivity);
                 ringtone.stop();
-                finish();
+                goHome();
             }
         });
+    }
+    private void goHome() {
+        Intent mainActivity = new Intent(AlarmActivity.this, MainActivity.class);
+        startActivity(mainActivity);
+        finish();
     }
     private Runnable animateIcon() {
         alarmIcon.animate().scaleXBy(1).scaleYBy(1).setDuration(2000).withEndAction(new Runnable() {

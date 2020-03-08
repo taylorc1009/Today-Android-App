@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isHome = false;
 
-    DatabaseUtils alarms = new DatabaseUtils();
+    //DatabaseUtils alarms = new DatabaseUtils();
 
     HeadlineReceiver headlineReceiver = new HeadlineReceiver();
 
