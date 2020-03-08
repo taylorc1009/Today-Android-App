@@ -41,7 +41,7 @@ public class AlarmActivity extends AppCompatActivity {
         alarmTime.setText(timeStr);
 
         Objects.requireNonNull(getSupportActionBar()).hide();
-        animateIcon();
+        //animateIcon();
         final MediaPlayer ringtone = MediaPlayer.create(this, R.raw.alarmheaven);
         ringtone.start();
         stopAlarm.setOnClickListener(new View.OnClickListener() {

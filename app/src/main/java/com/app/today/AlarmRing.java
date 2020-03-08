@@ -9,12 +9,12 @@ import java.util.Objects;
 public class AlarmRing extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("! alarm PendingIntent received with ID", String.valueOf(Objects.requireNonNull(intent.getExtras()).getInt("alarmID")));
+        Log.i("! alarm PendingIntent received with ID", Objects.requireNonNull(Objects.requireNonNull(intent.getExtras()).getString("alarmID")));
         if (intent.hasExtra("alarmID")) {
             Intent sendAlarmIntent = new Intent(context, AlarmActivity.class);
             sendAlarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            sendAlarmIntent.putExtra("alarmID", intent.getExtras().getInt("alarmID"));
-            Log.i("? attempting to start AlarmActivity with ID", String.valueOf(intent.getExtras().getInt("alarmID")));
+            sendAlarmIntent.putExtra("alarmID", intent.getExtras().getString("alarmID"));
+            Log.i("? attempting to start AlarmActivity with ID", Objects.requireNonNull(intent.getExtras().getString("alarmID")));
             context.startActivity(sendAlarmIntent);
         }
     }

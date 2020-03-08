@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.Objects;
+
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
@@ -41,6 +43,7 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        Objects.requireNonNull(getSupportActionBar()).hide();
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         rExArrow = findViewById(R.id.rExArrow);

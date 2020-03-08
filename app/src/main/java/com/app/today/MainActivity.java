@@ -6,6 +6,7 @@
 *   Add alarm icon scale animation in AlarmActivity
 *   Add 3-layer architecture
 *   Fix weather temp and wind speed
+*   Change navigation bar color
 *  */
 
 package com.app.today;

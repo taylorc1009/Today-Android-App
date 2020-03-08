@@ -175,7 +175,6 @@ public class AlarmSystem extends AppCompatActivity {
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        //UITime = hour.getText() + ":" + minute.getText();
                         Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         clearAddUI();
@@ -208,8 +207,9 @@ public class AlarmSystem extends AppCompatActivity {
             super.onPostExecute(s);
             if(s != null) {
                 for(Alarm alarm : s) {
-                    TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                    alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                    createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    //TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
                 updateAlarms(View.VISIBLE, View.GONE, View.GONE);
             }
@@ -243,29 +243,31 @@ public class AlarmSystem extends AppCompatActivity {
                 days = days + "," + Calendar.SATURDAY;
             if(chkSun.isChecked())
                 days = days + "," + Calendar.SUNDAY;
+                //try   days += "," + Cal...
         }
         return new Alarm(id, days, label, UITime);
     }
-    TableRow createRow(String time, String label, String days) {
+    void createRow(String time, String label, String days) { //label is unused as of now, will be used later
         TableRow alarmRow = new TableRow(getApplicationContext());
-        //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        alarmRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        alarmRow.setId(10+alarmTable.getChildCount());
+        alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
-        rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debug to check the dimensions of the constraint
-        //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT));
+        rowLayout.setId(11+alarmTable.getChildCount());
+        rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debugging to check the dimensions of the ConstraintLayout
+        alarmRow.addView(rowLayout);//, TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         ConstraintSet setLayout = new ConstraintSet();
-        setLayout.clone(rowLayout);
-        setLayout.constrainDefaultWidth(alarmRow.getId(), alarmRow.getWidth());
 
         TextView timeTxt = new TextView(getApplicationContext());
+        timeTxt.setId(12+alarmTable.getChildCount());
         timeTxt.setText(time);
         timeTxt.setTextSize(30);
-        timeTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
-        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, rowLayout.getId(), ConstraintSet.LEFT, 0);
-        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+        rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
         TextView daysTxt = new TextView(getApplicationContext());
+        daysTxt.setId(13+alarmTable.getChildCount());
         StringBuilder daysOutput = new StringBuilder("Days:");
         String[] tokenized = days.split(",");
         for(int i = 1; i < tokenized.length; i++) { //starts at 1 because index 0 in the array will be empty (refer to how the days string is stored)
@@ -287,16 +289,18 @@ public class AlarmSystem extends AppCompatActivity {
         }
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
-        daysTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
         setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
-        //params.setMargins(30, 15, 0, 8);
+        setLayout.clone(rowLayout);
+        rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        /*setLayout.constrainDefaultWidth(alarmRow.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+        setLayout.constrainDefaultHeight(alarmRow.getId(), ConstraintSet.WRAP_CONTENT);*/
+
+        Log.i("parent id = 0???", String.valueOf(ConstraintSet.PARENT_ID)); //this is always returning 0, why?
+
         setLayout.applyTo(rowLayout);
-        rowLayout.addView(timeTxt);
-        rowLayout.addView(daysTxt);
-        alarmRow.addView(rowLayout);
-        return alarmRow;
     }
     private void clearAddUI() {
         hour.getText().clear();
@@ -347,14 +351,14 @@ public class AlarmSystem extends AppCompatActivity {
         Log.i("? attempted to invoke AlarmManager with ID", String.valueOf(id));
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
-        //sets alarm -> alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
 
         //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
         //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
         //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
         //already exist
 
-        alarms.store(alarm);
+        //alarms.store(alarm);
     }
 
     /* Possible alarm operators
