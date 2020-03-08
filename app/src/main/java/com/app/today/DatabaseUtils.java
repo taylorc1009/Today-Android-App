@@ -20,6 +20,7 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
     private DatabaseReference myRef = database.getReference("alarms");
 
     private List<Alarm> alarms = new ArrayList<>();
+    private Alarm alarm;
     private boolean found = false;
 
     void store(Alarm alarm) {
@@ -60,6 +61,21 @@ class DatabaseUtils { //extends SQLiteOpenHelper {
             return alarms;
         else
             return null;
+    }
+    Alarm get(String id) {
+        alarm = null;
+        myRef.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                alarm = dataSnapshot.getValue(Alarm.class);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                alarms.clear();
+                Log.e("? database pull cancelled", "alarms retrieved before cancellation = " + alarms.size(), databaseError.toException());
+            }
+        });
+        return alarm;
     }
     boolean has(String id) {
         myRef.child(id).addValueEventListener(new ValueEventListener() {

@@ -224,11 +224,11 @@ public class AlarmSystem extends AppCompatActivity {
     }
     private Alarm createAlarm(String hour, String minute, String label) {
         String days = "";
-        String UITime = hour + ":" + minute;
-        String id = alarms.newKey();
+        /*String UITime = ;
+        String id = ;
         if (!(alarmLabel.getText().toString().equals("")))
-            label = alarmLabel.getText().toString();
-        if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
+            label = ;*/
+        //if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
             if(chkMon.isChecked()) //TODO maybe try a space as the token instead? So we can use trim() to remove the extra index
                 days = days + "," + Calendar.MONDAY;
             if(chkTues.isChecked())
@@ -244,8 +244,8 @@ public class AlarmSystem extends AppCompatActivity {
             if(chkSun.isChecked())
                 days = days + "," + Calendar.SUNDAY;
                 //try   days += "," + Cal...
-        }
-        return new Alarm(id, days, label, UITime);
+        //}
+        return new Alarm(alarms.newKey(), days, alarmLabel.getText().toString(), hour + ":" + minute);
     }
     void createRow(String time, String label, String days) { //label is unused as of now, will be used later
         TableRow alarmRow = new TableRow(getApplicationContext());
