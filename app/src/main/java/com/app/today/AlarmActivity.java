@@ -46,10 +46,10 @@ public class AlarmActivity extends AppCompatActivity {
                     ring = true;
                     alarms.delete(id);
                 } else {
-                    String[] tokenized = alarm.getDays().split(",");
+                    String[] tokenized = alarm.getDays().split(" ");
                     Calendar time = Calendar.getInstance();
-                    for (int i = 1; i < tokenized.length; i++)
-                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(tokenized[i]))
+                    for (String s : tokenized)
+                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
                             ring = true;
                 }
                 if (ring)

@@ -55,8 +55,6 @@ public class AlarmSystem extends AppCompatActivity {
     AlarmManager alarmManager;
     PendingIntent alarmSender;
 
-    //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    //DatabaseUtils alarms = new DatabaseUtils(AlarmSystem.this); //SQLite
     DatabaseUtilities alarms = new DatabaseUtilities();
     List<Alarm> alarmList = new ArrayList<>();
 
@@ -177,7 +175,6 @@ public class AlarmSystem extends AppCompatActivity {
                         scheduleAlarm(alarm, alarmTime);
                         Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
                         clearAddUI();
-                        //new alarmRetrieve().execute();
                         retrieveAlarms();
                     }
                 }
@@ -191,45 +188,9 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
     }
-    /*class alarmRetrieve extends AsyncTask<String, Void, Task<DataSnapshot>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            alarmTable.removeAllViews();
-            updateAlarmsView(View.GONE, View.VISIBLE, View.GONE);
-        }
-        @Override
-        protected Task<DataSnapshot> doInBackground(String... strings) {
-            alarmList.clear();
-            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
-            final Task<DataSnapshot> load = firebaseQuery.start();
-            return load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    super.onComplete(task);
-                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
-                        alarmList.add(snapshot.getValue(Alarm.class));
-                    }
-                }
-            });
-        }
-        @Override
-        protected void onPostExecute(Task<DataSnapshot> s) {
-            super.onPostExecute(s);
-            if(s != null) {
-                for(Alarm alarm : alarmList) {
-                    createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                    //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                    //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                }
-                updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
-            }
-            else
-                updateAlarmsView(View.GONE, View.GONE, View.VISIBLE);
-        }
-    }*/
     private void retrieveAlarms() {
         updateAlarmsView(View.GONE, View.VISIBLE, View.GONE);
+        alarmTable.removeAllViews();
         alarmList.clear();
         DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
         final Task<DataSnapshot> load = firebaseQuery.start();
@@ -244,7 +205,7 @@ public class AlarmSystem extends AppCompatActivity {
                 }
                 else
                     alarmList = null;
-                if(alarmList != null) {
+                if(alarmList != null && !alarmList.isEmpty()) {
                     for(Alarm alarm : alarmList) {
                         createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                         //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
@@ -274,22 +235,22 @@ public class AlarmSystem extends AppCompatActivity {
             label = ;*/
         //if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
             if(chkMon.isChecked()) //TODO maybe try a space as the token instead? So we can use trim() to remove the extra index
-                days = days + "," + Calendar.MONDAY;
+                days += " " + Calendar.MONDAY;
             if(chkTues.isChecked())
-                days = days + "," + Calendar.TUESDAY;
+                days += " " + Calendar.TUESDAY;
             if(chkWed.isChecked())
-                days = days + "," + Calendar.WEDNESDAY;
+                days += " " + Calendar.WEDNESDAY;
             if(chkThurs.isChecked())
-                days = days + "," + Calendar.THURSDAY;
+                days += " " + Calendar.THURSDAY;
             if(chkFri.isChecked())
-                days = days + "," + Calendar.FRIDAY;
+                days += " " + Calendar.FRIDAY;
             if(chkSat.isChecked())
-                days = days + "," + Calendar.SATURDAY;
+                days += " " + Calendar.SATURDAY;
             if(chkSun.isChecked())
-                days = days + "," + Calendar.SUNDAY;
+                days += " " + Calendar.SUNDAY;
                 //TODO try   days += "," + Cal...
         //}
-        return new Alarm(alarms.newKey(), days, alarmLabel.getText().toString(), hour + ":" + minute);
+        return new Alarm(alarms.newKey(), days.trim(), alarmLabel.getText().toString(), hour + ":" + minute);
     }
     private void createTableLayoutRow(String time, String label, String days) { //label is unused as of now, will be used later
         TableRow alarmRow = new TableRow(getApplicationContext());
@@ -313,24 +274,28 @@ public class AlarmSystem extends AppCompatActivity {
         TextView daysTxt = new TextView(getApplicationContext());
         daysTxt.setId(13+alarmTable.getChildCount());
         StringBuilder daysOutput = new StringBuilder("Days:");
-        String[] tokenized = days.split(",");
-        for(int i = 1; i < tokenized.length; i++) { //starts at 1 because index 0 in the array will be empty (refer to how the days string is stored)
-            int d = Integer.parseInt(tokenized[i]);
-            if(d == Calendar.MONDAY)
-                daysOutput.append(" MON");
-            if(d == Calendar.TUESDAY)
-                daysOutput.append(" TUE");
-            if(d == Calendar.WEDNESDAY)
-                daysOutput.append(" WED");
-            if(d == Calendar.THURSDAY)
-                daysOutput.append(" THUR");
-            if(d == Calendar.FRIDAY)
-                daysOutput.append(" FRI");
-            if(d == Calendar.SATURDAY)
-                daysOutput.append(" SAT");
-            if(d == Calendar.SUNDAY)
-                daysOutput.append(" SUN");
+        if(!days.equals("")) {
+            String[] tokenized = days.split(" ");
+            for (String s : tokenized) { //starts at 1 because index 0 in the array will be empty (refer to how the days string is stored)
+                int d = Integer.parseInt(s);
+                if (d == Calendar.MONDAY)
+                    daysOutput.append(" MON");
+                if (d == Calendar.TUESDAY)
+                    daysOutput.append(" TUE");
+                if (d == Calendar.WEDNESDAY)
+                    daysOutput.append(" WED");
+                if (d == Calendar.THURSDAY)
+                    daysOutput.append(" THUR");
+                if (d == Calendar.FRIDAY)
+                    daysOutput.append(" FRI");
+                if (d == Calendar.SATURDAY)
+                    daysOutput.append(" SAT");
+                if (d == Calendar.SUNDAY)
+                    daysOutput.append(" SUN");
+            }
         }
+        else
+            daysOutput.append(" NON-REPEATING");
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
         rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
