@@ -12,8 +12,8 @@ import java.util.List;
 
 class HeadlineReceiver {
     private static final String API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
-    private List<Headline> headlines = new ArrayList<>();
-    List<Headline> getHeadlines() {
+    private List<String> headlines = new ArrayList<>();
+    List<String> getHeadlines() {
         try {
             JSONObject results = new JSONObject(makeRequest());
             JSONArray resultsArray = results.getJSONObject("response").getJSONArray("results");
@@ -21,8 +21,8 @@ class HeadlineReceiver {
                 JSONObject jsonObj = resultsArray.getJSONObject(i);
                 Log.i("? results obj " + i, String.valueOf(jsonObj));
 
-                Headline headline = new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"));//, jsonObj.getString("sectionName")
-                headlines.add(headline);
+                //Headline headline = new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"));//, jsonObj.getString("sectionName")
+                headlines.add(jsonObj.getString("webTitle"));
             }
         } catch (JSONException e) {
             Log.e("JSONException", "failed to parse request/result", e);

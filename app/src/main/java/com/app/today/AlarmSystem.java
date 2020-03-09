@@ -88,16 +88,19 @@ public class AlarmSystem extends AppCompatActivity {
         button = findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new alarmRetrieve().execute();
+                //new alarmRetrieve().execute();
                 //alarms.has
             }
         });
 
-        try {
+        /*try {
             new alarmRetrieve().execute().get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        retrieveAlarms();
+
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clearAddUI();
@@ -189,7 +192,8 @@ public class AlarmSystem extends AppCompatActivity {
                         scheduleAlarm(alarm, alarmTime);
                         Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
                         clearAddUI();
-                        new alarmRetrieve().execute();
+                        //new alarmRetrieve().execute();
+                        retrieveAlarms();
                     }
                 }
                 else {
@@ -202,7 +206,7 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
     }
-    class alarmRetrieve extends AsyncTask<String, Void, Task<DataSnapshot>> {
+    /*class alarmRetrieve extends AsyncTask<String, Void, Task<DataSnapshot>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -227,7 +231,6 @@ public class AlarmSystem extends AppCompatActivity {
         @Override
         protected void onPostExecute(Task<DataSnapshot> s) {
             super.onPostExecute(s);
-            Log.i("wHy Tf ArE yOu PrOcEsSiNg?", "BVGJH");
             if(s != null) {
                 for(Alarm alarm : alarmList) {
                     createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
@@ -239,6 +242,36 @@ public class AlarmSystem extends AppCompatActivity {
             else
                 updateAlarms(View.GONE, View.GONE, View.VISIBLE);
         }
+    }*/
+    private void retrieveAlarms() {
+        updateAlarms(View.GONE, View.VISIBLE, View.GONE);
+        alarms.clear();
+        DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
+        final Task<DataSnapshot> load = firebaseQuery.start();
+        load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                super.onComplete(task);
+                if(task.isSuccessful()) {
+                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
+                        alarms.add(snapshot.getValue(Alarm.class));
+                    }
+                }
+                else
+                    alarms = null;
+                if(alarms != null) {
+                    for(Alarm alarm : alarmList) {
+                        createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        //TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                    }
+                    updateAlarms(View.VISIBLE, View.GONE, View.GONE);
+                }
+                else
+                    updateAlarms(View.GONE, View.GONE, View.VISIBLE);
+            }
+        });
+        //Log.i("??? has?", )
     }
     private void updateAlarms(int table, int load, int error) {
         alarmLoad.setVisibility(load);

@@ -61,14 +61,12 @@ public class MainActivity extends AppCompatActivity {
     Button button;
 
     List<String> weatherDetails = new ArrayList<>();
-    static final String API = "2a2d2e85e492fe3c92b568f4fe3ce854";
+    static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
     List<Event> calendar = new ArrayList<>();
 
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
-
-    private boolean isHome = false;
 
     //DatabaseUtils alarms = new DatabaseUtils();
 
@@ -80,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         user = mAuth.getCurrentUser();
         if(user == null) {
-            Log.i("! user is NOT signed in, on home page true or false?", String.valueOf(isHome));
             Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(alarmActivity);
             finish();
@@ -119,16 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        isHome = true;
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        isHome = false;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -186,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
                 //t.quit(); <-- causes a dead thread warning, critical?
-                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + API);
+                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + weatherAPI);
             }
             return null;
         }
@@ -257,20 +244,20 @@ public class MainActivity extends AppCompatActivity {
         else
             calTitle.setText(R.string.calError);
     }
-    class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
+    class headlineReceiver extends AsyncTask<String, Void, List<String>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             updateNews(View.VISIBLE, View.GONE, View.GONE);
         }
         @Override
-        protected List<Headline> doInBackground(String... strings) {
-            List<Headline> headlines = new ArrayList<>();
+        protected List<String> doInBackground(String... strings) {
+            List<String> headlines;
             headlines = headlineReceiver.getHeadlines();
             return headlines;
         }
         @Override
-        protected void onPostExecute(List<Headline> result) {
+        protected void onPostExecute(List<String> result) {
             if(result != null) {
                 for(int i = 0; i < result.size(); i++) {
                     TableRow newsRow = new TableRow(getApplicationContext());
@@ -285,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
                     //setLayout.constrainDefaultWidth(newsRow.getId(), alarmRow.getWidth());*/
 
                     TextView titleTxt = new TextView(getApplicationContext());
-                    String output = i+1 + ". " + result.get(i).getTitle();
+                    String output = i+1 + ". " + result.get(i);//.getTitle();
                     titleTxt.setText(output);
                     titleTxt.setTextSize(14);
                     titleTxt.setPadding(0, 12, 0, 0);

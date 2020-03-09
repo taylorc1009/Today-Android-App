@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;*/
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,36 +18,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 
-class DatabaseUtilities { //extends SQLiteOpenHelper {
+class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("alarms");
 
     List<Alarm> alarms = new ArrayList<>();
     private Alarm alarm;
     private boolean found = false;
-
-    /*public interface OnGetDataListener {
-        //this is for callbacks
-        void onSuccess(DataSnapshot dataSnapshot);
-        void onStart();
-        void onFailure();
-    }
-    public void readData(final OnGetDataListener listener) {
-        listener.onStart();
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onSuccess(dataSnapshot);
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                listener.onFailure();
-            }
-        });
-    }*/
 
     DatabaseUtilities() {
         /*myRef.addValueEventListener(new ValueEventListener() {
@@ -66,10 +50,29 @@ class DatabaseUtilities { //extends SQLiteOpenHelper {
                 Log.w("? Firebase database", "failed to read value", error.toException());
             }
         });*/
+        //updateLocal();
     }
-
+    /*void updateLocal() {
+        alarms.clear();
+        DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(myRef);
+        final Task<DataSnapshot> load = firebaseQuery.start();
+        load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                super.onComplete(task);
+                if(task.isSuccessful()) {
+                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
+                        alarms.add(snapshot.getValue(Alarm.class));
+                    }
+                }
+                else
+                    alarms = null;
+            }
+        });
+    }*/
     void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
+        //updateLocal();
     }
     String newKey() {
         return myRef.push().getKey();
@@ -149,10 +152,10 @@ class DatabaseUtilities { //extends SQLiteOpenHelper {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });*/
+
         for (Alarm al : alarms) {
             Log.i("id", al.getId());
             if (al.getId().equals(id)) {
-                Log.i("FOUND", "WTFTFTFTFTFTFTFT");
                 return true;
             }
         }
@@ -161,11 +164,115 @@ class DatabaseUtilities { //extends SQLiteOpenHelper {
     void delete(String id) {
         myRef.child(id).removeValue();
     }
-    static class FirebaseQuery {
+    @Override
+    public int size() {
+        return alarms.size();
+    }
+    @Override
+    public boolean isEmpty() {
+        return alarms.isEmpty();
+    }
+    @Override
+    public boolean contains(@Nullable Object o) {
+        for (Alarm al : alarms) {
+            Log.i("id", al.getId());
+            Alarm a = (Alarm) o;
+            assert a != null;
+            if (al.getId().equals(a.getId())) {
+                return true;
+            }
+        }
+        return false;
+        //return alarms.contains(o);
+    }
+    @NonNull
+    @Override
+    public Iterator iterator() {
+        return alarms.iterator();
+    }
+    @NonNull
+    @Override
+    public Object[] toArray() {
+        return new Object[0];
+    }
+    @Override
+    public boolean add(Object o) {
+        return false;
+    }
+    @Override
+    public boolean remove(@Nullable Object o) {
+        return alarms.remove(o);
+    }
+    @Override
+    public boolean addAll(@NonNull Collection c) {
+        return alarms.addAll(c);
+    }
+    @Override
+    public boolean addAll(int index, @NonNull Collection c) {
+        return false;
+    }
+    @Override
+    public void clear() {
+        alarms.clear();
+    }
+    @Override
+    public Object get(int index) {
+        return alarms.get(index);
+    }
+    @Override
+    public Object set(int index, Object element) {
+        return alarms.set(index, (Alarm) element);
+    }
+    @Override
+    public void add(int index, Object element) {
+        alarms.add(index, (Alarm) element);
+    }
+    @Override
+    public Object remove(int index) {
+        return alarms.remove(index);
+    }
+    @Override
+    public int indexOf(@Nullable Object o) {
+        return alarms.indexOf(o);
+    }
+    @Override
+    public int lastIndexOf(@Nullable Object o) {
+        return alarms.lastIndexOf(o);
+    }
+    @NonNull
+    @Override
+    public ListIterator listIterator() {
+        return alarms.listIterator();
+    }
+    @NonNull
+    @Override
+    public ListIterator listIterator(int index) {
+        return alarms.listIterator(index);
+    }
+    @NonNull
+    @Override
+    public List subList(int fromIndex, int toIndex) {
+        return alarms.subList(fromIndex, toIndex);
+    }
+    @Override
+    public boolean retainAll(@NonNull Collection c) {
+        return alarms.retainAll(c);
+    }
+    @Override
+    public boolean removeAll(@NonNull Collection c) {
+        return alarms.removeAll(c);
+    }
+    @Override
+    public boolean containsAll(@NonNull Collection c) {
+        return alarms.containsAll(c);
+    }
+    @NonNull
+    @Override
+    public Object[] toArray(@NonNull Object[] a) {
+        return alarms.toArray(a);
+    }
 
-        //private final HashSet<DatabaseReference> refs = new HashSet<>();
-        //private final HashMap<DatabaseReference, DataSnapshot> snaps = new HashMap<>();
-        //private final HashMap<DatabaseReference, ValueEventListener> listeners = new HashMap<>();
+    static class FirebaseQuery {
 
         private DatabaseReference ref;
 
@@ -214,17 +321,17 @@ class DatabaseUtilities { //extends SQLiteOpenHelper {
             }
         }
     }
-    static class completeListener implements OnCompleteListener<DataSnapshot> {
+    static class completeListener extends DatabaseUtilities implements OnCompleteListener<DataSnapshot> {
         @Override
         public void onComplete(@NonNull Task<DataSnapshot> task) {
             try {
                 if (task.isSuccessful()) {
-                    final DataSnapshot result = task.getResult();
-                    // Look up DataSnapshot objects using the same DatabaseReferences you passed into FirebaseMultiQuery
+                    //final DataSnapshot result = task.getResult();
+                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                        alarms.add(snapshot.getValue(Alarm.class));
                 }
                 else
                     throw Objects.requireNonNull(task.getException());
-                    // log the error or whatever you need to do
             } catch (Exception e) {
                 e.printStackTrace();
             }
