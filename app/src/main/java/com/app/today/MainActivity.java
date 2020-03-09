@@ -2,6 +2,7 @@
 *   Add the users alarm data to a database and display it in the AlarmSystem table
 *   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?) from database and AlarmManager
 *   - Alarm data won't display in the TableLayout properly
+*   App icon
 *   Google News API?
 *   Try to get alarms to display on the homepage
 *   Add alarm icon scale animation in AlarmActivity
