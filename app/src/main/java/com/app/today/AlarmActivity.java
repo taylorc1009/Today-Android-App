@@ -22,7 +22,7 @@ public class AlarmActivity extends AppCompatActivity {
     ImageView alarmIcon;
     FloatingActionButton snoozeAlarm, stopAlarm;
     TextView alarmTime, alarmLabel;
-    boolean ring = false;
+    private boolean ring = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 
 class Alarm implements Serializable {
+    //Alarm doesn't need to store the time in millis as the AlarmManager does this,
+    //so I'm only going to store the data needed for retrieving the alarm and display data
+
+    //Attributes must be public for Firebase serialization
     public String id;
     public String days;
     public String label;
@@ -29,17 +33,5 @@ class Alarm implements Serializable {
     }
     String getTime() {
         return time;
-    }
-    void setId(String id) {
-        this.id = id;
-    }
-    void setDays(String days) {
-        this.days = days;
-    }
-    void setLabel(String label) {
-        this.label = label;
-    }
-    void setTime(String time) {
-        this.time = time;
     }
 }

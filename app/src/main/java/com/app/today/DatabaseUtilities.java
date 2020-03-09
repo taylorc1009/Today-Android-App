@@ -1,13 +1,7 @@
 package com.app.today;
 
-/*import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;*/
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -18,13 +12,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
-class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
+class DatabaseUtilities { //implements List {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("alarms");
 
@@ -119,7 +110,7 @@ class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
                 return al;
         return null;
     }
-    boolean has(final String id) {
+    boolean has(String id) {
         found = false;
         /*myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -164,7 +155,7 @@ class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
     void delete(String id) {
         myRef.child(id).removeValue();
     }
-    @Override
+    /*@Override
     public int size() {
         return alarms.size();
     }
@@ -270,7 +261,7 @@ class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
     @Override
     public Object[] toArray(@NonNull Object[] a) {
         return alarms.toArray(a);
-    }
+    }*/
 
     static class FirebaseQuery {
 
@@ -283,32 +274,21 @@ class DatabaseUtilities implements List { //extends SQLiteOpenHelper {
         Task<DataSnapshot> start() {
             Task<DataSnapshot> task;
             final TaskCompletionSource<DataSnapshot> source = new TaskCompletionSource<>();
-            final ValueEventListener listener = new EventListener(ref, source);
+            final ValueEventListener listener = new EventListener(source);
             ref.addListenerForSingleValueEvent(listener);
             task = source.getTask();
             return task.continueWithTask(new Continuation<DataSnapshot, Task<DataSnapshot>>() {
                 @Override
                 public Task<DataSnapshot> then(@NonNull Task<DataSnapshot> task) {
-                    Log.i("task continuation completed???", String.valueOf(Objects.requireNonNull(task.getResult()).getChildrenCount()));
                     return task;
                 }
             });
         }
 
-        /*public void stop() {
-            /*for (final Map.Entry<DatabaseReference, ValueEventListener> entry : listeners.entrySet()) {
-                entry.getKey().removeEventListener(entry.getValue());
-            }
-            snap = null;
-            //listeners = null;
-        }*/
-
         static class EventListener implements ValueEventListener {
-            private final DatabaseReference ref;
             private final TaskCompletionSource<DataSnapshot> taskSource;
 
-            EventListener(DatabaseReference ref, TaskCompletionSource<DataSnapshot> taskSource) {
-                this.ref = ref;
+            EventListener(TaskCompletionSource<DataSnapshot> taskSource) {
                 this.taskSource = taskSource;
             }
             @Override

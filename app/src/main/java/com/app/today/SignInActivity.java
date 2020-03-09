@@ -25,10 +25,10 @@ import java.util.Objects;
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
-    EditText email, password, pName;
+    EditText email, password, realName;
     Button signIn;
     ConstraintLayout credentialsGroup, registerExpand, registerGroup, authenticating;
-    ImageView rExArrow;
+    ImageView regArrow;
     ProgressBar authLoad;
     TextView authTxt;
 
@@ -36,7 +36,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private String emailStr = "";
     private String passStr = "";
-    private String realName = "";
+    private String displayName = "";
     private boolean isRegistering = false;
 
     @Override
@@ -46,14 +46,14 @@ public class SignInActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
-        rExArrow = findViewById(R.id.rExArrow);
+        regArrow = findViewById(R.id.regArrow);
         credentialsGroup = findViewById(R.id.credentialsGroup);
         registerExpand = findViewById(R.id.registerExpand);
         registerGroup = findViewById(R.id.registerGroup);
         authenticating = findViewById(R.id.authenticating);
         authLoad = findViewById(R.id.authLoad);
         authTxt = findViewById(R.id.authTxt);
-        pName = findViewById(R.id.pName);
+        realName = findViewById(R.id.realName);
         signIn = findViewById(R.id.signInBtn);
         cleanView();
         registerExpand.setOnClickListener(new View.OnClickListener() {
@@ -61,13 +61,13 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!isRegistering) {
                     isRegistering = true;
-                    rExArrow.animate().rotation(180);
+                    regArrow.animate().rotation(180);
                     registerGroup.setVisibility(View.VISIBLE);
                     registerGroup.animate().alpha(1);
                     signIn.setText(R.string.registerBtn);
                 }
                 else {
-                    rExArrow.animate().rotation(0);
+                    regArrow.animate().rotation(0);
                     registerGroup.animate().alpha(0).setDuration(1).withEndAction(cleanView()); // doesn't fade out then clear
                 }
             }
@@ -78,10 +78,10 @@ public class SignInActivity extends AppCompatActivity {
                 if(!password.getText().toString().trim().equals("") && isValidPassword(password.getText().toString().trim())) {
                     if(!email.getText().toString().trim().equals("") && isValidEmail(email.getText().toString().trim())) {
                         if(isRegistering) {
-                            if(!pName.getText().toString().trim().equals("") && isValidName(pName.getText().toString().trim())) {
+                            if(!realName.getText().toString().trim().equals("") && isValidName(realName.getText().toString().trim())) {
                                 emailStr = email.getText().toString().trim();
                                 passStr = password.getText().toString().trim();
-                                realName = pName.getText().toString().trim();
+                                displayName = realName.getText().toString().trim();
                                 credentialsGroup.setVisibility(View.GONE);
                                 authenticating.setVisibility(View.VISIBLE);
                                 createAccount();
@@ -109,7 +109,7 @@ public class SignInActivity extends AppCompatActivity {
                 if(task.isSuccessful()) {
                     Log.d("Firebase Register", "createUserWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
-                    UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setDisplayName(realName).build();
+                    UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
                     assert user != null;
                     user.updateProfile(request);
                     Intent mainActivity = new Intent(SignInActivity.this, MainActivity.class);
@@ -117,7 +117,7 @@ public class SignInActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Log.w("Firebase Register", "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(SignInActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Account not found", Toast.LENGTH_SHORT).show();
                     authenticating.setVisibility(View.GONE);
                     credentialsGroup.setVisibility(View.VISIBLE);
                 }
@@ -167,8 +167,8 @@ public class SignInActivity extends AppCompatActivity {
         if(isRegistering) {
             isRegistering = false;
             registerGroup.setVisibility(View.GONE);
-            pName.getText().clear();
-            rExArrow.setRotation(0);
+            realName.getText().clear();
+            regArrow.setRotation(0);
             registerGroup.setAlpha(0);
             signIn.setText(R.string.signInBtn);
         }

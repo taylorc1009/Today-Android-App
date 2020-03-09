@@ -43,15 +43,14 @@ import java.util.concurrent.Executor;
 
 public class AlarmSystem extends AppCompatActivity {
     ImageView alarmBack, alarmAdd, alarmSave;
-    CardView alarmsCard, addCard;
+    CardView addCard, alarmsCard;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
     EditText hour, minute, alarmLabel;
-    TextView alarmEmpty;
-    ProgressBar alarmLoad;
     ConstraintLayout addGroup;
     TableLayout alarmTable;
 
-    Button button;
+    ProgressBar alarmLoad;
+    TextView alarmEmpty;
 
     AlarmManager alarmManager;
     PendingIntent alarmSender;
@@ -65,13 +64,10 @@ public class AlarmSystem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_system);
-        alarmsCard = findViewById(R.id.alarmsCard);
         addCard = findViewById(R.id.addCard);
         alarmBack = findViewById(R.id.alarmBack);
         alarmAdd = findViewById(R.id.alarmAdd);
         alarmTable = findViewById(R.id.alarmTable);
-        alarmEmpty = findViewById(R.id.alarmEmpty);
-        alarmLoad = findViewById(R.id.alarmLoad);
         alarmSave = findViewById(R.id.alarmSave);
         addGroup = findViewById(R.id.addGroup);
         chkMon = findViewById(R.id.chkMon);
@@ -84,20 +80,9 @@ public class AlarmSystem extends AppCompatActivity {
         hour = findViewById(R.id.hour);
         minute = findViewById(R.id.minute);
         alarmLabel = findViewById(R.id.alarmLabel);
-
-        button = findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //new alarmRetrieve().execute();
-                //alarms.has
-            }
-        });
-
-        /*try {
-            new alarmRetrieve().execute().get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }*/
+        alarmLoad = findViewById(R.id.alarmLoad);
+        alarmsCard = findViewById(R.id.alarmsCard);
+        alarmEmpty = findViewById(R.id.alarmEmpty);
 
         retrieveAlarms();
 
@@ -188,7 +173,7 @@ public class AlarmSystem extends AppCompatActivity {
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        Alarm alarm = createAlarm(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
+                        Alarm alarm = createDatabaseInstance(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
                         clearAddUI();
@@ -211,7 +196,7 @@ public class AlarmSystem extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             alarmTable.removeAllViews();
-            updateAlarms(View.GONE, View.VISIBLE, View.GONE);
+            updateAlarmsView(View.GONE, View.VISIBLE, View.GONE);
         }
         @Override
         protected Task<DataSnapshot> doInBackground(String... strings) {
@@ -233,19 +218,19 @@ public class AlarmSystem extends AppCompatActivity {
             super.onPostExecute(s);
             if(s != null) {
                 for(Alarm alarm : alarmList) {
-                    createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                    //TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                    //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                     //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
-                updateAlarms(View.VISIBLE, View.GONE, View.GONE);
+                updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
             }
             else
-                updateAlarms(View.GONE, View.GONE, View.VISIBLE);
+                updateAlarmsView(View.GONE, View.GONE, View.VISIBLE);
         }
     }*/
     private void retrieveAlarms() {
-        updateAlarms(View.GONE, View.VISIBLE, View.GONE);
-        alarms.clear();
+        updateAlarmsView(View.GONE, View.VISIBLE, View.GONE);
+        alarmList.clear();
         DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
         final Task<DataSnapshot> load = firebaseQuery.start();
         load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
@@ -254,31 +239,34 @@ public class AlarmSystem extends AppCompatActivity {
                 super.onComplete(task);
                 if(task.isSuccessful()) {
                     for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
-                        alarms.add(snapshot.getValue(Alarm.class));
+                        alarmList.add(snapshot.getValue(Alarm.class));
                     }
                 }
                 else
-                    alarms = null;
-                if(alarms != null) {
+                    alarmList = null;
+                if(alarmList != null) {
                     for(Alarm alarm : alarmList) {
-                        createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                        //TableRow alarmRow = createRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                         //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                     }
-                    updateAlarms(View.VISIBLE, View.GONE, View.GONE);
+                    updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
                 }
                 else
-                    updateAlarms(View.GONE, View.GONE, View.VISIBLE);
+                    updateAlarmsView(View.GONE, View.GONE, View.VISIBLE);
             }
         });
         //Log.i("??? has?", )
     }
-    private void updateAlarms(int table, int load, int error) {
+    private void updateAlarmsView(int table, int load, int error) {
+        /*findViewById(R.id.alarmLoad).setVisibility(load);
+        findViewById(R.id.alarmCard).setVisibility(table);
+        findViewById(R.id.alarmEmpty).setVisibility(error);*/
         alarmLoad.setVisibility(load);
         alarmsCard.setVisibility(table);
         alarmEmpty.setVisibility(error);
     }
-    private Alarm createAlarm(String hour, String minute, String label) {
+    private Alarm createDatabaseInstance(String hour, String minute, String label) {
         String days = "";
         /*String UITime = ;
         String id = ;
@@ -299,11 +287,11 @@ public class AlarmSystem extends AppCompatActivity {
                 days = days + "," + Calendar.SATURDAY;
             if(chkSun.isChecked())
                 days = days + "," + Calendar.SUNDAY;
-                //try   days += "," + Cal...
+                //TODO try   days += "," + Cal...
         //}
         return new Alarm(alarms.newKey(), days, alarmLabel.getText().toString(), hour + ":" + minute);
     }
-    void createRow(String time, String label, String days) { //label is unused as of now, will be used later
+    private void createTableLayoutRow(String time, String label, String days) { //label is unused as of now, will be used later
         TableRow alarmRow = new TableRow(getApplicationContext());
         alarmRow.setId(10+alarmTable.getChildCount());
         alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);

@@ -12,8 +12,8 @@ import java.util.List;
 
 class HeadlineReceiver {
     private static final String API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
-    private List<String> headlines = new ArrayList<>();
     List<String> getHeadlines() {
+        List<String> headlines = new ArrayList<>();
         try {
             JSONObject results = new JSONObject(makeRequest());
             JSONArray resultsArray = results.getJSONObject("response").getJSONArray("results");

@@ -2,7 +2,7 @@ package com.app.today;
 
 import java.util.Date;
 
-public class Event {
+class Event {
     private String title;
     private Date begin;
     private Date end;
@@ -12,21 +12,11 @@ public class Event {
         this.title = title;
         this.begin = begin;
         this.end = end;
-        this.allDay = !allDay;
+        this.allDay = !allDay; //Inverted because it's inverted in the calendar for some reason
     }
 
     String getTitle() { return title; }
     Date getBegin() { return begin; }
     Date getEnd() { return end; }
     boolean isAllDay() { return allDay; }
-
-    @Override
-    public String toString() {
-        return "Event2{" +
-                "title='" + title + '\'' +
-                ", begin=" + begin +
-                ", end=" + end +
-                ", allDay=" + allDay +
-                '}';
-    }
 }

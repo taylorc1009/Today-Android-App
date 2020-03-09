@@ -60,17 +60,17 @@ public class MainActivity extends AppCompatActivity {
     TableLayout calTable, newsTable;
     Button button;
 
-    List<String> weatherDetails = new ArrayList<>();
-    static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
+    private List<String> weatherDetails = new ArrayList<>();
+    private static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
-    List<Event> calendar = new ArrayList<>();
+    private List<Event> calendar = new ArrayList<>();
 
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
 
     //DatabaseUtils alarms = new DatabaseUtils();
 
-    HeadlineReceiver headlineReceiver = new HeadlineReceiver();
+    private HeadlineReceiver headlineReceiver = new HeadlineReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                updateCalendar();
+                updateCalendarView();
             new headlineReceiver().execute();
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -135,11 +135,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_refreshWeather:
                 if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
                     new weatherTask().execute();
-                    Toast.makeText(MainActivity.this, "!INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "! INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
             case R.id.action_refreshCalendar:
                 if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                    updateCalendar();
+                    updateCalendarView();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -149,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateWeather(View.VISIBLE, View.GONE, View.GONE, View.GONE);
+            updateWeatherView(View.VISIBLE, View.GONE, View.GONE, View.GONE);
         }
         @Override
-        public String doInBackground(String... args) {
+        protected String doInBackground(String... args) {
             final LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
@@ -196,21 +196,21 @@ public class MainActivity extends AppCompatActivity {
                     highsLowsTxt.setText(weatherDetails.get(2));
                     windTxt.setText(weatherDetails.get(3));
                     lastWUpdateTxt.setText(weatherDetails.get(4));
-                    updateWeather(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
+                    updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
                 } else
-                    updateWeather(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
             } catch (JSONException e) {
-                updateWeather(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
             }
         }
     }
-    private void updateWeather(int load, int card, int group, int error) {
+    private void updateWeatherView(int load, int card, int group, int error) {
         findViewById(R.id.weatherLoad).setVisibility(load);
         findViewById(R.id.weatherCard).setVisibility(card);
         findViewById(R.id.weatherStats).setVisibility(group);
         findViewById(R.id.weatherError).setVisibility(error);
     }
-    private void updateCalendar() {
+    private void updateCalendarView() {
         calTable.removeAllViews();
         if(calendar != null)
             calendar.clear();
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateNews(View.VISIBLE, View.GONE, View.GONE);
+            updateHeadlinesView(View.VISIBLE, View.GONE, View.GONE);
         }
         @Override
         protected List<String> doInBackground(String... strings) {
@@ -299,14 +299,14 @@ public class MainActivity extends AppCompatActivity {
                     //new TableLayout.LayoutParams(1, 1)
                 }
                 newsTitle.setText(R.string.newsTitle);
-                updateNews(View.GONE, View.VISIBLE, View.VISIBLE);
+                updateHeadlinesView(View.GONE, View.VISIBLE, View.VISIBLE);
             } else {
                 newsTitle.setText(R.string.newsError);
-                updateNews(View.GONE, View.VISIBLE, View.GONE);
+                updateHeadlinesView(View.GONE, View.VISIBLE, View.GONE);
             }
         }
     }
-    private void updateNews(int load, int card, int table) {
+    private void updateHeadlinesView(int load, int card, int table) {
         findViewById(R.id.newsLoad).setVisibility(load);
         findViewById(R.id.newsCard).setVisibility(card);
         newsTable.setVisibility(table);
