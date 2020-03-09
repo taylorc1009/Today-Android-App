@@ -1,26 +1,28 @@
 /* TODO
 *   Add the users alarm data to a database and display it in the AlarmSystem table
-*   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?)
+*   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?) from database and AlarmManager
 *   - Alarm data won't display in the TableLayout properly
-*   - Data isn't pulled as soon as alarm activity is opened (looks like onPostExecute completes before doInBackground)
+*   Google News API?
+*   Try to get alarms to display on the homepage
 *   Add alarm icon scale animation in AlarmActivity
-*   Add 3-layer architecture
 *   Fix weather temp and wind speed
-*   Change navigation bar color
+*   Add weather icons
+*   Card title texts bold? i.e. UI improvements
+*   Alarm snooze? if not maybe add a message saying the snooze button isn't good for you
+*   Diagrams (class/flow/wireframe) and report
+*   Internal commentary
+*   Maybe UnitTest?
 *  */
 
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;

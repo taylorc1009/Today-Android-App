@@ -1,5 +1,3 @@
-// https://content.guardianapis.com/search?api-key=07f8c2ea-493e-4429-ae47-74ade74d113c
-
 package com.app.today;
 
 import android.util.Log;
