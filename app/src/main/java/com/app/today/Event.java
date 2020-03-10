@@ -3,6 +3,8 @@ package com.app.today;
 import java.util.Date;
 
 class Event {
+    //Calendar event, holds the information to show the user
+
     private String title;
     private Date begin;
     private Date end;

@@ -305,7 +305,7 @@ class DatabaseUtilities { //implements List {
         @Override
         public void onComplete(@NonNull Task<DataSnapshot> task) {
             try {
-                if (task.isSuccessful()) {
+                if(task.isSuccessful()) {
                     //final DataSnapshot result = task.getResult();
                     for(DataSnapshot snapshot : task.getResult().getChildren())
                         alarms.add(snapshot.getValue(Alarm.class));

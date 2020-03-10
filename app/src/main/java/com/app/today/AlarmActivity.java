@@ -16,24 +16,42 @@ import java.util.Calendar;
 import java.util.Objects;
 
 public class AlarmActivity extends AppCompatActivity {
+    //UI attributes
     ImageView alarmIcon;
     FloatingActionButton snoozeAlarm, stopAlarm;
     TextView alarmTime, alarmLabel;
+
+    //Used to determine whether the alarm should ring today
     private boolean ring = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_ring);
+
+        //Hide the ActionBar
         Objects.requireNonNull(getSupportActionBar()).hide();
+
+        //Initialize the UI attributes
         alarmIcon = findViewById(R.id.alarmIcon);
         snoozeAlarm = findViewById(R.id.snoozeAlarm);
         stopAlarm = findViewById(R.id.stopAlarm);
         alarmTime = findViewById(R.id.alarmTime);
         alarmLabel = findViewById(R.id.alarmLabel);
+
+        //Create an instance of database utilities to get the alarm data from the database
         DatabaseUtilities alarms = new DatabaseUtilities();
+
+        //Get this intents extras
         Bundle extras = getIntent().getExtras();
+
+        //If the alarm ID is defined, continue
+        //Else return to the MainAtivity
         if(extras != null) {
+            //Get the alarm ID from the intent extras
             String id = extras.getString("alarmID");
+
+            //Verify the alarm ID exists in the database
             if(alarms.has(id)) {
                 assert id != null;
                 Log.i("! AlarmActivity started with ID", id);

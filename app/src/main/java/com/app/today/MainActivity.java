@@ -6,7 +6,6 @@
 *   Try to get alarms to display on the homepage
 *   Add alarm icon scale animation in AlarmActivity
 *   Fix weather temp and wind speed
-*   Add weather icons
 *   Card title texts bold? i.e. UI improvements
 *   Alarm snooze? if not maybe add a message saying the snooze button isn't good for you
 *   Diagrams (class/flow/wireframe) and report
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     //UI attributes
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle;
-    ImageView alarmMore;
+    ImageView alarmMore, weatherIcon;
     TableLayout calTable, newsTable;
     Button button;
 
@@ -95,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("! user is signed in", Objects.requireNonNull(user.getEmail()));
 
             //Initialize UI attributes
+            weatherIcon = findViewById(R.id.weatherIcon);
             lastWUpdateTxt = findViewById(R.id.lastWUpdate);
             forecastTxt = findViewById(R.id.forecast);
             highsLowsTxt = findViewById(R.id.highsLows);
@@ -233,6 +233,29 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(main.getString("temp_min") + "°C min - " + main.getString("temp_max") + "°C max");
                 weatherDetails.add(wind.getString("speed") + " mph winds");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
+
+                int weatherID = Integer.parseInt(weather.getString("id"));
+                //Based on the weather ID, this will determine which drawable to use
+                if(weatherID == 800)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
+                else if(weatherID == 801)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
+                else if(weatherID == 802)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
+                else if(weatherID == 803 || weatherID == 804)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
+                else if(weatherID == 500 || weatherID == 504)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
+                else if(weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
+                else if((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
+                else if((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
+                else if(weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
+                else
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
 
                 //If .json response isn't empty, display the response in the suitable UI views
                 //Else throw an empty .json message

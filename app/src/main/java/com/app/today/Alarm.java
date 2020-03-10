@@ -3,6 +3,7 @@ package com.app.today;
 import java.io.Serializable;
 
 class Alarm implements Serializable {
+    //Used to store the alarms data for/from the database
     //Alarm doesn't need to store the time in millis as the AlarmManager does this,
     //so I'm only going to store the data needed for retrieving the alarm and display data
 
