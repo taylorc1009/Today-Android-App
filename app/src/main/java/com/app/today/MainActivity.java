@@ -135,14 +135,18 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+    //Uses our 'menu.xml' file to define the ActionBar menu and pushes it to the display
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) { //Uses our 'menu.xml' file to define the ActionBar menu and pushes it to the display
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    //Defines the actions for each option in the action bar menu
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) { //Defines the actions for each option in the action bar menu
+    public boolean onOptionsItemSelected(MenuItem item) {
         //It receives a value passed on-click of the ActionBar menu and determines what to do by using a switch case
         switch (item.getItemId()) {
             case R.id.action_logOut:
@@ -166,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
     //action (doInBackground, which as the name implies can be done in the background)
     class weatherTask extends AsyncTask<String, Void, String> {
@@ -276,23 +281,30 @@ public class MainActivity extends AppCompatActivity {
             //If there are events happening today, add them to the UI table
             //Else show there are no events today
             if(!calendar.isEmpty()) {
+                calTitle.setText(R.string.calTitle);
                 for(Event event : calendar) {
+                    //Creates a new TableRow to be added to the table
                     TableRow eventRow = new TableRow(getApplicationContext());
-                    eventRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                    TextView timeTxt = new TextView(getApplicationContext());
+
+                    //Creates and defines a TextView to display an event
+                    TextView eventTxt = new TextView(getApplicationContext());
                     String output;
+                    //If the current event is not happening all day, display its start and end times
+                    //Else display it as an all day event
                     if(!event.isAllDay())
                         output = event.getTitle() + " | " + resolver.getTimeString(event.getBegin().getTime()) + "-" + resolver.getTimeString(event.getEnd().getTime());
                     else
                         output = event.getTitle() + " | All day";
-                    timeTxt.setText(output);
-                    timeTxt.setTextSize(14);
-                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    eventTxt.setText(output);
+                    eventTxt.setTextSize(14);
+                    //Define the layout parameters and margins of the event text view
+                    //LayoutParameters are basically the width, height and weight (number of lines) of the display
+                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
                     params.setMargins(0, 12, 0, 8);
-                    timeTxt.setLayoutParams(params);
+                    eventTxt.setLayoutParams(params);
 
-                    calTitle.setText(R.string.calTitle);
-                    eventRow.addView(timeTxt);
+                    //Adds the text to the row, then the row to the table with the layout parameters
+                    eventRow.addView(eventTxt);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
             } else
@@ -301,6 +313,8 @@ public class MainActivity extends AppCompatActivity {
         else
             calTitle.setText(R.string.calError);
     }
+
+    //
     class headlineReceiver extends AsyncTask<String, Void, List<String>> {
         @Override
         protected void onPreExecute() {
@@ -316,44 +330,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<String> result) {
             if(result != null) {
-                for(int i = 0; i < result.size(); i++) {
-                    TableRow newsRow = new TableRow(getApplicationContext());
-                    //TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                    //newsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-
-                    /*ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
-                    //rowLayout.setBackgroundColor(R.color.colorAccent); //only using for debug to check the dimensions of the constraint
-                    //rowLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT));
-                    ConstraintSet setLayout = new ConstraintSet();
-                    setLayout.clone(rowLayout);
-                    //setLayout.constrainDefaultWidth(newsRow.getId(), alarmRow.getWidth());*/
-
-                    TextView titleTxt = new TextView(getApplicationContext());
-                    String output = i+1 + ". " + result.get(i);//.getTitle();
-                    titleTxt.setText(output);
-                    titleTxt.setTextSize(14);
-                    titleTxt.setPadding(0, 12, 0, 0);
-                    titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
-                    /*titleTxt.setMaxWidth(rowLayout.getMaxWidth());
-                    titleTxt.setMaxHeight(ConstraintLayout.LayoutParams.WRAP_CONTENT);*/
-                    //titleTxt.connect(titleTxt.getId(), ConstraintSet.LEFT, rowLayout.getId(), ConstraintSet.LEFT, 0);
-                    //setLayout.connect(titleTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
-
-                    /*TextView categoryTxt = new TextView(getApplicationContext());
-                    String daysOutput = "";
-                    categoryTxt.setText(daysOutput);
-                    categoryTxt.setTextSize(12);
-                    categoryTxt.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
-                    setLayout.connect(categoryTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
-                    setLayout.connect(categoryTxt.getId(), ConstraintSet.TOP, titleTxt.getId(), ConstraintSet.BOTTOM, 0);*/
-
-                    //params.setMargins(30, 15, 0, 8);
-                    //setLayout.applyTo(rowLayout);
-                    //rowLayout.addView(titleTxt);
-                    //rowLayout.addView(categoryTxt);
-                    newsRow.addView(titleTxt);
-                    newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                    //new TableLayout.LayoutParams(1, 1)
+                int i = 0;
+                for(String headline : result) {
+                    if(!(headline.equals("Corrections and clarifications") || headline.equals("This week’s correction | For the record"))) {
+                        i++;
+                        Log.i("headline", String.valueOf(i));
+                        TableRow newsRow = new TableRow(getApplicationContext());
+                        TextView titleTxt = new TextView(getApplicationContext());
+                        String output = i + ". " + headline;
+                        titleTxt.setText(output);
+                        titleTxt.setTextSize(14);
+                        titleTxt.setPadding(0, 12, 0, 0);
+                        titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
+                        newsRow.addView(titleTxt);
+                        newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                    }
                 }
                 newsTitle.setText(R.string.newsTitle);
                 updateHeadlinesView(View.GONE, View.VISIBLE, View.VISIBLE);
