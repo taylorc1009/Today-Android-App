@@ -71,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
     //Used to store calendar events
     private List<Event> calendar = new ArrayList<>();
 
-    //Used to store news headlines
-    private HeadlineReceiver headlineReceiver = new HeadlineReceiver();
-
     //Used to verify Firebase sign in
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
@@ -314,27 +311,34 @@ public class MainActivity extends AppCompatActivity {
             calTitle.setText(R.string.calError);
     }
 
-    //
+    //AsyncTask for getting headlines
     class headlineReceiver extends AsyncTask<String, Void, List<String>> {
+        //onPreExecute shows the user the weather is loading
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             updateHeadlinesView(View.VISIBLE, View.GONE, View.GONE);
         }
+
+        //doInBackground retrieves headlines and passes them to onPostExecute
         @Override
         protected List<String> doInBackground(String... strings) {
-            List<String> headlines;
-            headlines = headlineReceiver.getHeadlines();
-            return headlines;
+            return HeadlineReceiver.getHeadlines();
         }
+
+        //onPostExecutes shows the results to the user
         @Override
         protected void onPostExecute(List<String> result) {
+            //If results aren't empty, display them in the headline table
+            //Else show headline error
             if(result != null) {
+                //Integer used just to label the headlines with a number
                 int i = 0;
                 for(String headline : result) {
+                    //This if is only used to prevent useless headlines from being displayed, for some reason The Guardian API gives us them
                     if(!(headline.equals("Corrections and clarifications") || headline.equals("This week’s correction | For the record"))) {
                         i++;
-                        Log.i("headline", String.valueOf(i));
+                        //Creates a new table row, defines the headline TextView and adds it to the row, and then the row to the table
                         TableRow newsRow = new TableRow(getApplicationContext());
                         TextView titleTxt = new TextView(getApplicationContext());
                         String output = i + ". " + headline;
@@ -354,30 +358,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    //Used to hide/show certain views based on the parameters
     private void updateHeadlinesView(int load, int card, int table) {
         findViewById(R.id.newsLoad).setVisibility(load);
         findViewById(R.id.newsCard).setVisibility(card);
         newsTable.setVisibility(table);
     }
+
+    //Used by the app to request a permission (p)
     private boolean reqPermission(int p) {
         switch(p) {
             case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
+                //If the permission is not already granted, request it
+                //Else return true/granted
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
-                    } else { */
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
                 } else { return true; }
+                //Checks again after the request was made to check the result
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    } else { */
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                 } else { return true; }
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     return true;
         }
+        //If the permission was not granted, returns false
         return false;
     }
 }

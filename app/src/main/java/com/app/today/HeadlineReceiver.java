@@ -10,7 +10,7 @@ import java.util.List;
 
 class HeadlineReceiver {
     private static final String API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
-    List<String> getHeadlines() {
+    static List<String> getHeadlines() {
         List<String> headlines = new ArrayList<>();
         try {
             JSONObject results = new JSONObject(makeRequest());
@@ -28,7 +28,7 @@ class HeadlineReceiver {
         }
         return headlines;
     }
-    private String makeRequest() {
+    private static String makeRequest() {
         return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=news&api-key=" + API);
     }
 }
