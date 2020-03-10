@@ -175,27 +175,37 @@ public class AlarmSystem extends AppCompatActivity {
         //Button for saving an alarm
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //If both the hour and minute fields are populated
+                //If both the hour and minute fields are populated, continue
+                //Else highlight the EditText's red and ask for re-entry
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
+                    //Build a time to compare the users requested time to the system time
                     Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0); //Calendar.getInstance();
-                    long alarmTime = validationDate.getTimeInMillis();
                     long now = System.currentTimeMillis();
+                    //Store the time of the users alarm in milliseconds for the system to use
+                    long alarmTime = validationDate.getTimeInMillis();
 
                     Log.i("? time comparison", "is " + now + " > " + alarmTime + "?");
                     Log.i("? date == ", validationDate.getTime().toString());
 
+                    //Check if the alarm is set for a time in the past, we do this because if it is the alarm will ring instantly
+                    //We do not need to check if it is set to repeat as it will only ring on the days it is set, so we can check if it is due to ring later
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
+                        //This is only used to convert a single integer hour/minute to a 24hr time
                         StringBuilder hr = new StringBuilder(hour.getText().toString());
                         StringBuilder min = new StringBuilder(minute.getText().toString());
                         if(hr.length() == 1)
                             hr.insert(0, 0);
                         if(min.length() == 1)
                             min.insert(0, 0);
+
+                        //Utilize these functions to set up the data we need for the alarm
                         Alarm alarm = createDatabaseInstance(hr.toString(), min.toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
+
+                        //Update the UI
                         clearAddAlarmUI();
                         retrieveAlarms();
                     }
@@ -210,16 +220,30 @@ public class AlarmSystem extends AppCompatActivity {
             }
         });
     }
+
+    //Update the alarm table in the UI with the alarms in the database
     private void retrieveAlarms() {
+        //Show the user the alarms are loading
         updateAlarmsView(View.GONE, View.VISIBLE, View.GONE);
+
+        //Clear the UI and stored alarm data
         alarmTable.removeAllViews();
         alarmList.clear();
+
+        //We need to make querying the database a task as the program will continue running without
+        //the results of the query if we don't
+
+        //Create a query task for the database using the Firebase database reference
         DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
+        //Start the query and have it store the Task result of type DataSnapshot
         final Task<DataSnapshot> load = firebaseQuery.start();
+        //Add a completeListener to the Task
         load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 super.onComplete(task);
+                //If the query was successful, store the data in the List
+                //Else return null so the UI knows to say otherwise
                 if(task.isSuccessful()) {
                     for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
                         alarmList.add(snapshot.getValue(Alarm.class));
@@ -227,6 +251,8 @@ public class AlarmSystem extends AppCompatActivity {
                 }
                 else
                     alarmList = null;
+                //If there are results, list them in the UI
+                //Else show there aren't any in the UI
                 if(alarmList != null && !alarmList.isEmpty()) {
                     for(Alarm alarm : alarmList) {
                         createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
@@ -241,60 +267,68 @@ public class AlarmSystem extends AppCompatActivity {
         });
         //Log.i("??? has?", )
     }
+
+    //Used to show/hide parts of the UI based on the parameters
     private void updateAlarmsView(int table, int load, int error) {
-        /*findViewById(R.id.alarmLoad).setVisibility(load);
-        findViewById(R.id.alarmCard).setVisibility(table);
-        findViewById(R.id.alarmEmpty).setVisibility(error);*/
         alarmLoad.setVisibility(load);
         alarmsCard.setVisibility(table);
         alarmEmpty.setVisibility(error);
     }
+
+    //Used to create an instance of Alarm with the data we need to store
     private Alarm createDatabaseInstance(String hour, String minute, String label) {
         String days = "";
-        /*String UITime = ;
-        String id = ;
-        if (!(alarmLabel.getText().toString().equals("")))
-            label = ;*/
-        //if(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked()) {
-            if(chkMon.isChecked()) //TODO maybe try a space as the token instead? So we can use trim() to remove the extra index
-                days += " " + Calendar.MONDAY;
-            if(chkTues.isChecked())
-                days += " " + Calendar.TUESDAY;
-            if(chkWed.isChecked())
-                days += " " + Calendar.WEDNESDAY;
-            if(chkThurs.isChecked())
-                days += " " + Calendar.THURSDAY;
-            if(chkFri.isChecked())
-                days += " " + Calendar.FRIDAY;
-            if(chkSat.isChecked())
-                days += " " + Calendar.SATURDAY;
-            if(chkSun.isChecked())
-                days += " " + Calendar.SUNDAY;
-                //TODO try   days += "," + Cal...
-        //}
-        return new Alarm(alarms.newKey(), days.trim(), alarmLabel.getText().toString(), hour + ":" + minute);
+        //Checks what days were checked to add the Calendar value of them to the database
+        if(chkMon.isChecked())
+            days += " " + Calendar.MONDAY;
+        if(chkTues.isChecked())
+            days += " " + Calendar.TUESDAY;
+        if(chkWed.isChecked())
+            days += " " + Calendar.WEDNESDAY;
+        if(chkThurs.isChecked())
+            days += " " + Calendar.THURSDAY;
+        if(chkFri.isChecked())
+            days += " " + Calendar.FRIDAY;
+        if(chkSat.isChecked())
+            days += " " + Calendar.SATURDAY;
+        if(chkSun.isChecked())
+            days += " " + Calendar.SUNDAY;
+
+        //Create a new Alarm object
+        return new Alarm(alarms.newKey(), days.trim(), label, hour + ":" + minute);
     }
+
+    //Create a new row to add to the TableLayout in the alarm UI
     private void createTableLayoutRow(String time, String label, String days) { //label is unused as of now, will be used later
+        //Create a new row and add it to the TableLayout with the specified width and height
         TableRow alarmRow = new TableRow(getApplicationContext());
         alarmRow.setId(10+alarmTable.getChildCount());
         alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
+        //Create a ConstraintLayout to add to the TableRow, to allow us to constrain the views to where we need them
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
         rowLayout.setId(11+alarmTable.getChildCount());
         rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debugging to check the dimensions of the ConstraintLayout
         alarmRow.addView(rowLayout);//, TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+
+        //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
         ConstraintSet setLayout = new ConstraintSet();
 
+        //Create a TextView for the alarm time and define its parameters
         TextView timeTxt = new TextView(getApplicationContext());
         timeTxt.setId(12+alarmTable.getChildCount());
         timeTxt.setText(time);
         timeTxt.setTextSize(30);
         rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        //Use setLayout to constrain the TextView end to the ConstraintLayout end, and top to top
         setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
         setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
+        //Same as the timeTxt except here we're building the string we want to display
         TextView daysTxt = new TextView(getApplicationContext());
         daysTxt.setId(13+alarmTable.getChildCount());
+        //Uses the Calendar days stored in the Firebase database to determine which days, if any, this alarm
+        //will repeat on for this to be shown to the user
         StringBuilder daysOutput = new StringBuilder("Days:");
         if(!days.equals("")) {
             String[] tokenized = days.split(" ");
@@ -324,6 +358,7 @@ public class AlarmSystem extends AppCompatActivity {
         setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
+        //Clones the constraints of the views we defined into the ConstraintLayout
         setLayout.clone(rowLayout);
         rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         /*setLayout.constrainDefaultWidth(alarmRow.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
@@ -333,9 +368,12 @@ public class AlarmSystem extends AppCompatActivity {
 
         setLayout.applyTo(rowLayout);
     }
+
+    //Empties the view to add an alarm
     private void clearAddAlarmUI() {
         hour.getText().clear();
         minute.getText().clear();
+        //Uncheck boxes that were checked
         if(chkMon.isChecked())
             chkMon.toggle();
         if(chkTues.isChecked())
@@ -355,31 +393,38 @@ public class AlarmSystem extends AppCompatActivity {
     }
     private void scheduleAlarm(Alarm alarm, long alarmTime) {
 
-        /* perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
-        * day has come, pull the alarm matching the ID we want from the database and check if it is due
-        * to ring on the current day. */
+        /* TODO perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
+        *   day has come, pull the alarm matching the ID we want from the database and check if it is due
+        *   to ring on the current day. */
 
-        String id = alarm.getId();
+        //Creates the intent of the activity to be started upon alarm ring
         Intent alarmIntent = new Intent(this, AlarmRing.class);
-        alarmIntent.putExtra("alarmID", id);
+        //Give the intent a parameter with the ID of the alarm so it can get the data it needs from the database when it rings
+        alarmIntent.putExtra("alarmID", alarm.getId());
+        //Used to call the receiver AlarmRing when the intent should start
         alarmIntent.setAction("com.app.today.FireAlarm");
+        //Create a PendingIntent for the above intent to be started when the alarm should ring
         alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-        //upon ring, transition to alarm activity
-        //perhaps pull an id and ring the alarm matching that id, alarms could be stored
-        //in a database, plus it might be easier to view and delete them this way?
 
+        //TODO upon ring, transition to alarm activity
+        //  perhaps pull an id and ring the alarm matching that id, alarms could be stored
+        //  in a database, plus it might be easier to view and delete them this way?
 
+        Log.i("? attempted to invoke AlarmManager with ID", alarm.getId());
 
-        Log.i("? attempted to invoke AlarmManager with ID", String.valueOf(id));
+        //Get an instance of the alarm manager to store our alarm
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender); //AlarmManager.INTERVAL_DAY * 7 <-- changed from a week to a day to fit proposal
+        //Set the alarm to repeat at the same time every day with our PendingIntent, we will check upon ring if
+        //the alarm is meant to ring that day, if not then cancel the process
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender);
 
-        //Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
-        //you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
-        //the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
-        //already exist
+        //TODO Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
+        //  you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
+        //  the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
+        //  already exist
 
+        //Store the alarm data in the database
         alarms.store(alarm);
     }
 
