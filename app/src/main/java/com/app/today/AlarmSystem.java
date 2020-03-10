@@ -267,7 +267,7 @@ public class AlarmSystem extends AppCompatActivity {
         StringBuilder daysOutput = new StringBuilder("Days:");
         if(!days.equals("")) {
             String[] tokenized = days.split(" ");
-            for (String s : tokenized) { //starts at 1 because index 0 in the array will be empty (refer to how the days string is stored)
+            for (String s : tokenized) {
                 int d = Integer.parseInt(s);
                 if (d == Calendar.MONDAY)
                     daysOutput.append(" MON");
