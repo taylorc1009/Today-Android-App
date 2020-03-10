@@ -33,26 +33,30 @@ import java.util.List;
 import java.util.Objects;
 
 public class AlarmSystem extends AppCompatActivity {
+    //UI attributes
     ImageView alarmBack, alarmAdd, alarmSave;
     CardView addCard, alarmsCard;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
     EditText hour, minute, alarmLabel;
     ConstraintLayout addGroup;
     TableLayout alarmTable;
-
     ProgressBar alarmLoad;
     TextView alarmEmpty;
 
+    //Utilities for managing/setting alarms
     AlarmManager alarmManager;
     PendingIntent alarmSender;
 
+    //DatabaseUtilities to interact with the Firebase database
     DatabaseUtilities alarms = new DatabaseUtilities();
     List<Alarm> alarmList = new ArrayList<>();
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_system);
+        
+        //Initialize the UI attributes
         addCard = findViewById(R.id.addCard);
         alarmBack = findViewById(R.id.alarmBack);
         alarmAdd = findViewById(R.id.alarmAdd);
@@ -73,18 +77,22 @@ public class AlarmSystem extends AppCompatActivity {
         alarmsCard = findViewById(R.id.alarmsCard);
         alarmEmpty = findViewById(R.id.alarmEmpty);
 
+        //Update the list of alarms and the table UI
         retrieveAlarms();
 
+        //Button to return to the home page
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                clearAddUI();
+                clearAddAlarmUI();
                 Intent mainReturn = new Intent(AlarmSystem.this, MainActivity.class);
-                //mainReturn.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+                //On return to the MainActivity, clear the previous instance of MainActivity on the stack
                 mainReturn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainReturn);
                 finish();
             }
         });
+
+        //Button to show the CardView for adding alarms
         alarmAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(addCard.getVisibility() == View.GONE)
@@ -94,33 +102,44 @@ public class AlarmSystem extends AppCompatActivity {
                     addCard.setVisibility(View.GONE);
             }
         });
+
+        //Text field for entering the alarm hour
         hour.addTextChangedListener(new TextWatcher() {
             int hr;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //If the length is greater than 0 run validity check
+                //Else reset the number to check against
                 if(s.length() > 0) {
                     hr = Integer.parseInt(s.toString());
+                    //If the hour is out of range, validate
                     if(!(hr >= 0 && hr <= 23 && s.length() <= 2)) {
+                        //If number length is greater than 0, simulate backspace pressed
+                        //Else clear the output field
+                        //This prevents a NullPointerException
                         if(s.length() != 0)
                             hour.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         else
                             hour.getText().clear();
+                    }
                 }
                 else
                     hr = 0;
-                }
             }
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        //Text field for entering the alarm minute
         minute.addTextChangedListener(new TextWatcher() {
             int min;
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //Refer to the hour TextWatcher for validation comments
                 if(s.length() > 0) {
                     min = Integer.parseInt(s.toString());
                     if(!(min >= 0 && min <= 59 && s.length() <= 2)) {
@@ -136,11 +155,14 @@ public class AlarmSystem extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        //Text field for the alarm label
         alarmLabel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //Simulate backspace press if the CharSequence length if over 100
                 if(s.length() > 100) {
                     alarmLabel.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                     Toast.makeText(AlarmSystem.this, "Label may consist of 100 characters max", Toast.LENGTH_SHORT).show();
@@ -149,8 +171,11 @@ public class AlarmSystem extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        //Button for saving an alarm
         alarmSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //If both the hour and minute fields are populated
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
                     Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0); //Calendar.getInstance();
                     long alarmTime = validationDate.getTimeInMillis();
@@ -162,10 +187,16 @@ public class AlarmSystem extends AppCompatActivity {
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        Alarm alarm = createDatabaseInstance(hour.getText().toString(), minute.getText().toString(), alarmLabel.getText().toString());
+                        StringBuilder hr = new StringBuilder(hour.getText().toString());
+                        StringBuilder min = new StringBuilder(minute.getText().toString());
+                        if(hr.length() == 1)
+                            hr.insert(0, 0);
+                        if(min.length() == 1)
+                            min.insert(0, 0);
+                        Alarm alarm = createDatabaseInstance(hr.toString(), min.toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
                         Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
-                        clearAddUI();
+                        clearAddAlarmUI();
                         retrieveAlarms();
                     }
                 }
@@ -302,7 +333,7 @@ public class AlarmSystem extends AppCompatActivity {
 
         setLayout.applyTo(rowLayout);
     }
-    private void clearAddUI() {
+    private void clearAddAlarmUI() {
         hour.getText().clear();
         minute.getText().clear();
         if(chkMon.isChecked())
