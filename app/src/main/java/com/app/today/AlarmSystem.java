@@ -394,7 +394,7 @@ public class AlarmSystem extends AppCompatActivity {
                 alarmIntent.setAction("com.app.today.FireAlarm");
 
                 //Check if the alarm exists locally first, otherwise we will get a NullPointerException
-                if(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT) != null)
+                if(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null)
                     alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT));
 
                 retrieveAlarms();
