@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle;
     ImageView alarmMore, weatherIcon;
     TableLayout calTable, newsTable;
-    Button button;
 
     //Used to get and store weather details
     private List<String> weatherDetails = new ArrayList<>();
@@ -149,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 //Refreshes the calendar
                 if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                     updateCalendarView();
+            case R.id.action_refreshNews:
+                //Refreshes the news headlines
+                new headlineReceiver().execute();
             default:
                 return super.onOptionsItemSelected(item);
         }
