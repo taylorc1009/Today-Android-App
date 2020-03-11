@@ -53,6 +53,7 @@
         android:text="@string/alarmTime"
         android:textSize="50sp"
         android:textColor="#FFFFFF"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/alarmIcon"
         app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
         app:layout_constraintHorizontal_bias="0.568"

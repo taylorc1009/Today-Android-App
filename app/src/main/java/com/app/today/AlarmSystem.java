@@ -392,10 +392,13 @@ public class AlarmSystem extends AppCompatActivity {
                 Intent alarmIntent = new Intent(getApplicationContext(), AlarmRing.class);
                 alarmIntent.putExtra("alarmID", String.valueOf(alarmRow.getTag()));
                 alarmIntent.setAction("com.app.today.FireAlarm");
+                PendingIntent alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
                 //Check if the alarm exists locally first, otherwise we will get a NullPointerException
-                if(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null)
-                    alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT));
+                if(alarmSender != null) {
+                    alarmManager.cancel(alarmSender);
+                    alarmSender.cancel();
+                }
 
                 retrieveAlarms();
             }
@@ -457,7 +460,7 @@ public class AlarmSystem extends AppCompatActivity {
         //Used to call the receiver AlarmRing when the intent should start
         alarmIntent.setAction("com.app.today.FireAlarm");
         //Create a PendingIntent for the above intent to be started when the alarm should ring
-        alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
         Log.i("? attempted to invoke AlarmManager with ID", alarm.getId());
         //Get an instance of the alarm manager to store our alarm

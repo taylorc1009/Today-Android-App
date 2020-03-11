@@ -50,6 +50,7 @@ class DatabaseUtilities {
             return task.continueWithTask(new Continuation<DataSnapshot, Task<DataSnapshot>>() {
                 @Override
                 public Task<DataSnapshot> then(@NonNull Task<DataSnapshot> task) {
+                    Log.i("! FirebaseQuery Task complete", Objects.requireNonNull(task.getResult()).toString());
                     return task;
                 }
             });
@@ -75,11 +76,9 @@ class DatabaseUtilities {
         @Override
         public void onComplete(@NonNull Task<DataSnapshot> task) {
             try {
-                if(task.isSuccessful()) {
-                    //final DataSnapshot result = task.getResult();
-                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                if(task.isSuccessful())
+                    for(DataSnapshot snapshot : Objects.requireNonNull(task.getResult()).getChildren())
                         alarms.add(snapshot.getValue(Alarm.class));
-                }
                 else
                     throw Objects.requireNonNull(task.getException());
             } catch (Exception e) {

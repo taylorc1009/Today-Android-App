@@ -2,6 +2,10 @@ package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -25,6 +29,8 @@ public class AlarmActivity extends AppCompatActivity {
     //Create an instance of database utilities to get the alarm data from the database
     DatabaseUtilities alarmUtils = new DatabaseUtilities();
     Alarm alarm = new Alarm();
+
+    AlarmManager alarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,16 @@ public class AlarmActivity extends AppCompatActivity {
                                 assert alarm != null;
                                 if(alarm.getDays() == null || alarm.getDays().equals("")) {
                                     ring = true;
+                                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                                     alarmUtils.delete(id);
+                                    Intent alarmIntent = new Intent(getApplicationContext(), AlarmRing.class);
+                                    alarmIntent.putExtra("alarmID", id);
+                                    alarmIntent.setAction("com.app.today.FireAlarm");
+                                    PendingIntent alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+                                    if(alarmSender != null) {
+                                        alarmManager.cancel(alarmSender);
+                                        alarmSender.cancel();
+                                    }
                                 } else {
                                     String[] tokenized = alarm.getDays().split(" ");
                                     Calendar time = Calendar.getInstance();
@@ -111,6 +126,7 @@ public class AlarmActivity extends AppCompatActivity {
 
     private void goHome() {
         Intent mainActivity = new Intent(AlarmActivity.this, MainActivity.class);
+        mainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainActivity);
         finish();
     }
