@@ -122,6 +122,7 @@ public class AlarmSystem extends AppCompatActivity {
                 if(s.length() > 0) {
                     hr = Integer.parseInt(s.toString());
                     //If the hour is out of range, validate
+                    //Else if it's in range and complete, move to minute field
                     if(!(hr >= 0 && hr <= 23 && s.length() <= 2)) {
                         //If number length is greater than 0, simulate backspace pressed
                         //Else clear the output field
@@ -130,6 +131,10 @@ public class AlarmSystem extends AppCompatActivity {
                             hour.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         else
                             hour.getText().clear();
+                    }
+                    else if(hr >= 0 && hr <= 23 && s.length() == 2) {
+                        hour.clearFocus();
+                        minute.requestFocus();
                     }
                 }
                 else

@@ -179,6 +179,7 @@
                     android:inputType="number"
                     android:textAlignment="center"
                     android:textSize="25sp"
+                    android:focusableInTouchMode="true"
                     app:layout_constraintStart_toStartOf="@+id/guideline"
                     app:layout_constraintTop_toTopOf="@+id/hour" />
 
