@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -324,6 +325,7 @@ public class AlarmSystem extends AppCompatActivity {
         timeTxt.setId(12+alarmTable.getChildCount());
         timeTxt.setText(time);
         timeTxt.setTextSize(30);
+        timeTxt.setTypeface(null, Typeface.BOLD);
         rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //Same as the timeTxt except here we're building the string we want to display
