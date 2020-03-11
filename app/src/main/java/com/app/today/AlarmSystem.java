@@ -262,7 +262,7 @@ public class AlarmSystem extends AppCompatActivity {
                 //Else show there aren't any in the UI
                 if(alarmList != null && !alarmList.isEmpty()) {
                     for(Alarm alarm : alarmList) {
-                        createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        createTableLayoutRow(alarm.getId(), alarm.getTime(), alarm.getLabel(), alarm.getDays());
                         //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
                         //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                     }
@@ -305,19 +305,21 @@ public class AlarmSystem extends AppCompatActivity {
     }
 
     //Create a new row to add to the TableLayout in the alarm UI
-    private void createTableLayoutRow(String time, String label, String days) { //label is unused as of now, will be used later
+    private void createTableLayoutRow(final String id, String time, String label, String days) {
         //Create a new row and add it to the TableLayout with the specified width and height
-        TableRow alarmRow = new TableRow(getApplicationContext());
+        final TableRow alarmRow = new TableRow(getApplicationContext());
         alarmRow.setId(10+alarmTable.getChildCount());
+        //Store the ID of the alarm displayed in this row to allow us to know which one the user chooses to delete later
+        alarmRow.setTag(id);
         alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
-        //Create a ConstraintLayout to add to the TableRow, to allow us to constrain the views to where we need them
+        //Create a ConstraintLayout added to the TableRow to allow us to constrain the views to where we need them
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
         rowLayout.setId(11+alarmTable.getChildCount());
         rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         alarmRow.addView(rowLayout);
 
-        //Create a TextView for the alarm time and define its parameters
+        //Create a TextView for the alarm time and define its visual parameters
         TextView timeTxt = new TextView(getApplicationContext());
         timeTxt.setId(12+alarmTable.getChildCount());
         timeTxt.setText(time);
@@ -358,18 +360,63 @@ public class AlarmSystem extends AppCompatActivity {
         daysTxt.setTypeface(null, Typeface.ITALIC);
         rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
+        //Create a TextView for the alarm time and define its visual parameters only if the label isn't empty
+        TextView labelTxt = new TextView(getApplicationContext());
+        if(!(label == null || label.equals(""))) {
+            labelTxt.setId(14 + alarmTable.getChildCount());
+            String output = "Label:" + label;
+            labelTxt.setText(output);
+            labelTxt.setTextSize(12);
+            labelTxt.setTypeface(null, Typeface.ITALIC);
+            rowLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        }
+        else
+            //Else set to null for it to be deleted
+            labelTxt = null;
+
         //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
         ConstraintSet setLayout = new ConstraintSet();
+        //We need to clone the current condition of the ConstraintLayout to the Set before we can add constraints to them
         setLayout.clone(rowLayout);
 
-        //Use setLayout to constrain the TextView end to the ConstraintLayout end, and top to top
+        //Use setLayout to constrain the timeTxt start to the ConstraintLayout start, and top to top
         setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
         setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
+        //Constrains the daysTxt to the end and top of timeTxt
         setLayout.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
 
+        //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
+        if(!(label == null || label.equals(""))) {
+            setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+            setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
+        }
+
         setLayout.applyTo(rowLayout);
+
+        //A button used to delete an alarm shown in the list
+        ImageView deleteBtn = new ImageView(getApplicationContext());
+        deleteBtn.setId(15+alarmTable.getChildCount());
+        deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
+        deleteBtn.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
+        alarmRow.addView(deleteBtn, 90, 90);
+
+        //Add an OnClickListener to the delete button
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Delete the alarm from the database using the ID stored in the view tag
+                alarms.delete(String.valueOf(alarmRow.getTag()));
+
+                //To cancel the alarm in the AlarmManager, we need to recreate it exactly how it is created when it's scheduled
+                //Refer to scheduleAlarm method to see how it is made
+                Intent alarmIntent = new Intent(getApplicationContext(), AlarmRing.class);
+                alarmIntent.putExtra("alarmID", String.valueOf(alarmRow.getTag()));
+                alarmIntent.setAction("com.app.today.FireAlarm");
+                alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT));
+                retrieveAlarms();
+            }
+        });
     }
 
     //Empties the view to add an alarm
@@ -396,11 +443,6 @@ public class AlarmSystem extends AppCompatActivity {
         alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.add));
     }
     private void scheduleAlarm(Alarm alarm, long alarmTime) {
-
-        /* TODO perhaps the best way to do this is set the alarm to trigger every day, then once that time in the
-        *   day has come, pull the alarm matching the ID we want from the database and check if it is due
-        *   to ring on the current day. */
-
         //Creates the intent of the activity to be started upon alarm ring
         Intent alarmIntent = new Intent(this, AlarmRing.class);
         //Give the intent a parameter with the ID of the alarm so it can get the data it needs from the database when it rings
@@ -410,12 +452,7 @@ public class AlarmSystem extends AppCompatActivity {
         //Create a PendingIntent for the above intent to be started when the alarm should ring
         alarmSender = PendingIntent.getBroadcast(this.getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
 
-        //TODO upon ring, transition to alarm activity
-        //  perhaps pull an id and ring the alarm matching that id, alarms could be stored
-        //  in a database, plus it might be easier to view and delete them this way?
-
         Log.i("? attempted to invoke AlarmManager with ID", alarm.getId());
-
         //Get an instance of the alarm manager to store our alarm
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
@@ -423,37 +460,7 @@ public class AlarmSystem extends AppCompatActivity {
         //the alarm is meant to ring that day, if not then cancel the process
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarmTime, AlarmManager.INTERVAL_DAY, alarmSender);
 
-        //TODO Currently this will fire the alarm every day, but if you want it to ring on set days every week, it will ring corresponding to the amount of days
-        //  you checked at the same time. So say you checked 4 days, it will fire 4 alarms at the same time every day. Either set the interval back to 7 so
-        //  the alarm for that day doesn't fire until next week, or only schedule it if it hasn't already been added to the database, i.e. alarm ID doesn't
-        //  already exist
-
         //Store the alarm data in the database
         alarms.store(alarm);
     }
-
-    /* Possible alarm operators
-
-    public void cancelPeriodicSchedule(PendingIntent sender) {
-        if (am != null) {
-            if (sender != null) {
-                am.cancel(sender);
-                sender.cancel();
-            }
-        }
-        // Deactivate Broadcast Receiver to stop receiving broadcasts
-        deactivateBroadcastreceiver();
-    }
-    private void activateBroadcastReceiver() {
-        PackageManager pm = context.getPackageManager();
-        ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
-        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        Toast.makeText(context, "activated", Toast.LENGTH_LONG).show();
-    }
-    private void deactivateBroadcastreceiver() {
-        PackageManager pm = context.getPackageManager();
-        ComponentName componentName = new ComponentName(context, AlarmReceiver.class);
-        pm.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-        Toast.makeText(context, "cancelled", Toast.LENGTH_LONG).show();
-    }*/
 }

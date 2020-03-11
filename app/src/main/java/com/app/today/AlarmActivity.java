@@ -28,7 +28,7 @@ public class AlarmActivity extends AppCompatActivity {
     private boolean ring = false;
 
     //Create an instance of database utilities to get the alarm data from the database
-    DatabaseUtilities alarmUtils = new DatabaseUtilities();
+    DatabaseUtilities alarms = new DatabaseUtilities();
     Alarm alarm = new Alarm();
 
     @Override
@@ -56,7 +56,7 @@ public class AlarmActivity extends AppCompatActivity {
             assert id != null;
             Log.i("alarm id", id);
             alarm = null;
-            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarmUtils.myRef);
+            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
             final Task<DataSnapshot> load = firebaseQuery.start();
             load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
                 @Override
@@ -69,7 +69,7 @@ public class AlarmActivity extends AppCompatActivity {
                                 assert alarm != null;
                                 if (alarm.getDays() == null) {
                                     ring = true;
-                                    alarmUtils.delete(id);
+                                    //alarms.delete(id);
                                 } else {
                                     String[] tokenized = alarm.getDays().split(" ");
                                     Calendar time = Calendar.getInstance();

@@ -25,7 +25,6 @@ class DatabaseUtilities {
 
     void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
-        //updateLocal();
     }
     String newKey() {
         return myRef.push().getKey();
