@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 int weatherID = Integer.parseInt(weather.getString("id"));
-                //Based on the weather ID, this will determine which drawable to use
+                //Based on the weather ID, this will determine which drawable weather icon to use
                 if(weatherID == 800)
                     weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
                 else if(weatherID == 801)
