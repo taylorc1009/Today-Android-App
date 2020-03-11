@@ -272,7 +272,6 @@ public class AlarmSystem extends AppCompatActivity {
                     updateAlarmsView(View.GONE, View.GONE, View.VISIBLE);
             }
         });
-        //Log.i("??? has?", )
     }
 
     //Used to show/hide parts of the UI based on the parameters
@@ -315,16 +314,14 @@ public class AlarmSystem extends AppCompatActivity {
         //Create a ConstraintLayout to add to the TableRow, to allow us to constrain the views to where we need them
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
         rowLayout.setId(11+alarmTable.getChildCount());
-        //rowLayout.setLayoutParams(new TableRow.LayoutParams(800, 400));
         rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debugging to check the dimensions of the ConstraintLayout
-        alarmRow.addView(rowLayout);//, TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+        alarmRow.addView(rowLayout);
 
         //Create a TextView for the alarm time and define its parameters
         TextView timeTxt = new TextView(getApplicationContext());
         timeTxt.setId(12+alarmTable.getChildCount());
         timeTxt.setText(time);
-        timeTxt.setTextSize(30);
+        timeTxt.setTextSize(40);
         timeTxt.setTypeface(null, Typeface.BOLD);
         rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
@@ -369,13 +366,8 @@ public class AlarmSystem extends AppCompatActivity {
         setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
         setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
-        setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
-        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
-
-        //setLayout.constrainWidth(timeTxt.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-        //setLayout.constrainHeight(timeTxt.getId(), ConstraintSet.WRAP_CONTENT);
-
-        Log.i("parent id = 0???", String.valueOf(ConstraintSet.PARENT_ID)); //this is always returning 0, why?
+        setLayout.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
 
         setLayout.applyTo(rowLayout);
     }

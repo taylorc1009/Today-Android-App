@@ -27,7 +27,8 @@ public class AlarmActivity extends AppCompatActivity {
     //Used to determine whether the alarm should ring today
     private boolean ring = false;
 
-    DatabaseUtilities alarms = new DatabaseUtilities();
+    //Create an instance of database utilities to get the alarm data from the database
+    DatabaseUtilities alarmUtils = new DatabaseUtilities();
     Alarm alarm = new Alarm();
 
     @Override
@@ -43,9 +44,6 @@ public class AlarmActivity extends AppCompatActivity {
         alarmTime = findViewById(R.id.alarmTime);
         alarmLabel = findViewById(R.id.alarmLabel);
 
-        //Create an instance of database utilities to get the alarm data from the database
-        DatabaseUtilities alarms = new DatabaseUtilities();
-
         //Get this intents extras
         Bundle extras = getIntent().getExtras();
 
@@ -55,33 +53,10 @@ public class AlarmActivity extends AppCompatActivity {
             //Get the alarm ID from the intent extras
             final String id = extras.getString("alarmID");
 
-            //Verify the alarm ID exists in the database
-            /*if(alarms.has(id)) {
-                assert id != null;
-                Log.i("! AlarmActivity started with ID", id);
-                Alarm alarm = alarms.get(id);
-                Log.i("? days", alarm.getTime() + ", " + alarm.getDays());
-                if (alarm.getDays() == null) {
-                    ring = true;
-                    alarms.delete(id);
-                } else {
-                    String[] tokenized = alarm.getDays().split(" ");
-                    Calendar time = Calendar.getInstance();
-                    for (String s : tokenized)
-                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
-                            ring = true;
-                }
-                if (ring)
-                    displayAlarm(alarm.getTime(), alarm.getLabel());
-            } else {
-                assert id != null;
-                Log.e("? alarms.has id = false", id);
-                goHome();
-            }*/
             assert id != null;
             Log.i("alarm id", id);
             alarm = null;
-            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
+            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarmUtils.myRef);
             final Task<DataSnapshot> load = firebaseQuery.start();
             load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
                 @Override
@@ -91,7 +66,20 @@ public class AlarmActivity extends AppCompatActivity {
                         for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
                             if(Objects.requireNonNull(snapshot.getValue(Alarm.class)).getId().equals(id)) {
                                 alarm = snapshot.getValue(Alarm.class);
-                                displayAlarm();
+                                assert alarm != null;
+                                if (alarm.getDays() == null) {
+                                    ring = true;
+                                    alarmUtils.delete(id);
+                                } else {
+                                    String[] tokenized = alarm.getDays().split(" ");
+                                    Calendar time = Calendar.getInstance();
+                                    for (String s : tokenized)
+                                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
+                                            ring = true;
+                                }
+                                if (ring)
+                                    displayAlarm();
+                                break;
                             }
                         }
                     }
