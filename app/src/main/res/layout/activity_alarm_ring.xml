@@ -37,11 +37,11 @@
         android:id="@+id/alarmLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:text="@string/alarmLabel"
         android:textColor="#FFFFFF"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
-        app:layout_constraintHorizontal_bias="0.519"
         app:layout_constraintStart_toStartOf="@+id/alarmIcon"
         app:layout_constraintTop_toBottomOf="@+id/alarmIcon" />
 

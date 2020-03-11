@@ -20,18 +20,19 @@ class DatabaseUtilities {
     DatabaseReference myRef = database.getReference("alarms");
 
     List<Alarm> alarms = new ArrayList<>();
-    private Alarm alarm;
-    private boolean found = false;
 
     void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
     }
+
     String newKey() {
         return myRef.push().getKey();
     }
+
     void delete(String id) {
         myRef.child(id).removeValue();
     }
+
     static class FirebaseQuery {
 
         private DatabaseReference ref;

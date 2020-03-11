@@ -9,14 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Objects;
 
 public class AlarmActivity extends AppCompatActivity {
@@ -28,7 +23,7 @@ public class AlarmActivity extends AppCompatActivity {
     private boolean ring = false;
 
     //Create an instance of database utilities to get the alarm data from the database
-    DatabaseUtilities alarms = new DatabaseUtilities();
+    DatabaseUtilities alarmUtils = new DatabaseUtilities();
     Alarm alarm = new Alarm();
 
     @Override
@@ -56,29 +51,31 @@ public class AlarmActivity extends AppCompatActivity {
             assert id != null;
             Log.i("alarm id", id);
             alarm = null;
-            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
+            DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarmUtils.myRef);
             final Task<DataSnapshot> load = firebaseQuery.start();
             load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                     super.onComplete(task);
                     if(task.isSuccessful()) {
-                        for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
+                        for(DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
                             if(Objects.requireNonNull(snapshot.getValue(Alarm.class)).getId().equals(id)) {
                                 alarm = snapshot.getValue(Alarm.class);
                                 assert alarm != null;
-                                if (alarm.getDays() == null) {
+                                if(alarm.getDays() == null || alarm.getDays().equals("")) {
                                     ring = true;
-                                    //alarms.delete(id);
+                                    alarmUtils.delete(id);
                                 } else {
                                     String[] tokenized = alarm.getDays().split(" ");
                                     Calendar time = Calendar.getInstance();
-                                    for (String s : tokenized)
-                                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
+                                    for(String s : tokenized)
+                                        if(time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
                                             ring = true;
                                 }
                                 if (ring)
                                     displayAlarm();
+                                else
+                                    finish();
                                 break;
                             }
                         }

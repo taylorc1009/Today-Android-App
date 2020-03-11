@@ -364,7 +364,7 @@ public class AlarmSystem extends AppCompatActivity {
         TextView labelTxt = new TextView(getApplicationContext());
         if(!(label == null || label.equals(""))) {
             labelTxt.setId(14 + alarmTable.getChildCount());
-            String output = "Label:" + label;
+            String output = "Label: " + label;
             labelTxt.setText(output);
             labelTxt.setTextSize(12);
             labelTxt.setTypeface(null, Typeface.ITALIC);
