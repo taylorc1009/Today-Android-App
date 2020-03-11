@@ -1,9 +1,4 @@
 /* TODO
-*   Add the users alarm data to a database and display it in the AlarmSystem table
-*   - Still need to be able to delete and edit alarms (could use alarmAdd UI to edit?) from database and AlarmManager
-*   - Alarm data won't display in the TableLayout properly
-*   - Try to get next alarm to display on the homepage
-*   - Alarm snooze? if not maybe add a message saying the snooze button isn't good for you
 *   Diagrams (class/flow/wireframe) and report
 *   Finish internal commentary
 *  */
@@ -27,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;

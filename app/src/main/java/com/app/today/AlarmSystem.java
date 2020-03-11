@@ -374,33 +374,12 @@ public class AlarmSystem extends AppCompatActivity {
             //Else set to null for it to be deleted
             labelTxt = null;
 
-        //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
-        ConstraintSet setLayout = new ConstraintSet();
-        //We need to clone the current condition of the ConstraintLayout to the Set before we can add constraints to them
-        setLayout.clone(rowLayout);
-
-        //Use setLayout to constrain the timeTxt start to the ConstraintLayout start, and top to top
-        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
-        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
-
-        //Constrains the daysTxt to the end and top of timeTxt
-        setLayout.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
-        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
-
-        //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
-        if(!(label == null || label.equals(""))) {
-            setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
-            setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
-        }
-
-        setLayout.applyTo(rowLayout);
-
         //A button used to delete an alarm shown in the list
         ImageView deleteBtn = new ImageView(getApplicationContext());
         deleteBtn.setId(15+alarmTable.getChildCount());
         deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
         deleteBtn.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
-        alarmRow.addView(deleteBtn, 90, 90);
+        rowLayout.addView(deleteBtn, 75, 75);
 
         //Add an OnClickListener to the delete button
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -417,6 +396,31 @@ public class AlarmSystem extends AppCompatActivity {
                 retrieveAlarms();
             }
         });
+
+        //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
+        ConstraintSet setLayout = new ConstraintSet();
+        //We need to clone the current condition of the ConstraintLayout to the Set before we can add constraints to them
+        setLayout.clone(rowLayout);
+
+        //Use setLayout to constrain the timeTxt start to the ConstraintLayout start, and top to top
+        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+
+        //Constrains the daysTxt to the end and top of timeTxt
+        setLayout.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
+
+        //Constrains the deleteBtn to the end of daysTxt
+        setLayout.connect(deleteBtn.getId(), ConstraintSet.LEFT, daysTxt.getId(), ConstraintSet.RIGHT, 8);
+        setLayout.connect(deleteBtn.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+
+        //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
+        if(!(label == null || label.equals(""))) {
+            setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+            setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
+        }
+
+        setLayout.applyTo(rowLayout);
     }
 
     //Empties the view to add an alarm
