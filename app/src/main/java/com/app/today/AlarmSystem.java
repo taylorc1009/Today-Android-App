@@ -95,11 +95,14 @@ public class AlarmSystem extends AppCompatActivity {
         //Button to show the CardView for adding alarms
         alarmAdd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(addCard.getVisibility() == View.GONE)
+                if(addCard.getVisibility() == View.GONE) {
                     addCard.setVisibility(View.VISIBLE);
-                    //change add button image to close/X
-                else
+                    alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.cancel));
+                }
+                else {
                     addCard.setVisibility(View.GONE);
+                    alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.add));
+                }
             }
         });
 
@@ -392,6 +395,7 @@ public class AlarmSystem extends AppCompatActivity {
             chkSun.toggle();
         alarmLabel.getText().clear();
         addCard.setVisibility(View.GONE);
+        alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.add));
     }
     private void scheduleAlarm(Alarm alarm, long alarmTime) {
 

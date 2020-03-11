@@ -306,8 +306,8 @@
 
                 <ImageView
                     android:id="@+id/alarmMore"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:backgroundTint="#00FFFFFF"
                     android:clickable="true"
                     android:focusable="true"
@@ -316,7 +316,7 @@
                     app:fabSize="auto"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/alarmIcon"
-                    app:srcCompat="@android:drawable/ic_input_add" />
+                    app:srcCompat="@drawable/add" />
 
 
                 <Button
