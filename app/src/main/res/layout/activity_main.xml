@@ -163,7 +163,7 @@
                     android:contentDescription="@string/imageDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@android:drawable/ic_menu_today" />
+                    app:srcCompat="@drawable/calendar" />
 
                 <TextView
                     android:id="@+id/calTitle"
@@ -291,7 +291,7 @@
                     android:contentDescription="@string/imageDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
+                    app:srcCompat="@drawable/alarm" />
 
                 <TextView
                     android:id="@+id/alarmTitle"

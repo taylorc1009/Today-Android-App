@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 //Add the objects main values into a list of strings to be displayed
                 weatherDetails.add(weather.getString("description"));
                 weatherDetails.add(main.getString("temp") + "°C");
-                weatherDetails.add(main.getString("temp_min") + "°C min - " + main.getString("temp_max") + "°C max");
+                weatherDetails.add(main.getString("temp_min") + "°C min / " + main.getString("temp_max") + "°C max");
                 weatherDetails.add(wind.getString("speed") + " mph winds");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 

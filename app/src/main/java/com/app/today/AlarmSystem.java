@@ -308,6 +308,7 @@ public class AlarmSystem extends AppCompatActivity {
         //Create a ConstraintLayout to add to the TableRow, to allow us to constrain the views to where we need them
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
         rowLayout.setId(11+alarmTable.getChildCount());
+        //rowLayout.setLayoutParams(new TableRow.LayoutParams(800, 400));
         rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debugging to check the dimensions of the ConstraintLayout
         alarmRow.addView(rowLayout);//, TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
@@ -362,8 +363,8 @@ public class AlarmSystem extends AppCompatActivity {
         setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
-        /*setLayout.constrainDefaultWidth(alarmRow.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-        setLayout.constrainDefaultHeight(alarmRow.getId(), ConstraintSet.WRAP_CONTENT);*/
+        //setLayout.constrainWidth(timeTxt.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+        //setLayout.constrainHeight(timeTxt.getId(), ConstraintSet.WRAP_CONTENT);
 
         Log.i("parent id = 0???", String.valueOf(ConstraintSet.PARENT_ID)); //this is always returning 0, why?
 
