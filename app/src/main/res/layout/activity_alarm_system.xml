@@ -26,8 +26,8 @@
 
         <ImageView
             android:id="@+id/alarmAdd"
-            android:layout_width="43dp"
-            android:layout_height="43dp"
+            android:layout_width="41dp"
+            android:layout_height="41dp"
             android:clickable="true"
             android:contentDescription="@string/imageDescription"
             android:focusable="true"
@@ -41,8 +41,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/alarmTitle"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:textColor="@color/white"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/alarmBack"

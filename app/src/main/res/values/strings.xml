@@ -30,7 +30,8 @@
     <string name="newsTitle">News | headlines…</string>
     <string name="newsError">"Couldn't retrieve headlines…"</string>
 
-    <string name="alarmTitle">Alarms</string>
+    <string name="alarmTitle">ALARMS</string>
+    <string name="alarmHomeTitle">Alarms</string>
     <string name="alarmAdd">Add an alarm</string>
     <string name="alarmEmpty">No alarms…</string>
     <string name="hourHint">23</string>
