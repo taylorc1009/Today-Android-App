@@ -334,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
         //onPostExecutes shows the results to the user
         @Override
         protected void onPostExecute(List<String> result) {
+            //Clean the table before new data is presented
+            newsTable.removeAllViews();
             //If results aren't empty, display them in the headline table
             //Else show headline error
             if(result != null) {
