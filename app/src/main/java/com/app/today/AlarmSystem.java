@@ -308,11 +308,9 @@ public class AlarmSystem extends AppCompatActivity {
         //Create a ConstraintLayout to add to the TableRow, to allow us to constrain the views to where we need them
         ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
         rowLayout.setId(11+alarmTable.getChildCount());
+        rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         rowLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)); //only using for debugging to check the dimensions of the ConstraintLayout
         alarmRow.addView(rowLayout);//, TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-
-        //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
-        ConstraintSet setLayout = new ConstraintSet();
 
         //Create a TextView for the alarm time and define its parameters
         TextView timeTxt = new TextView(getApplicationContext());
@@ -320,9 +318,6 @@ public class AlarmSystem extends AppCompatActivity {
         timeTxt.setText(time);
         timeTxt.setTextSize(30);
         rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-        //Use setLayout to constrain the TextView end to the ConstraintLayout end, and top to top
-        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
-        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
         //Same as the timeTxt except here we're building the string we want to display
         TextView daysTxt = new TextView(getApplicationContext());
@@ -355,12 +350,18 @@ public class AlarmSystem extends AppCompatActivity {
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
         rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+
+        //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
+        ConstraintSet setLayout = new ConstraintSet();
+        setLayout.clone(rowLayout);
+
+        //Use setLayout to constrain the TextView end to the ConstraintLayout end, and top to top
+        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
+        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+
         setLayout.connect(daysTxt.getId(), ConstraintSet.RIGHT, rowLayout.getId(), ConstraintSet.RIGHT, 0);
         setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
-        //Clones the constraints of the views we defined into the ConstraintLayout
-        setLayout.clone(rowLayout);
-        rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         /*setLayout.constrainDefaultWidth(alarmRow.getId(), ConstraintSet.MATCH_CONSTRAINT_SPREAD);
         setLayout.constrainDefaultHeight(alarmRow.getId(), ConstraintSet.WRAP_CONTENT);*/
 
