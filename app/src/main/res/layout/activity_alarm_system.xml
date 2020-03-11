@@ -188,13 +188,24 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/hour">
 
+                    <TextView
+                        android:id="@+id/repeatOnTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repeatOn"
+                        android:textStyle="italic"
+                        android:textSize="17sp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <CheckBox
                         android:id="@+id/chkMon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/Mon"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@id/repeatOnTxt" />
 
                     <CheckBox
                         android:id="@+id/chkTues"
@@ -253,6 +264,7 @@
                     android:hint="@string/labelHint"
                     android:inputType="textAutoCorrect"
                     android:textSize="18sp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/daysGroup" />
 
                 <ImageView
@@ -261,10 +273,10 @@
                     android:layout_height="25dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:tint="@color/black"
+                    android:tint="@color/colorPrimaryDark"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="@android:drawable/ic_menu_save"
+                    app:srcCompat="@drawable/save"
                     android:contentDescription="@string/imageDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

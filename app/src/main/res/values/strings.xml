@@ -39,6 +39,7 @@
     <string name="timeSep">:</string>
     <string name="minuteHint">59</string>
     <string name="labelHint">Alarm label (length 100)</string>
+    <string name="repeatOn">Repeat every…</string>
     <string name="Mon">Monday</string>
     <string name="Tues">Tuesday</string>
     <string name="Wed">Wednesday</string>
