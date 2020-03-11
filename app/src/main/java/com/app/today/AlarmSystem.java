@@ -362,17 +362,17 @@ public class AlarmSystem extends AppCompatActivity {
 
         //Create a TextView for the alarm time and define its visual parameters only if the label isn't empty
         TextView labelTxt = new TextView(getApplicationContext());
-        if(!(label == null || label.equals(""))) {
-            labelTxt.setId(14 + alarmTable.getChildCount());
-            String output = "Label: " + label;
-            labelTxt.setText(output);
-            labelTxt.setTextSize(12);
-            labelTxt.setTypeface(null, Typeface.ITALIC);
-            rowLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-        }
+        labelTxt.setId(14 + alarmTable.getChildCount());
+        String output;
+        //Shows alarm label only if it's defined, otherwise indicate there isn't one
+        if(!(label == null || label.equals("")))
+            output = "Label: " + label;
         else
-            //Else set to null for it to be deleted
-            labelTxt = null;
+            output = "Label: (n/a)";
+        labelTxt.setText(output);
+        labelTxt.setTextSize(12);
+        labelTxt.setTypeface(null, Typeface.ITALIC);
+        rowLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //A button used to delete an alarm shown in the list
         ImageView deleteBtn = new ImageView(getApplicationContext());
@@ -415,11 +415,10 @@ public class AlarmSystem extends AppCompatActivity {
         setLayout.connect(deleteBtn.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
 
         //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
-        if(!(label == null || label.equals(""))) {
-            setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
-            setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
-        }
+        setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
 
+        //Applies our constraints we defined using setLayout.connect
         setLayout.applyTo(rowLayout);
     }
 
