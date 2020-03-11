@@ -116,15 +116,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(alarmActivity);
                 }
             });
-            button = findViewById(R.id.button);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent alarmActivity = new Intent(MainActivity.this, AlarmActivity.class);
-                    startActivity(alarmActivity);
-                    finish();
-                }
-            });
         }
     }
 
