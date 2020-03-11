@@ -47,9 +47,9 @@ public class AlarmActivity extends AppCompatActivity {
         if(extras != null) {
             //Get the alarm ID from the intent extras
             final String id = extras.getString("alarmID");
-
             assert id != null;
-            Log.i("alarm id", id);
+            Log.i("! AlarmActivity initiated with ID", id);
+
             alarm = null;
             DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarmUtils.myRef);
             final Task<DataSnapshot> load = firebaseQuery.start();

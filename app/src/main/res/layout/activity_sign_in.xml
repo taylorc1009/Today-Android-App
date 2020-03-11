@@ -79,20 +79,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/registerExpand"
                 android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/regArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="18dp"
+                android:layout_width="22dp"
+                android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:contentDescription="@string/imageDescription"
                 android:interpolator="@android:anim/linear_interpolator"
+                android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/rExTxt"
                 app:layout_constraintStart_toEndOf="@id/rExTxt"
                 app:layout_constraintTop_toTopOf="@id/rExTxt"
-                app:srcCompat="@android:drawable/arrow_down_float" />
+                app:srcCompat="@drawable/expand" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -133,6 +135,7 @@
             android:background="#00FFFFFF"
             android:text="@string/signInBtn"
             android:textColor="#FFFFFF"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="@+id/password"
             app:layout_constraintTop_toBottomOf="@+id/registerGroup" />
     </androidx.constraintlayout.widget.ConstraintLayout>
