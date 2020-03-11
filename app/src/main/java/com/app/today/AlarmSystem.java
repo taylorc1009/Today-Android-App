@@ -358,6 +358,7 @@ public class AlarmSystem extends AppCompatActivity {
             daysOutput.append(" NON-REPEATING");
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
+        daysTxt.setTypeface(null, Typeface.ITALIC);
         rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
