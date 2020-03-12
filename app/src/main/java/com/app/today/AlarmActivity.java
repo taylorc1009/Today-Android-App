@@ -27,7 +27,6 @@ public class AlarmActivity extends AppCompatActivity {
 
     //Create an instance of database utilities to get the alarm data from the database
     DatabaseUtilities alarmUtils = new DatabaseUtilities();
-    Alarm alarm = new Alarm();
 
     //AlarmManager used to remove redundant alarms in this activity
     AlarmManager alarmManager;
@@ -39,6 +38,9 @@ public class AlarmActivity extends AppCompatActivity {
 
         //Hide the ActionBar
         Objects.requireNonNull(getSupportActionBar()).hide();
+
+        findViewById(R.id.ringLoading).setVisibility(View.VISIBLE);
+        findViewById(R.id.alarmRingGroup).setVisibility(View.GONE);
 
         //Initialize the UI attributes
         stopAlarm = findViewById(R.id.stopAlarm);
@@ -68,9 +70,10 @@ public class AlarmActivity extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         //Now we will iterate through our results to get the data matching the ID
                         for(DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
-                            if(Objects.requireNonNull(snapshot.getValue(Alarm.class)).getId().equals(id)) {
-                                alarm = snapshot.getValue(Alarm.class);
-                                assert alarm != null;
+                            Log.i("ring?", String.valueOf(ring));
+                            Alarm alarm = snapshot.getValue(Alarm.class);
+                            assert alarm != null;
+                            if(alarm.getId().equals(id)) {
                                 //If the user didn't specify a day in their alarm, continue
                                 //Else perform a check to see if the alarm is due to ring today
                                 if(alarm.getDays() == null || alarm.getDays().equals("")) {
@@ -115,15 +118,19 @@ public class AlarmActivity extends AppCompatActivity {
                                 //If the alarm was due to ring, do so
                                 //Else end this activity
                                 if (ring)
-                                    displayAlarm();
-                                else
+                                    displayAlarm(alarm);
+                                else {
+                                    goHome();
                                     finish();
+                                }
                                 break;
                             }
                         }
+                        Log.e("? alarm ID not found in the database", id);
+                        goHome();
                     }
                     else {
-                        Log.e("? Firebase Query error", "AlarmActivity ID = null or the ID to find doesn't exist in the table");
+                        Log.e("? Firebase Query error", "query failed");
                         goHome();
                     }
                 }
@@ -135,9 +142,11 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
     //Used to display the alarms data in the UI
-    private void displayAlarm() {
-        alarmTime.setText(alarm.getTime());
+    private void displayAlarm(Alarm alarm) {
+        findViewById(R.id.ringLoading).setVisibility(View.GONE);
+        findViewById(R.id.alarmRingGroup).setVisibility(View.VISIBLE);
 
+        alarmTime.setText(alarm.getTime());
         //Check if the user entered a label to prevent NullPointerException
         if(alarm.getLabel() != null)
             alarmLabel.setText(alarm.getLabel());

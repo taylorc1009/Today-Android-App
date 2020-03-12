@@ -191,7 +191,7 @@ public class AlarmSystem extends AppCompatActivity {
                 //Else highlight the EditText's red and ask for re-entry
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
                     //Build a time to compare the users requested time to the system time
-                    Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0); //Calendar.getInstance();
+                    Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0);
                     long now = System.currentTimeMillis();
                     //Store the time of the users alarm in milliseconds for the system to use
                     long alarmTime = validationDate.getTimeInMillis();
@@ -220,6 +220,7 @@ public class AlarmSystem extends AppCompatActivity {
                         //Update the UI
                         clearAddAlarmUI();
                         retrieveAlarms();
+                        DateUtilities.hideKeyboard(AlarmSystem.this);
                     }
                 }
                 else {

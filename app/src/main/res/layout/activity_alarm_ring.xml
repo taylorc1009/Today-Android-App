@@ -7,54 +7,77 @@
     android:background="#FF9D00"
     tools:context=".AlarmActivity">
 
-    <ImageView
-        android:id="@+id/alarmIcon"
+    <ProgressBar
+        android:id="@+id/ringLoading"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:contentDescription="@string/imageDescription"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/white"
+        android:indeterminateTintMode="src_in"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/alarmwhite" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/stopAlarm"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="84dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="@+id/alarmIcon"
-        app:layout_constraintTop_toBottomOf="@+id/alarmLabel"
-        app:srcCompat="@drawable/cancel" />
-
-    <TextView
-        android:id="@+id/alarmLabel"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/alarmRingGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/alarmLabel"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
-        app:layout_constraintStart_toStartOf="@+id/alarmIcon"
-        app:layout_constraintTop_toBottomOf="@+id/alarmIcon" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/alarmTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:text="@string/alarmTime"
-        android:textSize="50sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/alarmIcon"
-        app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
-        app:layout_constraintHorizontal_bias="0.568"
-        app:layout_constraintStart_toStartOf="@+id/alarmIcon" />
+        <ImageView
+            android:id="@+id/alarmIcon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/imageDescription"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/alarmwhite" />
+
+        <ImageView
+            android:id="@+id/stopAlarm"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="84dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="@+id/alarmIcon"
+            app:layout_constraintTop_toBottomOf="@+id/alarmLabel"
+            app:srcCompat="@drawable/cancel" />
+
+        <TextView
+            android:id="@+id/alarmLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/alarmLabel"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
+            app:layout_constraintStart_toStartOf="@+id/alarmIcon"
+            app:layout_constraintTop_toBottomOf="@+id/alarmIcon" />
+
+        <TextView
+            android:id="@+id/alarmTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:text="@string/alarmTime"
+            android:textColor="@color/white"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/alarmIcon"
+            app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
+            app:layout_constraintStart_toStartOf="@+id/alarmIcon" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
