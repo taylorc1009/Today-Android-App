@@ -51,11 +51,7 @@ public class MainActivity extends AppCompatActivity {
     TableLayout calTable, newsTable;
 
     //Used to get and store weather details
-    private List<String> weatherDetails = new ArrayList<>();
     private static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
-
-    //Used to store calendar events
-    private List<Event> calendar = new ArrayList<>();
 
     //Used to verify Firebase sign in
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -137,13 +133,16 @@ public class MainActivity extends AppCompatActivity {
                     new weatherTask().execute();
                     Toast.makeText(MainActivity.this, "! INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                 }
+                return true;
             case R.id.action_refreshCalendar:
                 //Refreshes the calendar
                 if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                     updateCalendarView();
+                return true;
             case R.id.action_refreshNews:
                 //Refreshes the news headlines
                 new headlineReceiver().execute();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -209,6 +208,8 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
                 long updatedAt = jsonObj.getLong("dt");
 
+                List<String> weatherDetails = new ArrayList<>();
+
                 //Add the objects main values into a list of strings to be displayed
                 weatherDetails.add(weather.getString("description"));
                 weatherDetails.add(main.getString("temp") + "°C");
@@ -267,14 +268,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Used to handle the response from the CalendarContentResolver
     private void updateCalendarView() {
-        //First, clear the table of calendar events in the UI and any currently stored events
+        //First, clear the table of calendar events in the UI
         calTable.removeAllViews();
-        if(calendar != null)
-            calendar.clear();
 
         //Create a CalendarContentResolver to query and return the events of the calendar
         CalendarContentResolver resolver = new CalendarContentResolver();
-        calendar = resolver.getCalendar(this);
+        List<Event> calendar = resolver.getCalendar(this);
 
         //If the calendar permission was granted, then this should continue
         //Else show error message
