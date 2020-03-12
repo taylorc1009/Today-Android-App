@@ -1,7 +1,3 @@
-/* TODO
-*   Diagrams (class/flow/wireframe) and report
-*  */
-
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
