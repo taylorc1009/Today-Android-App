@@ -85,7 +85,6 @@ public class AlarmActivity extends AppCompatActivity {
                                     //need to make an exact PendingIntent which corresponds to the one
                                     //stored so the Alarm Manager can find and delete it
                                     alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                                    alarmUtils.delete(id);
                                     Intent alarmIntent = new Intent(getApplicationContext(), AlarmRing.class);
                                     alarmIntent.putExtra("alarmID", id);
                                     alarmIntent.setAction("com.app.today.FireAlarm");
@@ -100,6 +99,7 @@ public class AlarmActivity extends AppCompatActivity {
                                     } catch (NullPointerException e) {
                                         Log.e("? Local PendingIntent was null", "new instance of AlarmManager?");
                                     }
+                                    alarmUtils.delete(id);
                                 } else {
                                     //The data type of the Calendar days are integers, I had to make a list
                                     //of which days the user checked and convert it into a string for
@@ -111,9 +111,12 @@ public class AlarmActivity extends AppCompatActivity {
 
                                     //For every day the user check, compare them to the current day integer
                                     //value and determine if the alarm is due to ring
-                                    for(String s : tokenized)
-                                        if(time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
+                                    for(String s : tokenized) {
+                                        if (time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s)) {
                                             ring = true;
+                                            break;
+                                        }
+                                    }
                                 }
                                 //If the alarm was due to ring, do so
                                 //Else end this activity
@@ -126,8 +129,10 @@ public class AlarmActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-                        Log.e("? alarm ID not found in the database", id);
-                        goHome();
+                        if(!ring) {
+                            Log.e("? alarm ID not found in the database", id);
+                            goHome();
+                        }
                     }
                     else {
                         Log.e("? Firebase Query error", "query failed");

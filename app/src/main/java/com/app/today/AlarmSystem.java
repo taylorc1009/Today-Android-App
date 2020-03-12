@@ -470,7 +470,7 @@ public class AlarmSystem extends AppCompatActivity {
         //Used to call the receiver AlarmRing when the intent should start
         alarmIntent.setAction("com.app.today.FireAlarm");
         //Create a PendingIntent for the above intent to be started when the alarm should ring
-        alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+        alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
 
         Log.i("? attempted to invoke AlarmManager with ID", alarm.getId());
         //Get an instance of the alarm manager to store our alarm
