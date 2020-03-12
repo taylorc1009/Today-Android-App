@@ -33,7 +33,7 @@
 
     <string name="alarmTitle">ALARMS</string>
     <string name="alarmHomeTitle">Alarms</string>
-    <string name="alarmAdd">Add an alarm</string>
+    <string name="alarmAddTitle">NEW ALARM</string>
     <string name="alarmEmpty">No alarms…</string>
     <string name="hourHint">23</string>
     <string name="timeSep">:</string>
