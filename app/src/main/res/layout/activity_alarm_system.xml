@@ -23,7 +23,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/back"
-            android:tint="@color/white"
             android:focusable="true" />
 
         <ImageView
@@ -35,7 +34,6 @@
             android:clickable="true"
             android:contentDescription="@string/imageDescription"
             android:focusable="true"
-            android:tint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/add" />

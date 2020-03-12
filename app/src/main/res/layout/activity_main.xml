@@ -317,9 +317,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/alarmIcon"
                     app:layout_constraintBottom_toBottomOf="@id/alarmIcon"
-                    app:srcCompat="@drawable/add" />
-
-
+                    app:srcCompat="@drawable/add"
+                    android:contentDescription="@string/imageDescription" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
