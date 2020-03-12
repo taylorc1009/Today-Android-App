@@ -308,7 +308,6 @@
                     android:id="@+id/alarmMore"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
-                    android:backgroundTint="#00FFFFFF"
                     android:clickable="true"
                     android:focusable="true"
                     android:tint="@color/colorPrimaryDark"
