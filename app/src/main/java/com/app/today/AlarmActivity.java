@@ -30,6 +30,7 @@ public class AlarmActivity extends AppCompatActivity {
     DatabaseUtilities alarmUtils = new DatabaseUtilities();
     Alarm alarm = new Alarm();
 
+    //AlarmManager used to remove redundant alarms in this activity
     AlarmManager alarmManager;
 
     @Override
@@ -49,14 +50,16 @@ public class AlarmActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
 
         //If the alarm ID is defined, continue
-        //Else return to the MainAtivity
+        //Else return to the MainActivity as we need an ID to continue
         if(extras != null) {
             //Get the alarm ID from the intent extras
             final String id = extras.getString("alarmID");
             assert id != null;
             Log.i("! AlarmActivity initiated with ID", id);
 
-            alarm = null;
+            //Now we will query the database using our Task
+            //This here is the main reason for our Task, if we didn't use it we would get a NullPointerException
+            //from having no alarm data to use
             DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarmUtils.myRef);
             final Task<DataSnapshot> load = firebaseQuery.start();
             load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
@@ -64,29 +67,50 @@ public class AlarmActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                     super.onComplete(task);
                     if(task.isSuccessful()) {
+                        //Now we will iterate through our results to get the data matching the ID
                         for(DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
                             if(Objects.requireNonNull(snapshot.getValue(Alarm.class)).getId().equals(id)) {
                                 alarm = snapshot.getValue(Alarm.class);
                                 assert alarm != null;
+                                //If the user didn't specify a day in their alarm, continue
+                                //Else perform a check to see if the alarm is due to ring today
                                 if(alarm.getDays() == null || alarm.getDays().equals("")) {
                                     ring = true;
+
+                                    //Because this alarm wasn't specified to repeat, we will delete it
+                                    //from both the table and the AlarmManager now
+                                    //Like the procedure for this in AlarmSystem (delete button), we
+                                    //need to make an exact PendingIntent which corresponds to the one
+                                    //stored so the Alarm Manager can find and delete it
                                     alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                                     alarmUtils.delete(id);
                                     Intent alarmIntent = new Intent(getApplicationContext(), AlarmRing.class);
                                     alarmIntent.putExtra("alarmID", id);
                                     alarmIntent.setAction("com.app.today.FireAlarm");
                                     PendingIntent alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+
+                                    //Again check if the PendingIntent actually exists first before we remove it
                                     if(alarmSender != null) {
                                         alarmManager.cancel(alarmSender);
                                         alarmSender.cancel();
                                     }
                                 } else {
+                                    //The data type of the Calendar days are integers, I had to make a list
+                                    //of which days the user checked and convert it into a string for
+                                    //Firebase to be able to store it, so I used a tokenizer to get them back
                                     String[] tokenized = alarm.getDays().split(" ");
+
+                                    //Get the current time (Calendar instance)
                                     Calendar time = Calendar.getInstance();
+
+                                    //For every day the user check, compare them to the current day integer
+                                    //value and determine if the alarm is due to ring
                                     for(String s : tokenized)
                                         if(time.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(s))
                                             ring = true;
                                 }
+                                //If the alarm was due to ring, do so
+                                //Else end this activity
                                 if (ring)
                                     displayAlarm();
                                 else
@@ -107,12 +131,17 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
+    //Used to display the alarms data in the UI
     private void displayAlarm() {
         alarmTime.setText(alarm.getTime());
+
+        //Check if the user entered a label to prevent NullPointerException
         if(alarm.getLabel() != null)
             alarmLabel.setText(alarm.getLabel());
         else
             alarmLabel.setText("");
+
+        //Play the alarm ringtone from resources and stop when the user stops the alarm
         final MediaPlayer ringtone = MediaPlayer.create(this, R.raw.alarmheaven);
         ringtone.start();
         stopAlarm.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +153,7 @@ public class AlarmActivity extends AppCompatActivity {
         });
     }
 
+    //Returns the user to the MainActivity
     private void goHome() {
         Intent mainActivity = new Intent(AlarmActivity.this, MainActivity.class);
         mainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

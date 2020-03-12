@@ -1,6 +1,5 @@
 /* TODO
 *   Diagrams (class/flow/wireframe) and report
-*   Finish internal commentary
 *  */
 
 package com.app.today;

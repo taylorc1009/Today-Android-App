@@ -242,14 +242,16 @@ public class AlarmSystem extends AppCompatActivity {
         alarmTable.removeAllViews();
         alarmList.clear();
 
-        //We need to make querying the database a task as the program will continue running without
-        //the results of the query if we don't
+        //This part is explained more in-depth in the DatabaseUtilities class
 
         //Create a query task for the database using the Firebase database reference
         DatabaseUtilities.FirebaseQuery firebaseQuery = new DatabaseUtilities.FirebaseQuery(alarms.myRef);
-        //Start the query and have it store the Task result of type DataSnapshot
+
+        //Start the query and have it store the Continuation result of type DataSnapshot
         final Task<DataSnapshot> load = firebaseQuery.start();
-        //Add a completeListener to the Task
+
+        //Add an completeListener to the Task and override the onComplete method so we can
+        //get it to do what we need
         load.addOnCompleteListener(new DatabaseUtilities.completeListener() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -268,8 +270,6 @@ public class AlarmSystem extends AppCompatActivity {
                 if(alarmList != null && !alarmList.isEmpty()) {
                     for(Alarm alarm : alarmList) {
                         createTableLayoutRow(alarm.getId(), alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                        //TableRow alarmRow = createTableLayoutRow(alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                        //alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                     }
                     updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
                 }
