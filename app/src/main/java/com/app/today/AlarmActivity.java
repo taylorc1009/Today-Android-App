@@ -88,10 +88,14 @@ public class AlarmActivity extends AppCompatActivity {
                                     alarmIntent.setAction("com.app.today.FireAlarm");
                                     PendingIntent alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
-                                    //Again check if the PendingIntent actually exists first before we remove it
-                                    if(alarmSender != null) {
+                                    //Sometimes the PendingIntent may be null before it's deleted
+                                    //this seems to happen when a new instance of AlarmManager is created
+                                    //because I don't think the alarm trigger is implemented properly
+                                    try {
                                         alarmManager.cancel(alarmSender);
                                         alarmSender.cancel();
+                                    } catch (NullPointerException e) {
+                                        Log.e("? Local PendingIntent was null", "new instance of AlarmManager?");
                                     }
                                 } else {
                                     //The data type of the Calendar days are integers, I had to make a list

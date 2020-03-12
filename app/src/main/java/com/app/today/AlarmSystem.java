@@ -399,10 +399,14 @@ public class AlarmSystem extends AppCompatActivity {
                 alarmIntent.setAction("com.app.today.FireAlarm");
                 PendingIntent alarmSender = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
-                //Check if the alarm exists locally first, otherwise we will get a NullPointerException
-                if(alarmSender != null) {
+                //Sometimes the PendingIntent may be null before it's deleted
+                //this seems to happen when a new instance of AlarmManager is created
+                //because I don't think the alarm trigger is implemented properly
+                try {
                     alarmManager.cancel(alarmSender);
                     alarmSender.cancel();
+                } catch (NullPointerException e) {
+                    Log.e("? Local PendingIntent was null", "new instance of AlarmManager?");
                 }
 
                 retrieveAlarms();
