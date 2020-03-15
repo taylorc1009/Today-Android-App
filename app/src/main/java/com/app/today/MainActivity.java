@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                     else
                         output = event.getTitle() + " | All day";
                     eventTxt.setText(output);
-                    eventTxt.setTextSize(14);
+                    eventTxt.setTextSize(15);
                     //Define the layout parameters and margins of the event text view
                     //LayoutParameters are basically the width, height and weight (number of lines) of the display
                     TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
@@ -315,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //AsyncTask for getting headlines
-    class headlineReceiver extends AsyncTask<String, Void, List<String>> {
+    class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
         //onPreExecute shows the user the weather is loading
         @Override
         protected void onPreExecute() {
@@ -325,13 +326,13 @@ public class MainActivity extends AppCompatActivity {
 
         //doInBackground retrieves headlines and passes them to onPostExecute
         @Override
-        protected List<String> doInBackground(String... strings) {
+        protected List<Headline> doInBackground(String... strings) {
             return HeadlineReceiver.getHeadlines();
         }
 
         //onPostExecutes shows the results to the user
         @Override
-        protected void onPostExecute(List<String> result) {
+        protected void onPostExecute(List<Headline> result) {
             //Clean the table before new data is presented
             newsTable.removeAllViews();
             //If results aren't empty, display them in the headline table
@@ -339,18 +340,30 @@ public class MainActivity extends AppCompatActivity {
             if(result != null) {
                 //Integer used just to label the headlines with a number
                 int i = 0;
-                for(String headline : result) {
+                for(final Headline headline : result) {
                     //This if is only used to prevent useless headlines from being displayed, for some reason The Guardian API gives us them
-                    if(!(headline.equals("Corrections and clarifications") || headline.equals("This week’s correction | For the record"))) {
+                    if(!(headline.getTitle().equals("Corrections and clarifications") || headline.getTitle().equals("This week’s correction | For the record"))) {
                         i++;
                         //Creates a new table row, defines the headline TextView and adds it to the row, and then the row to the table
                         TableRow newsRow = new TableRow(getApplicationContext());
                         TextView titleTxt = new TextView(getApplicationContext());
-                        String output = i + ". " + headline;
+                        String output = i + ". " + headline.getTitle();
                         titleTxt.setText(output);
-                        titleTxt.setTextSize(14);
-                        titleTxt.setPadding(0, 12, 0, 0);
+                        titleTxt.setTextSize(15);
+                        titleTxt.setPadding(0, 15, 0, 0);
                         titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
+
+                        newsRow.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String url = headline.getUrl();
+                                if (!url.startsWith("http://") && !url.startsWith("https://"))
+                                    url = "http://" + url;
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                startActivity(browserIntent);
+                            }
+                        });
+
                         newsRow.addView(titleTxt);
                         newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                     }

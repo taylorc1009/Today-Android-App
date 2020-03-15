@@ -13,8 +13,9 @@ class HeadlineReceiver {
     private static final String API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
 
     //Used to return a list of the headlines retrieved
-    static List<String> getHeadlines() {
-        List<String> headlines = new ArrayList<>();
+    static List<Headline> getHeadlines() {
+        List<Headline> headlines = new ArrayList<>();
+
         //Try to get the news headlines from a requested .json file
         //Else return null so the UI thread knows there was an error
         try {
@@ -26,7 +27,7 @@ class HeadlineReceiver {
                 JSONObject jsonObj = resultsArray.getJSONObject(i);
                 Log.i("? results obj " + i, String.valueOf(jsonObj));
 
-                headlines.add(jsonObj.getString("webTitle"));
+                headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl")));
             }
         } catch (JSONException e) {
             Log.e("JSONException", "failed to parse request/result", e);
