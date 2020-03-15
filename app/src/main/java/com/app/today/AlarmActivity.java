@@ -10,17 +10,26 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.Calendar;
 import java.util.Objects;
 
 public class AlarmActivity extends AppCompatActivity {
     //UI attributes
     ImageView stopAlarm;
-    TextView alarmTime, alarmLabel;
+    TextView alarmTime, alarmLabel, alarmGreet;
 
     //Used to determine whether the alarm should ring today
     private boolean ring = false;
@@ -30,6 +39,8 @@ public class AlarmActivity extends AppCompatActivity {
 
     //AlarmManager used to remove redundant alarms in this activity
     AlarmManager alarmManager;
+
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +57,7 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm = findViewById(R.id.stopAlarm);
         alarmTime = findViewById(R.id.alarmTime);
         alarmLabel = findViewById(R.id.alarmLabel);
+        alarmGreet = findViewById(R.id.alarmGreet);
 
         //Get this intents extras
         Bundle extras = getIntent().getExtras();
@@ -164,9 +176,44 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ringtone.stop();
-                goHome();
+                greet();
             }
         });
+    }
+
+    private void greet() {
+        String greeting = "Good morning, " + user.getDisplayName() + "!";
+        alarmGreet.setText(greeting);
+
+        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(2000);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                findViewById(R.id.alarmRingGroup).setVisibility(View.GONE);
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+                anim.setDuration(2000);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        alarmGreet.setVisibility(View.GONE);
+                        goHome();
+                    }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+                alarmGreet.startAnimation(anim);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        alarmGreet.setVisibility(View.VISIBLE);
+        alarmGreet.startAnimation(anim);
     }
 
     //Returns the user to the MainActivity

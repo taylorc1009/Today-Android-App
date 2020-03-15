@@ -80,4 +80,18 @@
             app:layout_constraintEnd_toEndOf="@+id/alarmIcon"
             app:layout_constraintStart_toStartOf="@+id/alarmIcon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/alarmGreet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alarmGreet"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
