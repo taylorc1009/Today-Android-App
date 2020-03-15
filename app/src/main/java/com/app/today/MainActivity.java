@@ -1,7 +1,5 @@
-/* TODO
-*   fix hideKeyboard
-*   fix alarm start from background
-*   make headlines clickable
+/*
+*       40398643 | Taylor Courtney
 * */
 
 package com.app.today;
