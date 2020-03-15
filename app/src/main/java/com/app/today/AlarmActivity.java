@@ -181,39 +181,48 @@ public class AlarmActivity extends AppCompatActivity {
         });
     }
 
+    //Displays a good morning message to the user
     private void greet() {
-        String greeting = "Good morning, " + user.getDisplayName() + "!";
-        alarmGreet.setText(greeting);
+        //If the username can be retrieved, add it to the greeting
+        if(user != null) {
+            String greeting = "Good morning, " + user.getDisplayName() + "!";
+            alarmGreet.setText(greeting);
+        }
 
-        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-        anim.setDuration(2000);
-        anim.setAnimationListener(new Animation.AnimationListener() {
+        //Creates an animation to fade in the greeting
+        AlphaAnimation animIn = new AlphaAnimation(0.0f, 1.0f);
+        animIn.setDuration(2000);
+
+        //Adds a state listener to the animation
+        //Once the fade in animation has completed, begin fade out
+        animIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 findViewById(R.id.alarmRingGroup).setVisibility(View.GONE);
             }
             @Override
             public void onAnimationEnd(Animation animation) {
-                AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
-                anim.setDuration(2000);
-                anim.setAnimationListener(new Animation.AnimationListener() {
+                AlphaAnimation animOut = new AlphaAnimation(1.0f, 0.0f);
+                animOut.setDuration(2000);
+                animOut.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {}
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         alarmGreet.setVisibility(View.GONE);
+                        //After animations have finished, close AlarmActivity
                         goHome();
                     }
                     @Override
                     public void onAnimationRepeat(Animation animation) {}
                 });
-                alarmGreet.startAnimation(anim);
+                alarmGreet.startAnimation(animOut);
             }
             @Override
             public void onAnimationRepeat(Animation animation) {}
         });
         alarmGreet.setVisibility(View.VISIBLE);
-        alarmGreet.startAnimation(anim);
+        alarmGreet.startAnimation(animIn);
     }
 
     //Returns the user to the MainActivity
