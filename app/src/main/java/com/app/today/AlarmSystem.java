@@ -220,7 +220,6 @@ public class AlarmSystem extends AppCompatActivity {
                         //Update the UI
                         clearAddAlarmUI();
                         retrieveAlarms();
-                        DateUtilities.hideKeyboard(AlarmSystem.this);
                     }
                 }
                 else {

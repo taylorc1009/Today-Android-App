@@ -1,3 +1,9 @@
+/* TODO
+*   fix hideKeyboard
+*   fix alarm start from background
+*   make headlines clickable
+* */
+
 package com.app.today;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -223,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
                 else if(weatherID == 803 || weatherID == 804)
                     weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
-                else if(weatherID == 500 || weatherID == 504)
+                else if(weatherID >= 500 && weatherID <= 504)
                     weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
                 else if(weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
                     weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));

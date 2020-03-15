@@ -70,7 +70,6 @@ public class AlarmActivity extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         //Now we will iterate through our results to get the data matching the ID
                         for(DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
-                            Log.i("ring?", String.valueOf(ring));
                             Alarm alarm = snapshot.getValue(Alarm.class);
                             assert alarm != null;
                             if(alarm.getId().equals(id)) {
