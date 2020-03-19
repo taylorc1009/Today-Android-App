@@ -233,10 +233,14 @@ public class MainActivity extends AppCompatActivity {
                     //there is, request a weather update for the new location
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     assert lm != null;
-                    lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     HandlerThread t = new HandlerThread("handlerThread");
                     t.start();
                     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
+                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    assert location != null;
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                    Log.i("? latitude, longitude", latitude + ", " + longitude);
                     //t.quit(); <-- causes a dead thread warning, critical?
                     return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
                 }
