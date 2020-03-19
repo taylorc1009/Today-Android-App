@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     //there is, request a weather update for the new location
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     assert lm != null;
-                    lm.getLastKnownLocation(LocationManager.GPS_PROVIDER); //Location location =
+                    lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     HandlerThread t = new HandlerThread("handlerThread");
                     t.start();
                     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
