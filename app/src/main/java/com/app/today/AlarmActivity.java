@@ -43,7 +43,7 @@ public class AlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm_ring);
 
         //Hide the ActionBar
-        Objects.requireNonNull(getSupportActionBar()).hide();
+        //Objects.requireNonNull(getSupportActionBar()).hide();
 
         findViewById(R.id.ringLoading).setVisibility(View.VISIBLE);
         findViewById(R.id.alarmRingGroup).setVisibility(View.GONE);

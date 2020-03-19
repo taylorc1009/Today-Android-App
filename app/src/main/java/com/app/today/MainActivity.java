@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
             //If they are, begin initializing the homepage
 
             //Used to add an options menu to the ActionBar
-            Toolbar toolbar = findViewById(R.id.action_logOut);
-            setActionBar(toolbar);
+            //Toolbar toolbar = findViewById(R.id.action_logOut);
+            //setActionBar(toolbar);
 
             Log.i("! user is signed in", Objects.requireNonNull(user.getEmail()));
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Uses our 'menu.xml' file to define the ActionBar menu and pushes it to the display
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
     //action (doInBackground, which as the name implies can be done in the background)

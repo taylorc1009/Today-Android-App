@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".AlarmSystem"
     android:background="@color/colorAccent"
-    android:scrollbars="none">
+    android:scrollbars="none"
+    android:theme="@style/AppTheme">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
