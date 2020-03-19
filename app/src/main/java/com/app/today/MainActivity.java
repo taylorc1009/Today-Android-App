@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
+            //I added a hardcode option for testing, in case the location manager doesn't work
             if(hardcodeLoc)
                 return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
             else {
