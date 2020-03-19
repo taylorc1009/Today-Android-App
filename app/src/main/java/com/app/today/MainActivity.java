@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C min / " + Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C max");
                 weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
 
-                weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
+                weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 int weatherID = Integer.parseInt(weather.getString("id"));
                 //Based on the weather ID, this will determine which drawable weather icon to use
