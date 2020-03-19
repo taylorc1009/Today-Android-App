@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
 
+    //Used to hardcode the location for accurate weather results
+    private boolean hardcodeLoc = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(signIn);
                 finish();
                 return true;
+            case R.id.action_hardcodeWeather:
+                item.setChecked(!item.isChecked());
+                hardcodeLoc = item.isChecked();
             case R.id.action_refreshWeather:
                 //Refreshes the weather (requests location access beforehand)
                 if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
@@ -165,31 +171,36 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
-            final LocationListener locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
+            if(hardcodeLoc)
+                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
+            else {
+                final LocationListener locationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                    }
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {}
+                    @Override
+                    public void onProviderEnabled(String provider) {}
+                    @Override
+                    public void onProviderDisabled(String provider) {}
+                };
+                //The GPS permission is required for the completion of weather retrieval
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    //Creates an instance of the location service and retrieves the last know location
+                    //We do this so the system can determine later if there's a location update, and if
+                    //there is, request a weather update for the new location
+                    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    assert lm != null;
+                    lm.getLastKnownLocation(LocationManager.GPS_PROVIDER); //Location location =
+                    HandlerThread t = new HandlerThread("handlerThread");
+                    t.start();
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
+                    //t.quit(); <-- causes a dead thread warning, critical?
+                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
                 }
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {}
-                @Override
-                public void onProviderEnabled(String provider) {}
-                @Override
-                public void onProviderDisabled(String provider) {}
-            };
-            //The GPS permission is required for the completion of weather retrieval
-            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                //Creates an instance of the location service and retrieves the last know location
-                //We do this so the system can determine later if there's a location update, and if
-                //there is, request a weather update for the new location
-                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                lm.getLastKnownLocation(LocationManager.GPS_PROVIDER); //Location location =
-                HandlerThread t = new HandlerThread("handlerThread");
-                t.start();
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                //t.quit(); <-- causes a dead thread warning, critical?
-                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=" + weatherAPI);
             }
             return null;
         }
@@ -213,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //Add the objects main values into a list of strings to be displayed
                 weatherDetails.add(weather.getString("description"));
-                weatherDetails.add(main.getString("temp") + "°C");
+                weatherDetails.add(main.getString("temp")  + "°C");
                 weatherDetails.add(main.getString("temp_min") + "°C min / " + main.getString("temp_max") + "°C max");
                 weatherDetails.add(wind.getString("speed") + " mph winds");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));

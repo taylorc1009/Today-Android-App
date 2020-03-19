@@ -3,6 +3,7 @@
     <string name="imageDescription">(display icon description)</string>
 
     <string name="menuLogOut">Log out</string>
+    <string name="hardcodeWeather">Hardcode location for weather</string>
     <string name="refreshWeather">Refresh weather</string>
     <string name="refreshCalendar">Refresh calendar</string>
     <string name="refreshNews">Refresh headlines</string>
