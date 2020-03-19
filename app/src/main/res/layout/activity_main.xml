@@ -26,6 +26,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/logOut"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:contentDescription="@string/imageDescription"
+            android:focusable="true"
+            android:src="@drawable/logout"
+            app:layout_constraintBottom_toTopOf="@+id/weatherGroup"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/refresh"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:contentDescription="@string/imageDescription"
+            android:focusable="true"
+            android:src="@drawable/refresh"
+            app:layout_constraintBottom_toTopOf="@+id/weatherGroup"
+            app:layout_constraintEnd_toStartOf="@id/logOut" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/weatherGroup"
             android:layout_width="match_parent"
@@ -76,6 +100,15 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
+
+                        <CheckBox
+                            android:id="@+id/hardcodeLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:text="@string/hardcodeWeather"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <ImageView
                             android:id="@+id/weatherIcon"

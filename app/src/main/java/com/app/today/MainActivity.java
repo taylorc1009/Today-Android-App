@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -48,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     //UI attributes
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle;
-    ImageView alarmMore, weatherIcon;
+    ImageView alarmMore, weatherIcon, logOut, refresh;
+    CheckBox hardcodeLocation;
     TableLayout calTable, newsTable;
 
     //Used to get and store weather details
@@ -93,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
             alarmMore = findViewById(R.id.alarmMore);
             newsTitle = findViewById(R.id.newsTitle);
             newsTable = findViewById(R.id.newsTable);
+            logOut = findViewById(R.id.logOut);
+            refresh = findViewById(R.id.refresh);
+            hardcodeLocation = findViewById(R.id.hardcodeLocation);
 
             //Request required permissions then begin UI operations
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
@@ -106,6 +111,40 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
                     startActivity(alarmActivity);
+                }
+            });
+            logOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Signs the user out and returns them to the sign in page
+                    mAuth.signOut();
+                    Intent signIn = new Intent(MainActivity.this, SignInActivity.class);
+                    startActivity(signIn);
+                    finish();
+                }
+            });
+            refresh.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Refreshes the weather (requests location access beforehand)
+                    if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
+                        new weatherTask().execute();
+                        Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
+                    }
+                    //Refreshes the calendar (requests location access beforehand)
+                    if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
+                        updateCalendarView();
+                    //Refreshes the news headlines
+                    new headlineReceiver().execute();
+                }
+            });
+            hardcodeLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hardcodeLoc = hardcodeLocation.isChecked();
+                    if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+                        new weatherTask().execute();
+                    Toast.makeText(MainActivity.this, "! INFO: this is only to provide more accurate results, though it is fixed to Edinburgh", Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -224,9 +263,12 @@ public class MainActivity extends AppCompatActivity {
 
                 //Add the objects main values into a list of strings to be displayed
                 weatherDetails.add(weather.getString("description"));
-                weatherDetails.add(main.getString("temp")  + "°C");
-                weatherDetails.add(main.getString("temp_min") + "°C min / " + main.getString("temp_max") + "°C max");
-                weatherDetails.add(wind.getString("speed") + " mph winds");
+
+                //Convert to integers to display a whole number
+                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
+                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C min / " + Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C max");
+                weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
+
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 int weatherID = Integer.parseInt(weather.getString("id"));

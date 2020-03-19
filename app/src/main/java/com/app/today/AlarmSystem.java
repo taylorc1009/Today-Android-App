@@ -215,7 +215,6 @@ public class AlarmSystem extends AppCompatActivity {
                         //Utilize these functions to set up the data we need for the alarm
                         Alarm alarm = createDatabaseInstance(hr.toString(), min.toString(), alarmLabel.getText().toString());
                         scheduleAlarm(alarm, alarmTime);
-                        Toast.makeText(getApplicationContext(), "! DEV: your alarm may take a few minutes to ring...", Toast.LENGTH_LONG).show();
 
                         //Update the UI
                         clearAddAlarmUI();
