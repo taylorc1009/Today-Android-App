@@ -18,9 +18,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -29,7 +26,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
-import android.widget.Toolbar;
 import com.androdocs.httprequest.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //Acquires the current user and determines whether they are logged in or not
         user = mAuth.getCurrentUser();
+
         if(user == null) {
             //If not, go to sign in page
             Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
@@ -76,11 +74,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             //If they are, begin initializing the homepage
-
-            //Used to add an options menu to the ActionBar
-            //Toolbar toolbar = findViewById(R.id.action_logOut);
-            //setActionBar(toolbar);
-
             Log.i("! user is signed in", Objects.requireNonNull(user.getEmail()));
 
             //Initialize UI attributes
@@ -123,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             });
+
             refresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -138,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
                     new headlineReceiver().execute();
                 }
             });
+
+            //This is only used for testing, it's a safety net for if the LocationManager fails
             hardcodeLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -149,50 +145,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
-    //Uses our 'menu.xml' file to define the ActionBar menu and pushes it to the display
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    //Defines the actions for each option in the action bar menu
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //It receives a value passed on-click of the ActionBar menu and determines what to do by using a switch case
-        switch (item.getItemId()) {
-            case R.id.action_logOut:
-                //Signs the user out and returns them to the sign in page
-                mAuth.signOut();
-                Intent signIn = new Intent(MainActivity.this, SignInActivity.class);
-                startActivity(signIn);
-                finish();
-                return true;
-            case R.id.action_hardcodeWeather:
-                item.setChecked(!item.isChecked());
-                hardcodeLoc = item.isChecked();
-            case R.id.action_refreshWeather:
-                //Refreshes the weather (requests location access beforehand)
-                if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
-                    new weatherTask().execute();
-                    Toast.makeText(MainActivity.this, "! INFO: If refresh fails, there's no new weather data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
-                }
-                return true;
-            case R.id.action_refreshCalendar:
-                //Refreshes the calendar
-                if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                    updateCalendarView();
-                return true;
-            case R.id.action_refreshNews:
-                //Refreshes the news headlines
-                new headlineReceiver().execute();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
 
     //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
     //action (doInBackground, which as the name implies can be done in the background)
@@ -210,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
-            //I added a hardcode option for testing, in case the location manager doesn't work
+            //Determines which HTTP request to make depending on the hardcode location toggle
             if(hardcodeLoc)
                 return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
             else {
@@ -227,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProviderDisabled(String provider) {}
                 };
-                //The GPS permission is required for the completion of weather retrieval
+                //The GPS permission is required for the completion of weather retrieval in the current location
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     //Creates an instance of the location service and retrieves the last know location
                     //We do this so the system can determine later if there's a location update, and if
@@ -255,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             //If there's weather data to use, i.e. the .json response isn't empty, try to update the UI too
             //Else show the error message (in the catch)
             try {
-                //Retrieves the .json result
+                //Stores the .json result
                 JSONObject jsonObj = new JSONObject(result);
 
                 //Organises the results into suitable Objects
