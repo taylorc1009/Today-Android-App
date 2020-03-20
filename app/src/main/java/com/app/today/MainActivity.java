@@ -11,6 +11,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -191,11 +192,17 @@ public class MainActivity extends AppCompatActivity {
                     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     assert location != null;
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                    Log.i("? latitude, longitude", latitude + ", " + longitude);
-                    //t.quit(); <-- causes a dead thread warning, critical?
-                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
+                    try {
+                        longitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                        Log.i("? latitude, longitude", latitude + ", " + longitude);
+                        //t.quit(); <-- causes a dead thread warning, critical?
+                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
+                    } catch (NullPointerException e) {
+                        Toast.makeText(getApplicationContext(), "! INFO: LastKnownLocation from LocationManager was 'null' - used hardcoded location", Toast.LENGTH_LONG).show();
+                        Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null', try refreshing now?", e);
+                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
+                    }
                 }
             }
             return null;
@@ -356,11 +363,12 @@ public class MainActivity extends AppCompatActivity {
                         i++;
                         //Creates a new table row, defines the headline TextView and adds it to the row, and then the row to the table
                         TableRow newsRow = new TableRow(getApplicationContext());
+
                         TextView titleTxt = new TextView(getApplicationContext());
                         String output = i + ". " + headline.getTitle();
                         titleTxt.setText(output);
                         titleTxt.setTextSize(15);
-                        titleTxt.setPadding(0, 15, 0, 0);
+                        titleTxt.setPadding(0, 24, 0, 0);
                         titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
 
                         newsRow.setOnClickListener(new View.OnClickListener() {

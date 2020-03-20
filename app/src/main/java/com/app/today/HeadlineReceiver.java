@@ -1,3 +1,5 @@
+// Google News API - 3906607150f944d0a94a74da4c17f51b << results appear to require a Google library to parse the .json response
+
 package com.app.today;
 
 import android.util.Log;
@@ -10,7 +12,7 @@ import java.util.List;
 
 class HeadlineReceiver {
     //The Guardian API key, used to get news headlines
-    private static final String API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
+    private static final String newsAPI = "07f8c2ea-493e-4429-ae47-74ade74d113c";
 
     //Used to return a list of the headlines retrieved
     static List<Headline> getHeadlines() {
@@ -30,7 +32,10 @@ class HeadlineReceiver {
                 headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl")));
             }
         } catch (JSONException e) {
-            Log.e("JSONException", "failed to parse request/result", e);
+            Log.e("? JSONException", "failed to parse request/result", e);
+            return null;
+        } catch (NullPointerException e) {
+            Log.e("? NullPointerException", ".json result was not populated", e);
             return null;
         }
         //Return the headlines to be displayed if successful
@@ -39,6 +44,6 @@ class HeadlineReceiver {
 
     //Used to make and return the HttpRequest for the headlines
     private static String makeRequest() {
-        return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=world&api-key=" + API);
+        return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=world&api-key=" + newsAPI);
     }
 }

@@ -33,42 +33,42 @@ class CalendarContentResolver {
                     //Adds the results of the query to the HashSet
                     calendarIds.add(cursor.getString(0));
             cursor.close();
-        } catch(AssertionError | Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
 
-        //If the query didn't return an empty result, continue
-        //Else return the empty list so the UI thread knows there are none
-        if(!calendarIds.isEmpty()) {
-            //This resource identifier queries the events we previously got for instances we ask for, in this case I'm asking for today's events
-            Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
-            //Uses my buildTime method to create an instance of the specified times of today, start and end
-            Calendar dayStart = DateUtilities.buildTime(0, 0, 0, 0);
-            Calendar dayEnd = DateUtilities.buildTime(23, 59, 59, 999);
-            //Appends the identifier, telling it we only want results in the time range specified
-            ContentUris.appendId(builder, dayStart.getTimeInMillis());
-            ContentUris.appendId(builder, dayEnd.getTimeInMillis());
-            //Finally we query the calendar for instances, using the URI, for the fields "title", "begin", "end", and "allDay"
-            //in ASC (oldest to newest) order
-            Cursor cursor = resolver.query(builder.build(), new String[]{ "title", "begin", "end", "allDay" }, null, null, "startDay ASC, startMinute ASC");
+            //If the query didn't return an empty result, continue
+            //Else return the empty list so the UI thread knows there are none
+            if(!calendarIds.isEmpty()) {
+                //This resource identifier queries the events we previously got for instances we ask for, in this case I'm asking for today's events
+                Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
+                //Uses my buildTime method to create an instance of the specified times of today, start and end
+                Calendar dayStart = DateUtilities.buildTime(0, 0, 0, 0);
+                Calendar dayEnd = DateUtilities.buildTime(23, 59, 59, 999);
+                //Appends the identifier, telling it we only want results in the time range specified
+                ContentUris.appendId(builder, dayStart.getTimeInMillis());
+                ContentUris.appendId(builder, dayEnd.getTimeInMillis());
+                //Finally we query the calendar for instances, using the URI, for the fields "title", "begin", "end", and "allDay"
+                //in ASC (oldest to newest) order
+                cursor = resolver.query(builder.build(), new String[]{ "title", "begin", "end", "allDay" }, null, null, "startDay ASC, startMinute ASC");
 
-            //Now we iterate through the results and store them in a list to be returned
-            assert cursor != null;
-            for (String ignored : calendarIds) {
-                if (cursor.getCount() > 0) {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            Event event = new Event(cursor.getString(0), new Date(cursor.getLong(1)), new Date(cursor.getLong(2)), cursor.getString(3).equals("0"));
-                            Log.i("! event found", event.toString() + ", " + getTimeString(event.getBegin().getTime()));
-                            events.add(event);
-                        } while (cursor.moveToNext());
+                //Now we iterate through the results and store them in a list to be returned
+                assert cursor != null;
+                for (String ignored : calendarIds) {
+                    if (cursor.getCount() > 0) {
+                        if (cursor.moveToFirst()) {
+                            do {
+                                Event event = new Event(cursor.getString(0), new Date(cursor.getLong(1)), new Date(cursor.getLong(2)), cursor.getString(3).equals("0"));
+                                Log.i("! event found", event.toString() + ", " + getTimeString(event.getBegin().getTime()));
+                                events.add(event);
+                            } while (cursor.moveToNext());
+                        }
                     }
                 }
+                cursor.close();
             }
-            cursor.close();
+            return events;
+        } catch(AssertionError | Exception e ) {
+            Log.e("? Exception", e.toString());
+            return null;
         }
-        return events;
     }
 
     //Converts the time of a calendar instance to a more user friendly, String value
