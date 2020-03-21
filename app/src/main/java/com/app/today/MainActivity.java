@@ -11,7 +11,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -117,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             });
-
             refresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -180,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProviderDisabled(String provider) {}
                 };
+
                 //The GPS permission is required for the completion of weather retrieval in the current location
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     //Creates an instance of the location service and retrieves the last know location
@@ -199,8 +198,8 @@ public class MainActivity extends AppCompatActivity {
                         //t.quit(); <-- causes a dead thread warning, critical?
                         return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
                     } catch (NullPointerException e) {
-                        Toast.makeText(getApplicationContext(), "! INFO: LastKnownLocation from LocationManager was 'null' - used hardcoded location", Toast.LENGTH_LONG).show();
                         Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null', try refreshing now?", e);
+                        //t.quit();
                         return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
                     }
                 }
