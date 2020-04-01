@@ -1,5 +1,9 @@
 /*
 *       40398643 | Taylor Courtney
+*  TODO
+*   Add a task to detect when permission requests complete
+*   Fix alarm not ringing on app kill
+*   Add a side scrollable view for news headlines (would be good to have an image to use with headlines for this)
 * */
 
 package com.app.today;
@@ -162,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... args) {
             //Determines which HTTP request to make depending on the hardcode location toggle
-            if(hardcodeLoc)
+            /*if(hardcodeLoc)
                 return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
-            else {
+            else {*/
                 final LocationListener locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
@@ -198,80 +202,86 @@ public class MainActivity extends AppCompatActivity {
                         //t.quit(); <-- causes a dead thread warning, critical?
                         return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
                     } catch (NullPointerException e) {
-                        Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null', try refreshing now?", e);
-                        //t.quit();
-                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
+                        Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null'", e);
+                        return null;
+                        /*//t.quit();
+                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);*/
                     }
                 }
-            }
+            //}
             return null;
         }
 
         //onPostExecute basically handles the weather response:
         @Override
         protected void onPostExecute(String result) {
-            //If there's weather data to use, i.e. the .json response isn't empty, try to update the UI too
-            //Else show the error message (in the catch)
-            try {
-                //Stores the .json result
-                JSONObject jsonObj = new JSONObject(result);
+            //Detects whether or not we actually got a result
+            if (result != null) {
+                //Try to update the UI using the results in the JSON file
+                //Else show the error message (in the catch)
+                try {
+                    //Stores the .json result
+                    JSONObject jsonObj = new JSONObject(result);
 
-                //Organises the results into suitable Objects
-                JSONObject main = jsonObj.getJSONObject("main");
-                JSONObject wind = jsonObj.getJSONObject("wind");
-                JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
-                long updatedAt = jsonObj.getLong("dt");
+                    //Organises the results into suitable Objects
+                    JSONObject main = jsonObj.getJSONObject("main");
+                    JSONObject wind = jsonObj.getJSONObject("wind");
+                    JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
+                    long updatedAt = jsonObj.getLong("dt");
 
-                List<String> weatherDetails = new ArrayList<>();
+                    List<String> weatherDetails = new ArrayList<>();
 
-                //Add the objects main values into a list of strings to be displayed
-                weatherDetails.add(weather.getString("description"));
+                    //Add the objects main values into a list of strings to be displayed
+                    weatherDetails.add(weather.getString("description"));
 
-                //Convert to integers to display a whole number
-                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
-                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C min / " + Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C max");
-                weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
+                    //Convert to integers to display a whole number
+                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
+                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C min / " + Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C max");
+                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
 
-                weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
+                    weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
-                int weatherID = Integer.parseInt(weather.getString("id"));
-                //Based on the weather ID, this will determine which drawable weather icon to use
-                if(weatherID == 800)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
-                else if(weatherID == 801)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
-                else if(weatherID == 802)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
-                else if(weatherID == 803 || weatherID == 804)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
-                else if(weatherID >= 500 && weatherID <= 504)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
-                else if(weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
-                else if((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
-                else if((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
-                else if(weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
-                else
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
+                    int weatherID = Integer.parseInt(weather.getString("id"));
+                    //Based on the weather ID, this will determine which drawable weather icon to use
+                    if (weatherID == 800)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
+                    else if (weatherID == 801)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
+                    else if (weatherID == 802)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
+                    else if (weatherID == 803 || weatherID == 804)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
+                    else if (weatherID >= 500 && weatherID <= 504)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
+                    else if (weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
+                    else if ((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
+                    else if ((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
+                    else if (weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
+                    else
+                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
 
-                //If .json response isn't empty, display the response in the suitable UI views
-                //Else throw an empty .json message
-                if(!weatherDetails.isEmpty()) {
-                    forecastTxt.setText(weatherDetails.get(0).toUpperCase());
-                    temperatureTxt.setText(weatherDetails.get(1));
-                    highsLowsTxt.setText(weatherDetails.get(2));
-                    windTxt.setText(weatherDetails.get(3));
-                    lastWUpdateTxt.setText(weatherDetails.get(4));
-                    updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
-                } else
-                    throw new JSONException("Weather JSON empty... was HttpRequest unsuccessful?");
-            } catch (JSONException e) {
-                Log.e("? weather JSONException", ".json empty?", e);
-                updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                    //If .json response isn't empty, display the response in the suitable UI views
+                    //Else throw an empty .json message
+                    if (!weatherDetails.isEmpty()) {
+                        forecastTxt.setText(weatherDetails.get(0).toUpperCase());
+                        temperatureTxt.setText(weatherDetails.get(1));
+                        highsLowsTxt.setText(weatherDetails.get(2));
+                        windTxt.setText(weatherDetails.get(3));
+                        lastWUpdateTxt.setText(weatherDetails.get(4));
+                        updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
+                    } else
+                        throw new JSONException("Weather JSON empty... was HttpRequest unsuccessful?");
+                } catch (JSONException e) {
+                    Log.e("? weather JSONException", ".json empty?", e);
+                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                }
             }
+            else
+                updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
         }
     }
 
@@ -403,24 +413,27 @@ public class MainActivity extends AppCompatActivity {
 
     //Used by the app to request a permission (p)
     private boolean reqPermission(int p) {
+        //Defines the permission we're looking for
+        String per;
         switch(p) {
             case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
-                //If the permission is not already granted, request it
-                //Else return true/granted
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
-                } else { return true; }
-                //Checks again after the request was made to check the result
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    return true;
+                per = Manifest.permission.READ_CALENDAR;
+                break;
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                } else { return true; }
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    return true;
+                per = Manifest.permission.ACCESS_FINE_LOCATION;
+                break;
+            default:
+                return false;
         }
-        //If the permission was not granted, returns false
-        return false;
+
+        //If the permission is not already granted, request it
+        //Else return true/granted
+        if (ContextCompat.checkSelfPermission(this, per) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{per}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
+
+            //Checks again after the request was made to check the result
+            return ContextCompat.checkSelfPermission(this, per) == PackageManager.PERMISSION_GRANTED;
+        } else
+            return true;
     }
 }
