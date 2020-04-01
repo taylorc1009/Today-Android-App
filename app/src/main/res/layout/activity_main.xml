@@ -298,7 +298,8 @@
                             android:id="@+id/headlineThumb"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/headlinebmp_format"
+                            android:foreground="@drawable/headline_bmp_gradient"
+                            android:background="@drawable/rounded_headline_bmp"
                             android:scaleType="centerCrop"
                             android:adjustViewBounds="true"
                             app:layout_constraintStart_toStartOf="parent"
@@ -311,15 +312,13 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/colorPrimaryDark"
                             android:text="@string/headlinePlaceholder"
-                            android:layout_marginTop="30dp"
-                            android:layout_marginBottom="30dp"
-                            android:layout_marginStart="50dp"
-                            android:layout_marginEnd="50dp"
-                            android:textAlignment="center"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintBottom_toBottomOf="@id/headlineThumb"
+                            app:layout_constraintStart_toStartOf="@id/headlineThumb"
+                            app:layout_constraintEnd_toEndOf="@id/headlineThumb" />
                     </com.app.today.HeadlineConstraintLayout>
 
                     <!--<HorizontalScrollView
