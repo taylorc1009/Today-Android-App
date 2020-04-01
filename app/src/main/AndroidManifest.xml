@@ -18,7 +18,7 @@
         <activity android:name=".PresentationLayer.SignInActivity" />
 
         <receiver
-            android:name=".BusinessLayer.AlarmRing"
+            android:name=".PresentationLayer.Utilities.AlarmRing"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.app.today.FireAlarm" />

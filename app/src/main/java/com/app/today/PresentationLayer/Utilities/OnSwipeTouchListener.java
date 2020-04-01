@@ -1,6 +1,6 @@
 // source - https://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures
 
-package com.app.today.BusinessLayer;
+package com.app.today.PresentationLayer.Utilities;
 
 import android.content.Context;
 import android.view.GestureDetector;
@@ -54,13 +54,13 @@ public class OnSwipeTouchListener implements OnTouchListener {
                         result = true;
                     }
                 }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                /*else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffY > 0)
                         onSwipeBottom();
                     else
                         onSwipeTop();
                     result = true;
-                }
+                }*/
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -71,6 +71,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
     public void onTap() {}
     public void onSwipeRight() {}
     public void onSwipeLeft() {}
-    public void onSwipeTop() {}
-    public void onSwipeBottom() {}
+    /*public void onSwipeTop() {}
+    public void onSwipeBottom() {}*/
 }

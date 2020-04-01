@@ -1,4 +1,4 @@
-package com.app.today.BusinessLayer;
+package com.app.today.PresentationLayer.Utilities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

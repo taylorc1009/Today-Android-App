@@ -295,7 +295,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/newsTitle"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-                    <com.app.today.BusinessLayer.HeadlineConstraintLayout
+                    <com.app.today.PresentationLayer.Utilities.HeadlineConstraintLayout
                         android:id="@+id/headlineView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -327,7 +327,7 @@
                             app:layout_constraintBottom_toBottomOf="@id/headlineThumb"
                             app:layout_constraintStart_toStartOf="@id/headlineThumb"
                             app:layout_constraintEnd_toEndOf="@id/headlineThumb" />
-                    </com.app.today.BusinessLayer.HeadlineConstraintLayout>
+                    </com.app.today.PresentationLayer.Utilities.HeadlineConstraintLayout>
 
                     <!--<HorizontalScrollView
                         android:id="@+id/newsScroller"
