@@ -12,7 +12,7 @@ import java.util.List;
 
 class HeadlineReceiver {
     //The Guardian API key, used to get news headlines
-    private static final String newsAPI = "07f8c2ea-493e-4429-ae47-74ade74d113c";
+    private static final String NEWS_API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
 
     //Used to return a list of the headlines retrieved
     static List<Headline> getHeadlines() {
@@ -21,7 +21,7 @@ class HeadlineReceiver {
         //Try to get the news headlines from a requested .json file
         //Else return null so the UI thread knows there was an error
         try {
-            JSONObject results = new JSONObject(makeRequest());
+            JSONObject results = new JSONObject(makeRequest());//.getJSONObject("response").getJSONArray("results");
             JSONArray resultsArray = results.getJSONObject("response").getJSONArray("results");
 
             //Store the results into a list
@@ -29,7 +29,13 @@ class HeadlineReceiver {
                 JSONObject jsonObj = resultsArray.getJSONObject(i);
                 Log.i("? results obj " + i, String.valueOf(jsonObj));
 
-                headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl")));
+                //Used to remove system char indicators from the URL string
+                StringBuilder thumbnail = new StringBuilder("");
+                for(char c : jsonObj.getJSONObject("fields").getString("thumbnail").toCharArray())
+                    if(c != '\\')
+                        thumbnail.append(c);
+
+                headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"), thumbnail.toString()));
             }
         } catch (JSONException e) {
             Log.e("? JSONException", "failed to parse request/result", e);
@@ -44,6 +50,6 @@ class HeadlineReceiver {
 
     //Used to make and return the HttpRequest for the headlines
     private static String makeRequest() {
-        return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=world&api-key=" + newsAPI);
+        return HttpRequest.excuteGet("https://content.guardianapis.com/search?section=world&show-fields=thumbnail&api-key=" + NEWS_API);
     }
 }

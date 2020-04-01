@@ -1,7 +1,7 @@
 /*
 *       40398643 | Taylor Courtney
 *  TODO
-*   Add a task to detect when permission requests complete
+*   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Fix alarm not ringing on app kill
 *   Add a side scrollable view for news headlines (would be good to have an image to use with headlines for this)
 *   Add tabs? Home and Alarms
@@ -18,6 +18,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,6 +27,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -35,6 +38,10 @@ import android.widget.Toast;
 import com.androdocs.httprequest.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
     //UI attributes
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
-    ImageView alarmMore, weatherIcon, logOut, refresh;
+    ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
     //HorizontalScrollView newsScroller;
     TableLayout calTable;//, newsTable;
     HeadlineConstraintLayout headlineView;
 
     //Used to get and store weather details
-    private static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
+    private static final String WEATHER_API = "2a2d2e85e492fe3c92b568f4fe3ce854";
 
     //Used to verify Firebase sign in
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -98,12 +105,14 @@ public class MainActivity extends AppCompatActivity {
             newsTitle = findViewById(R.id.newsTitle);
             headlineView = findViewById(R.id.headlineView);
             headlineText = findViewById(R.id.headlineText);
+            headlineThumb = findViewById(R.id.headlineThumb);
             /*newsTable = findViewById(R.id.newsTable);
             newsScroller = findViewById(R.id.newsScroller);*/
             logOut = findViewById(R.id.logOut);
             refresh = findViewById(R.id.refresh);
 
             //Request required permissions then begin UI operations
+            // << permission request Task should be added here >> should probably put this in onStart then?
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
@@ -192,12 +201,10 @@ public class MainActivity extends AppCompatActivity {
                     latitude = location.getLatitude();
                     Log.i("? latitude, longitude", latitude + ", " + longitude);
                     //t.quit(); <-- causes a dead thread warning, critical?
-                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
+                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API);
                 } catch (NullPointerException e) {
                     Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null'", e);
                     return null;
-                    /*//t.quit();
-                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);*/
                 }
             }
             return null;
@@ -392,12 +399,7 @@ public class MainActivity extends AppCompatActivity {
                         newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                     }*/
                 }
-                try {
-                    assert headlines != null;
-                    headlineText.setText(Objects.requireNonNull(headlines.get(0)).getTitle());
-                } catch (NullPointerException e) {
-                    Log.e("? headlines HashMap equals null", e.toString());
-                }
+                updateArticle();
                 headlineView.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
                     @Override
                     public void onSwipeRight() {
@@ -406,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
                             curHeadline = headlines.size() - 1;
                         else
                             curHeadline--;
-                        headlineText.setText(Objects.requireNonNull(headlines.get(curHeadline)).getTitle());
+                        updateArticle();
                     }
 
                     @Override
@@ -416,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
                             curHeadline = 0;
                         else
                             curHeadline++;
-                        headlineText.setText(Objects.requireNonNull(headlines.get(curHeadline)).getTitle());
+                        updateArticle();
                     }
 
                     @Override
@@ -434,6 +436,24 @@ public class MainActivity extends AppCompatActivity {
                 newsTitle.setText(R.string.newsError);
                 updateHeadlinesView(View.GONE, View.VISIBLE, View.GONE);
             }
+        }
+    }
+
+    //TODO you should probably take a look at the bitmaps lecture to make this more efficient
+    private void updateArticle() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        try {
+            assert headlines != null;
+            Headline h = Objects.requireNonNull(headlines.get(curHeadline));
+            headlineText.setText(h.getTitle());
+            URL url = new URL(h.getBmp());
+            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            headlineThumb.setImageBitmap(bmp);
+        } catch (NullPointerException | MalformedURLException e) {
+            Log.e("? headlines HashMap equals null", e.toString());
+        } catch (IOException e) {
+            Log.e("? couldn't parse URL stream", ".openConnection() failed", e);
         }
     }
 

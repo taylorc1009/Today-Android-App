@@ -35,11 +35,14 @@ dependencies {
     //androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.material:material:1.1.0'
 
+    //ImageLoader
+    //implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
     //HTTP Request
     implementation 'com.github.androdocs:Simple-HTTP-Request:v1.0'
 
     //Firebase
     implementation 'com.google.firebase:firebase-database:19.2.1'
-    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 }
