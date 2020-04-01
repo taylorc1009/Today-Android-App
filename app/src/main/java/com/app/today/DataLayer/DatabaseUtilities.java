@@ -1,7 +1,9 @@
-package com.app.today;
+package com.app.today.DataLayer;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
+
+import com.app.today.BusinessLayer.Alarm;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,42 +17,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-class DatabaseUtilities {
+public class DatabaseUtilities {
     //Initialize a Firebase database reference to allow us to contact it
     //This is a NoSQL database which stores data in the format of .json files,
     //so we will need to use code here to query it
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference("alarms");
+    public DatabaseReference myRef = database.getReference("alarms");
 
     List<Alarm> alarms = new ArrayList<>();
 
     //Method used to store an alarm in the child path which matches the passed alarm's ID
-    void store(Alarm alarm) {
+    public void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
     }
 
     //Used to return a new key of (and also create) a new child in the database
-    String newKey() {
+    public String newKey() {
         return myRef.push().getKey();
     }
 
     //Used to remove the value of the child path specified
-    void delete(String id) {
+    public void delete(String id) {
         myRef.child(id).removeValue();
     }
 
     //This is where we create our query task to be executed
     //We need to make querying the database for results into a task as the app
     //will not wait for the results to be pulled before continuing
-    static class FirebaseQuery {
+    public static class FirebaseQuery {
         //We first initialise the reference which we want to query
         private DatabaseReference ref;
-        FirebaseQuery(DatabaseReference ref) {
+        public FirebaseQuery(DatabaseReference ref) {
             this.ref = ref;
         }
 
         //Then we build the task we want to start
-        Task<DataSnapshot> start() {
+        public Task<DataSnapshot> start() {
             Task<DataSnapshot> task;
 
             //Specifies the result we need from the task, in our case a DataSnapshot from the database
@@ -75,7 +77,7 @@ class DatabaseUtilities {
             });
         }
 
-        static class EventListener implements ValueEventListener {
+        public static class EventListener implements ValueEventListener {
             //Implements the properties of ValueEventListener, which are: first we tell it which task to listen to,
             //then return a result which may either be a DataSnapshot, in out case, or an exception if it's cancelled
             private final TaskCompletionSource<DataSnapshot> taskSource;
@@ -96,7 +98,7 @@ class DatabaseUtilities {
     //Simply as it looks, this method is invoked upon Task completion, in our activities we
     //override this method to do what we need to do on completion, if not then we can use the
     //existing list in this instance of DatabaseUtilities
-    static class completeListener extends DatabaseUtilities implements OnCompleteListener<DataSnapshot> {
+    public static class completeListener extends DatabaseUtilities implements OnCompleteListener<DataSnapshot> {
         @Override
         public void onComplete(@NonNull Task<DataSnapshot> task) {
             try {

@@ -9,11 +9,12 @@
 *   - Could do the same with the google-services.json
 * */
 
-package com.app.today;
+package com.app.today.PresentationLayer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +46,14 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.app.today.BusinessLayer.CalendarContentResolver;
+import com.app.today.BusinessLayer.Event;
+import com.app.today.BusinessLayer.Headline;
+import com.app.today.BusinessLayer.HeadlineConstraintLayout;
+import com.app.today.BusinessLayer.HeadlineReceiver;
+import com.app.today.BusinessLayer.OnSwipeTouchListener;
+import com.app.today.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.HashMap;

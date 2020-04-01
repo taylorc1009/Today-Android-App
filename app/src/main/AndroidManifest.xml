@@ -15,19 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".SignInActivity" />
+        <activity android:name=".PresentationLayer.SignInActivity" />
 
         <receiver
-            android:name=".AlarmRing"
+            android:name=".BusinessLayer.AlarmRing"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.app.today.FireAlarm" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".AlarmActivity" />
-        <activity android:name=".AlarmSystem" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".PresentationLayer.AlarmActivity" />
+        <activity android:name=".PresentationLayer.AlarmSystem" />
+        <activity android:name=".PresentationLayer.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

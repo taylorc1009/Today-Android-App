@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
-    tools:context=".MainActivity"
+    tools:context=".PresentationLayer.MainActivity"
     android:scrollbars="none"
     android:theme="@style/AppTheme">
 
@@ -287,7 +287,15 @@
                         app:layout_constraintTop_toTopOf="@+id/newsIcon"
                         app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
 
-                    <com.app.today.HeadlineConstraintLayout
+                    <me.relex.circleindicator.CircleIndicator
+                        android:id="@+id/headlineIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="@id/newsTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/newsTitle"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <com.app.today.BusinessLayer.HeadlineConstraintLayout
                         android:id="@+id/headlineView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -319,7 +327,7 @@
                             app:layout_constraintBottom_toBottomOf="@id/headlineThumb"
                             app:layout_constraintStart_toStartOf="@id/headlineThumb"
                             app:layout_constraintEnd_toEndOf="@id/headlineThumb" />
-                    </com.app.today.HeadlineConstraintLayout>
+                    </com.app.today.BusinessLayer.HeadlineConstraintLayout>
 
                     <!--<HorizontalScrollView
                         android:id="@+id/newsScroller"

@@ -1,4 +1,4 @@
-package com.app.today;
+package com.app.today.BusinessLayer;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-class CalendarContentResolver {
+public class CalendarContentResolver {
     //Used to query the calendar and return the results
-    List<Event> getCalendar(Context context) {
+    public List<Event> getCalendar(Context context) {
         List<Event> events = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         HashSet<String> calendarIds = new HashSet<>(); //Using a HashSet to ensure no duplicate results
@@ -72,7 +72,7 @@ class CalendarContentResolver {
     }
 
     //Converts the time of a calendar instance to a more user friendly, String value
-    String getTimeString(long milliSeconds) {
+    public String getTimeString(long milliSeconds) {
         //Defines the format we want
         String format = "HH:mm";
         //Applies it to our time formatter

@@ -1,4 +1,4 @@
-package com.app.today;
+package com.app.today.PresentationLayer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
+import com.app.today.BusinessLayer.Alarm;
+import com.app.today.BusinessLayer.AlarmRing;
+import com.app.today.DataLayer.DatabaseUtilities;
+import com.app.today.BusinessLayer.DateUtilities;
+import com.app.today.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import java.util.List;
@@ -56,9 +61,6 @@ public class AlarmSystem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_system);
-
-        //Hide the ActionBar
-        //Objects.requireNonNull(getSupportActionBar()).hide();
         
         //Initialize the UI attributes
         addCard = findViewById(R.id.addCard);

@@ -1,4 +1,4 @@
-package com.app.today;
+package com.app.today.PresentationLayer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +13,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.app.today.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import java.util.Objects;
+
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 public class SignInActivity extends AppCompatActivity {
@@ -44,9 +46,6 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
-        //Hide action bar
-        //Objects.requireNonNull(getSupportActionBar()).hide();
 
         //Initialize the UI attributes
         email = findViewById(R.id.email);

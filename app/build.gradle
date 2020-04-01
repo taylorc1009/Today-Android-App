@@ -35,6 +35,9 @@ dependencies {
     //androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.material:material:1.1.0'
 
+    //CircleIndicator
+    implementation 'me.relex:circleindicator:2.1.4'
+
     //ImageLoader
     //implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 

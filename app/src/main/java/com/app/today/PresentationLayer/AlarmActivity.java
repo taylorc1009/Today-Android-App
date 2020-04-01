@@ -1,4 +1,4 @@
-package com.app.today;
+package com.app.today.PresentationLayer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +14,10 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.app.today.BusinessLayer.AlarmRing;
+import com.app.today.BusinessLayer.Alarm;
+import com.app.today.DataLayer.DatabaseUtilities;
+import com.app.today.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,9 +45,6 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_ring);
-
-        //Hide the ActionBar
-        //Objects.requireNonNull(getSupportActionBar()).hide();
 
         findViewById(R.id.ringLoading).setVisibility(View.VISIBLE);
         findViewById(R.id.alarmRingGroup).setVisibility(View.GONE);

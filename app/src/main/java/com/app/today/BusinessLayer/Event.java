@@ -1,8 +1,8 @@
-package com.app.today;
+package com.app.today.BusinessLayer;
 
 import java.util.Date;
 
-class Event {
+public class Event {
     //Calendar event, holds the information to show the user
 
     private String title;
@@ -17,8 +17,8 @@ class Event {
         this.allDay = !allDay; //Inverted because it's inverted in the calendar for some reason
     }
 
-    String getTitle() { return title; }
-    Date getBegin() { return begin; }
-    Date getEnd() { return end; }
-    boolean isAllDay() { return allDay; }
+    public String getTitle() { return title; }
+    public Date getBegin() { return begin; }
+    public Date getEnd() { return end; }
+    public boolean isAllDay() { return allDay; }
 }

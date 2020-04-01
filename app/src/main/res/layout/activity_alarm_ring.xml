@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FF9D00"
-    tools:context=".AlarmActivity"
+    tools:context=".PresentationLayer.AlarmActivity"
     android:theme="@style/AppTheme">
 
     <ProgressBar

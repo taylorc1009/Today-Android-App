@@ -1,10 +1,10 @@
-package com.app.today;
+package com.app.today.BusinessLayer;
 
 import android.icu.util.Calendar;
 
-class DateUtilities {
+public class DateUtilities {
     //I was going to make a collection of date utilities for the calendar and alarms, but this was the only method I needed across both
-    static Calendar buildTime(int hour, int minute, int second, int millis) {
+    public static Calendar buildTime(int hour, int minute, int second, int millis) {
         //Create an instance of the exact current time in milliseconds
         Calendar day = Calendar.getInstance();
         day.setTimeInMillis(System.currentTimeMillis());

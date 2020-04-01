@@ -1,9 +1,10 @@
-package com.app.today;
+package com.app.today.BusinessLayer;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import com.app.today.PresentationLayer.AlarmActivity;
 import java.util.Objects;
 
 public class AlarmRing extends BroadcastReceiver {

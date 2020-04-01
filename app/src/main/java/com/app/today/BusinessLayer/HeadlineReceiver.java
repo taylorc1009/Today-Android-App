@@ -1,6 +1,6 @@
 // Google News API - 3906607150f944d0a94a74da4c17f51b << results appear to require a Google library to parse the .json response
 
-package com.app.today;
+package com.app.today.BusinessLayer;
 
 import android.util.Log;
 import com.androdocs.httprequest.HttpRequest;
@@ -10,12 +10,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class HeadlineReceiver {
+public class HeadlineReceiver {
     //The Guardian API key, used to get news headlines
     private static final String NEWS_API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
 
     //Used to return a list of the headlines retrieved
-    static List<Headline> getHeadlines() {
+    public static List<Headline> getHeadlines() {
         List<Headline> headlines = new ArrayList<>();
 
         //Try to get the news headlines from a requested .json file
