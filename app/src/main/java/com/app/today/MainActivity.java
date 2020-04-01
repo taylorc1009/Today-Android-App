@@ -4,6 +4,7 @@
 *   Add a task to detect when permission requests complete
 *   Fix alarm not ringing on app kill
 *   Add a side scrollable view for news headlines (would be good to have an image to use with headlines for this)
+*   Add tabs? Home and Alarms
 * */
 
 package com.app.today;
@@ -23,7 +24,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -48,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     //UI attributes
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle;
+    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
     ImageView alarmMore, weatherIcon, logOut, refresh;
-    CheckBox hardcodeLocation;
-    TableLayout calTable, newsTable;
+    //HorizontalScrollView newsScroller;
+    TableLayout calTable;//, newsTable;
+    HeadlineConstraintLayout headlineView;
 
     //Used to get and store weather details
     private static final String weatherAPI = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -60,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
 
-    //Used to hardcode the location for accurate weather results
-    private boolean hardcodeLoc = false;
+    //Used to store retrieved headlines
+    private HashMap<Integer, Headline> headlines = new HashMap<>();
+    private int curHeadline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +94,12 @@ public class MainActivity extends AppCompatActivity {
             calTable = findViewById(R.id.calTable);
             alarmMore = findViewById(R.id.alarmMore);
             newsTitle = findViewById(R.id.newsTitle);
-            newsTable = findViewById(R.id.newsTable);
+            headlineView = findViewById(R.id.headlineView);
+            headlineText = findViewById(R.id.headlineText);
+            /*newsTable = findViewById(R.id.newsTable);
+            newsScroller = findViewById(R.id.newsScroller);*/
             logOut = findViewById(R.id.logOut);
             refresh = findViewById(R.id.refresh);
-            hardcodeLocation = findViewById(R.id.hardcodeLocation);
 
             //Request required permissions then begin UI operations
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
@@ -135,17 +140,6 @@ public class MainActivity extends AppCompatActivity {
                     new headlineReceiver().execute();
                 }
             });
-
-            //This is only used for testing, it's a safety net for if the LocationManager fails
-            hardcodeLocation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    hardcodeLoc = hardcodeLocation.isChecked();
-                    if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-                        new weatherTask().execute();
-                    Toast.makeText(MainActivity.this, "! INFO: this is only to provide more accurate results, though it is fixed to Edinburgh", Toast.LENGTH_LONG).show();
-                }
-            });
         }
     }
 
@@ -165,50 +159,45 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
-            //Determines which HTTP request to make depending on the hardcode location toggle
-            /*if(hardcodeLoc)
-                return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);
-            else {*/
-                final LocationListener locationListener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        longitude = location.getLongitude();
-                        latitude = location.getLatitude();
-                    }
-                    @Override
-                    public void onStatusChanged(String provider, int status, Bundle extras) {}
-                    @Override
-                    public void onProviderEnabled(String provider) {}
-                    @Override
-                    public void onProviderDisabled(String provider) {}
-                };
-
-                //The GPS permission is required for the completion of weather retrieval in the current location
-                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    //Creates an instance of the location service and retrieves the last know location
-                    //We do this so the system can determine later if there's a location update, and if
-                    //there is, request a weather update for the new location
-                    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    assert lm != null;
-                    HandlerThread t = new HandlerThread("handlerThread");
-                    t.start();
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
-                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    assert location != null;
-                    try {
-                        longitude = location.getLongitude();
-                        latitude = location.getLatitude();
-                        Log.i("? latitude, longitude", latitude + ", " + longitude);
-                        //t.quit(); <-- causes a dead thread warning, critical?
-                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
-                    } catch (NullPointerException e) {
-                        Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null'", e);
-                        return null;
-                        /*//t.quit();
-                        return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);*/
-                    }
+            final LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
                 }
-            //}
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                @Override
+                public void onProviderEnabled(String provider) {}
+                @Override
+                public void onProviderDisabled(String provider) {}
+            };
+
+            //The GPS permission is required for the completion of weather retrieval in the current location
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //Creates an instance of the location service and retrieves the last know location
+                //We do this so the system can determine later if there's a location update, and if
+                //there is, request a weather update for the new location
+                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                assert lm != null;
+                HandlerThread t = new HandlerThread("handlerThread");
+                t.start();
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                assert location != null;
+                try {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                    Log.i("? latitude, longitude", latitude + ", " + longitude);
+                    //t.quit(); <-- causes a dead thread warning, critical?
+                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + weatherAPI);
+                } catch (NullPointerException e) {
+                    Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null'", e);
+                    return null;
+                    /*//t.quit();
+                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=Edinburgh&units=metric&APPID=" + weatherAPI);*/
+                }
+            }
             return null;
         }
 
@@ -264,17 +253,12 @@ public class MainActivity extends AppCompatActivity {
                     else
                         weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
 
-                    //If .json response isn't empty, display the response in the suitable UI views
-                    //Else throw an empty .json message
-                    if (!weatherDetails.isEmpty()) {
-                        forecastTxt.setText(weatherDetails.get(0).toUpperCase());
-                        temperatureTxt.setText(weatherDetails.get(1));
-                        highsLowsTxt.setText(weatherDetails.get(2));
-                        windTxt.setText(weatherDetails.get(3));
-                        lastWUpdateTxt.setText(weatherDetails.get(4));
-                        updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
-                    } else
-                        throw new JSONException("Weather JSON empty... was HttpRequest unsuccessful?");
+                    forecastTxt.setText(weatherDetails.get(0).toUpperCase());
+                    temperatureTxt.setText(weatherDetails.get(1));
+                    highsLowsTxt.setText(weatherDetails.get(2));
+                    windTxt.setText(weatherDetails.get(3));
+                    lastWUpdateTxt.setText(weatherDetails.get(4));
+                    updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
                 } catch (JSONException e) {
                     Log.e("? weather JSONException", ".json empty?", e);
                     updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
@@ -360,14 +344,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Headline> result) {
             //Clean the table before new data is presented
-            newsTable.removeAllViews();
+            if(headlines != null && !headlines.isEmpty())
+                headlines.clear();
+            curHeadline = 0;
+            //newsTable.removeAllViews();
+
             //If results aren't empty, display them in the headline table
             //Else show headline error
             if(result != null) {
                 //Integer used just to label the headlines with a number
                 int i = 0;
                 for(final Headline headline : result) {
-                    //This if is only used to prevent useless headlines from being displayed, for some reason The Guardian API gives us them
+                    try {
+                        assert headlines != null;
+                        headlines.put(i, headline);
+                        i++;
+                    } catch(NullPointerException e) {
+                        Log.e("? headlines ArrayList result equals null", e.toString());
+                    }
+                    /*//This if is only used to prevent useless headlines from being displayed, for some reason The Guardian API gives us them
                     if(!(headline.getTitle().equals("Corrections and clarifications") || headline.getTitle().equals("This week’s correction | For the record"))) {
                         i++;
                         //Creates a new table row, defines the headline TextView and adds it to the row, and then the row to the table
@@ -393,8 +388,44 @@ public class MainActivity extends AppCompatActivity {
 
                         newsRow.addView(titleTxt);
                         newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                    }
+                    }*/
                 }
+                try {
+                    assert headlines != null;
+                    headlineText.setText(Objects.requireNonNull(headlines.get(0)).getTitle());
+                } catch (NullPointerException e) {
+                    Log.e("? headlines HashMap equals null", e.toString());
+                }
+                headlineView.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+                    @Override
+                    public void onSwipeRight() {
+                        super.onSwipeRight();
+                        if(curHeadline == 0)
+                            curHeadline = headlines.size() - 1;
+                        else
+                            curHeadline--;
+                        headlineText.setText(Objects.requireNonNull(headlines.get(curHeadline)).getTitle());
+                    }
+
+                    @Override
+                    public void onSwipeLeft() {
+                        super.onSwipeLeft();
+                        if(curHeadline == headlines.size() - 1)
+                            curHeadline = 0;
+                        else
+                            curHeadline++;
+                        headlineText.setText(Objects.requireNonNull(headlines.get(curHeadline)).getTitle());
+                    }
+
+                    @Override
+                    public void onTap() {
+                        String url = Objects.requireNonNull(headlines.get(curHeadline)).getUrl();
+                        if (!url.startsWith("http://") && !url.startsWith("https://"))
+                            url = "http://" + url;
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                    }
+                });
                 newsTitle.setText(R.string.newsTitle);
                 updateHeadlinesView(View.GONE, View.VISIBLE, View.VISIBLE);
             } else {
@@ -405,10 +436,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Used to hide/show certain views based on the parameters
-    private void updateHeadlinesView(int load, int card, int table) {
+    private void updateHeadlinesView(int load, int card, int headline) {
         findViewById(R.id.newsLoad).setVisibility(load);
         findViewById(R.id.newsCard).setVisibility(card);
-        newsTable.setVisibility(table);
+        headlineView.setVisibility(headline);
     }
 
     //Used by the app to request a permission (p)

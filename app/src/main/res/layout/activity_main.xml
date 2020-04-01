@@ -101,15 +101,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <CheckBox
-                            android:id="@+id/hardcodeLocation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            android:text="@string/hardcodeWeather"
-                            android:textSize="12sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
                         <ImageView
                             android:id="@+id/weatherIcon"
                             android:layout_width="78dp"
@@ -296,12 +287,44 @@
                         app:layout_constraintTop_toTopOf="@+id/newsIcon"
                         app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
 
-                    <TableLayout
-                        android:id="@+id/newsTable"
-                        android:layout_width="wrap_content"
+                    <com.app.today.HeadlineConstraintLayout
+                        android:id="@+id/headlineView"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/newsIcon"/>
+                        app:layout_constraintTop_toBottomOf="@id/newsIcon">
+
+                        <TextView
+                            android:id="@+id/headlineText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:text="@string/headlinePlaceholder"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="30dp"
+                            android:layout_marginStart="50dp"
+                            android:layout_marginEnd="50dp"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+                    </com.app.today.HeadlineConstraintLayout>
+
+                    <!--<HorizontalScrollView
+                        android:id="@+id/newsScroller"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/newsIcon" >
+
+                        <TableLayout
+                            android:id="@+id/newsTable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+                    </HorizontalScrollView>-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>

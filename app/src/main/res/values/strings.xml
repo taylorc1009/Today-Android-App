@@ -30,6 +30,7 @@
     <string name="event">Event</string>
 
     <string name="newsTitle">News | headlines…</string>
+    <string name="headlinePlaceholder">Headline</string>
     <string name="newsError">"Couldn't retrieve headlines…"</string>
 
     <string name="alarmTitle">ALARMS</string>
