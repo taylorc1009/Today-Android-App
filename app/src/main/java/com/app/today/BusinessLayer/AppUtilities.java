@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-public class DateUtilities {
+public class AppUtilities {
     //I was going to make a collection of date utilities for the calendar and alarms, but this was the only method I needed across both
     public static Calendar buildTime(int hour, int minute, int second, int millis) {
         //Create an instance of the exact current time in milliseconds

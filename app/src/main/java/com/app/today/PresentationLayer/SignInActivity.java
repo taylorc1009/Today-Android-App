@@ -13,8 +13,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.app.today.BusinessLayer.AppUtilities;
 import com.app.today.R;
-import com.app.today.BusinessLayer.DateUtilities;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -94,8 +95,7 @@ public class SignInActivity extends AppCompatActivity {
                     //If email is not blank and is valid, continue
                     //Else request re-entry
                     if(!email.getText().toString().trim().equals("") && isValidEmail(email.getText().toString().trim())) {
-                        DateUtilities.hideKeyboardFrom(getApplicationContext(), signIn.getRootView().findFocus());
-
+                        AppUtilities.hideKeyboardFrom(getApplicationContext(), signIn.getRootView().findFocus());
 
                         //If the user is registering, validate their display name then attempt to register them
                         //Else attempt sign in

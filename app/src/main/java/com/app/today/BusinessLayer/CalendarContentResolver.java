@@ -40,8 +40,8 @@ public class CalendarContentResolver {
                 //This resource identifier queries the events we previously got for instances we ask for, in this case I'm asking for today's events
                 Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
                 //Uses my buildTime method to create an instance of the specified times of today, start and end
-                Calendar dayStart = DateUtilities.buildTime(0, 0, 0, 0);
-                Calendar dayEnd = DateUtilities.buildTime(23, 59, 59, 999);
+                Calendar dayStart = AppUtilities.buildTime(0, 0, 0, 0);
+                Calendar dayEnd = AppUtilities.buildTime(23, 59, 59, 999);
                 //Appends the identifier, telling it we only want results in the time range specified
                 ContentUris.appendId(builder, dayStart.getTimeInMillis());
                 ContentUris.appendId(builder, dayEnd.getTimeInMillis());

@@ -29,14 +29,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
 import com.app.today.BusinessLayer.Alarm;
+import com.app.today.BusinessLayer.AppUtilities;
 import com.app.today.PresentationLayer.Utilities.AlarmRing;
 import com.app.today.DataLayer.DatabaseUtilities;
-import com.app.today.BusinessLayer.DateUtilities;
 import com.app.today.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -195,7 +193,7 @@ public class AlarmSystem extends AppCompatActivity {
                 //Else highlight the EditText's red and ask for re-entry
                 if(!(hour.getText().toString().equals("") || minute.getText().toString().equals(""))) {
                     //Build a time to compare the users requested time to the system time
-                    Calendar validationDate = DateUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0);
+                    Calendar validationDate = AppUtilities.buildTime(Integer.parseInt(hour.getText().toString()), Integer.parseInt(minute.getText().toString()), 0, 0);
                     long now = System.currentTimeMillis();
                     //Store the time of the users alarm in milliseconds for the system to use
                     long alarmTime = validationDate.getTimeInMillis();
@@ -208,7 +206,7 @@ public class AlarmSystem extends AppCompatActivity {
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
-                        DateUtilities.hideKeyboardFrom(getApplicationContext(), alarmSave.getRootView().findFocus());
+                        AppUtilities.hideKeyboardFrom(getApplicationContext(), alarmSave.getRootView().findFocus());
 
                         //This is only used to convert a single integer hour/minute to a 24hr time
                         StringBuilder hr = new StringBuilder(hour.getText().toString());
