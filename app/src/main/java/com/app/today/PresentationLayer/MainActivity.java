@@ -2,6 +2,7 @@
 *       40398643 | Taylor Courtney
 *  TODO
 *   Add a task to detect when permission requests complete + request multiple permissions at once
+*   Add a task to detect when the devices location has been retrieved
 *   Fix alarm not ringing on app kill
 *   Add a side scrollable view for news headlines (would be good to have an image to use with headlines for this)
 *   Add tabs? Home and Alarms
@@ -11,24 +12,20 @@
 
 package com.app.today.PresentationLayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.HandlerThread;
-import android.os.StrictMode;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -39,27 +36,22 @@ import android.widget.Toast;
 import com.androdocs.httprequest.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import com.app.today.BusinessLayer.CalendarContentResolver;
 import com.app.today.BusinessLayer.Event;
 import com.app.today.BusinessLayer.Headline;
-import com.app.today.PresentationLayer.Utilities.HeadlineConstraintLayout;
+import com.app.today.PresentationLayer.Utilities.HeadlineAdapter;
 import com.app.today.BusinessLayer.HeadlineReceiver;
-import com.app.today.PresentationLayer.Utilities.OnSwipeTouchListener;
 import com.app.today.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import androidx.core.view.ViewCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 public class MainActivity extends AppCompatActivity {
     //Used to determine which permission we're asking for
@@ -69,9 +61,8 @@ public class MainActivity extends AppCompatActivity {
     //UI attributes
     TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
     ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
-    //HorizontalScrollView newsScroller;
-    TableLayout calTable;//, newsTable;
-    HeadlineConstraintLayout headlineView;
+    TableLayout calTable;
+    ViewPager2 headlinePager;
 
     //Used to get and store weather details
     private static final String WEATHER_API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -81,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
     protected FirebaseUser user;
 
     //Used to store retrieved headlines
-    private HashMap<Integer, Headline> headlines = new HashMap<>();
-    private int curHeadline;
+    private ArrayList<Headline> headlines = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +102,9 @@ public class MainActivity extends AppCompatActivity {
             calTable = findViewById(R.id.calTable);
             alarmMore = findViewById(R.id.alarmMore);
             newsTitle = findViewById(R.id.newsTitle);
-            headlineView = findViewById(R.id.headlineView);
+            headlinePager = findViewById(R.id.headlinePager);
             headlineText = findViewById(R.id.headlineText);
             headlineThumb = findViewById(R.id.headlineThumb);
-            /*newsTable = findViewById(R.id.newsTable);
-            newsScroller = findViewById(R.id.newsScroller);*/
             logOut = findViewById(R.id.logOut);
             refresh = findViewById(R.id.refresh);
 
@@ -361,84 +349,25 @@ public class MainActivity extends AppCompatActivity {
         //onPostExecutes shows the results to the user
         @Override
         protected void onPostExecute(List<Headline> result) {
-            //Clean the table before new data is presented
+            //Clean the headlines List before new data is added
             if(headlines != null && !headlines.isEmpty())
                 headlines.clear();
-            curHeadline = 0;
-            //newsTable.removeAllViews();
 
             //If results aren't empty, display them in the headline table
             //Else show headline error
             if(result != null) {
                 //Integer used just to label the headlines with a number
                 int i = 0;
-                for(final Headline headline : result) {
+                for(Headline headline : result) {
                     try {
                         assert headlines != null;
-                        headlines.put(i, headline);
+                        headlines.add(headline);
                         i++;
                     } catch(NullPointerException e) {
                         Log.e("? headlines ArrayList result equals null", e.toString());
                     }
-                    /*//This if is only used to prevent useless headlines from being displayed, for some reason The Guardian API gives us them
-                    if(!(headline.getTitle().equals("Corrections and clarifications") || headline.getTitle().equals("This week’s correction | For the record"))) {
-                        i++;
-                        //Creates a new table row, defines the headline TextView and adds it to the row, and then the row to the table
-                        TableRow newsRow = new TableRow(getApplicationContext());
-
-                        TextView titleTxt = new TextView(getApplicationContext());
-                        String output = i + ". " + headline.getTitle();
-                        titleTxt.setText(output);
-                        titleTxt.setTextSize(15);
-                        titleTxt.setPadding(0, 24, 0, 0);
-                        titleTxt.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f));
-
-                        newsRow.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String url = headline.getUrl();
-                                if (!url.startsWith("http://") && !url.startsWith("https://"))
-                                    url = "http://" + url;
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                                startActivity(browserIntent);
-                            }
-                        });
-
-                        newsRow.addView(titleTxt);
-                        newsTable.addView(newsRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                    }*/
                 }
-                updateArticle();
-                headlineView.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
-                    @Override
-                    public void onSwipeRight() {
-                        super.onSwipeRight();
-                        if(curHeadline == 0)
-                            curHeadline = headlines.size() - 1;
-                        else
-                            curHeadline--;
-                        updateArticle();
-                    }
-
-                    @Override
-                    public void onSwipeLeft() {
-                        super.onSwipeLeft();
-                        if(curHeadline == headlines.size() - 1)
-                            curHeadline = 0;
-                        else
-                            curHeadline++;
-                        updateArticle();
-                    }
-
-                    @Override
-                    public void onTap() {
-                        String url = Objects.requireNonNull(headlines.get(curHeadline)).getUrl();
-                        if (!url.startsWith("http://") && !url.startsWith("https://"))
-                            url = "http://" + url;
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(browserIntent);
-                    }
-                });
+                updateArticles();
                 newsTitle.setText(R.string.newsTitle);
                 updateHeadlinesView(View.GONE, View.VISIBLE, View.VISIBLE);
             } else {
@@ -449,28 +378,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TODO you should probably take a look at the bitmaps lecture to make this more efficient
-    private void updateArticle() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        try {
-            assert headlines != null;
-            Headline h = Objects.requireNonNull(headlines.get(curHeadline));
-            headlineText.setText(h.getTitle());
-            URL url = new URL(h.getBmp());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            headlineThumb.setImageBitmap(bmp);
-        } catch (NullPointerException | MalformedURLException e) {
-            Log.e("? headlines HashMap equals null", e.toString());
-        } catch (IOException e) {
-            Log.e("? couldn't parse URL stream", ".openConnection() failed", e);
-        }
+    private void updateArticles() {
+        //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
+
+        HeadlineAdapter adapter = new HeadlineAdapter(this, headlines);
+        headlinePager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        headlinePager.setAdapter(adapter);
+        headlinePager.setOffscreenPageLimit(3);
+
+        headlinePager.setPageTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float offset = position * - 30;
+                if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
+                    if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
+                        page.setTranslationX(-offset);
+                    else
+                        page.setTranslationX(offset);
+                else
+                    page.setTranslationY(offset);
+            }
+        });
     }
 
     //Used to hide/show certain views based on the parameters
     private void updateHeadlinesView(int load, int card, int headline) {
         findViewById(R.id.newsLoad).setVisibility(load);
         findViewById(R.id.newsCard).setVisibility(card);
-        headlineView.setVisibility(headline);
+        findViewById(R.id.headlinePager).setVisibility(headline);
     }
 
     //Used by the app to request a permission (p)
@@ -498,4 +433,5 @@ public class MainActivity extends AppCompatActivity {
         } else
             return true;
     }
+    
 }

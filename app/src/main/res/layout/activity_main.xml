@@ -295,54 +295,12 @@
                         app:layout_constraintBottom_toBottomOf="@id/newsTitle"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-                    <com.app.today.PresentationLayer.Utilities.HeadlineConstraintLayout
-                        android:id="@+id/headlineView"
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/headlinePager"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/newsIcon">
-
-                        <ImageView
-                            android:id="@+id/headlineThumb"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:foreground="@drawable/headline_bmp_gradient"
-                            android:background="@drawable/rounded_headline_bmp"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:contentDescription="@string/imageDescription" />
-
-                        <TextView
-                            android:id="@+id/headlineText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:text="@string/headlinePlaceholder"
-                            android:textStyle="bold"
-                            android:textSize="15sp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            app:layout_constraintBottom_toBottomOf="@id/headlineThumb"
-                            app:layout_constraintStart_toStartOf="@id/headlineThumb"
-                            app:layout_constraintEnd_toEndOf="@id/headlineThumb" />
-                    </com.app.today.PresentationLayer.Utilities.HeadlineConstraintLayout>
-
-                    <!--<HorizontalScrollView
-                        android:id="@+id/newsScroller"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/newsIcon" >
-
-                        <TableLayout
-                            android:id="@+id/newsTable"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-                    </HorizontalScrollView>-->
+                        app:layout_constraintStart_toStartOf="@+id/newsIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/newsIcon"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
