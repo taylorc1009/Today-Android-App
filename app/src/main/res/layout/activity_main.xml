@@ -287,10 +287,13 @@
                         app:layout_constraintTop_toTopOf="@+id/newsIcon"
                         app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
 
-                    <me.relex.circleindicator.CircleIndicator
+                    <me.relex.circleindicator.CircleIndicator3
                         android:id="@+id/headlineIndicator"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="14dp"
+                        app:ci_height="7dp"
+                        app:ci_width="7dp"
+                        app:ci_drawable="@drawable/circleindicator_black"
                         app:layout_constraintTop_toTopOf="@id/newsTitle"
                         app:layout_constraintBottom_toBottomOf="@id/newsTitle"
                         app:layout_constraintEnd_toEndOf="parent" />

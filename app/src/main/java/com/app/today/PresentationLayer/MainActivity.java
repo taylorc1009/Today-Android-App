@@ -53,6 +53,8 @@ import java.util.Objects;
 import androidx.core.view.ViewCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import me.relex.circleindicator.CircleIndicator3;
+
 public class MainActivity extends AppCompatActivity {
     //Used to determine which permission we're asking for
     static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
@@ -399,6 +401,11 @@ public class MainActivity extends AppCompatActivity {
                     page.setTranslationY(offset);
             }
         });
+
+        CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
+        indicator.setViewPager(headlinePager);
+        // optional
+        adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
     }
 
     //Used to hide/show certain views based on the parameters
