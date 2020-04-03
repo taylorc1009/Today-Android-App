@@ -4,7 +4,6 @@
 *   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Add a task to detect when the devices location has been retrieved
 *   Fix alarm not ringing on app kill
-*   Add a side scrollable view for news headlines (would be good to have an image to use with headlines for this)
 *   Add tabs? Home and Alarms
 *   Add API keys to a JSON file and encrypt it?
 *   - Could do the same with the google-services.json
