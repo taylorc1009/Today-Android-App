@@ -392,13 +392,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void transformPage(@NonNull View page, float position) {
                 float offset = position * - 30;
-                if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
+                if (position < -1) {
+                    page.setTranslationX(-offset);
+                } else if (position <= 1) {
+                    float scaleFactor = Math.max(0.7f, 1 - Math.abs(position));
+                    page.setTranslationX(offset);
+                    page.setScaleY(scaleFactor);
+                    page.setAlpha(scaleFactor);
+                } else {
+                    page.setAlpha(0);
+                    page.setTranslationX(offset);
+                }
+
+                // NO ZOOM TRANSITION
+                /*if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
                     if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
                         page.setTranslationX(-offset);
                     else
                         page.setTranslationX(offset);
                 else
-                    page.setTranslationY(offset);
+                    page.setTranslationY(offset);*/
             }
         });
 
