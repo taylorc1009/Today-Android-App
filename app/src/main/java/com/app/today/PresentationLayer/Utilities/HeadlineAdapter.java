@@ -58,7 +58,6 @@ public class HeadlineAdapter extends RecyclerView.Adapter<HeadlineAdapter.Headli
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("click", "!!!");
                 String url = headlines.get(position).getUrl();
                 if (!url.startsWith("http://") && !url.startsWith("https://"))
                     url = "http://" + url;
