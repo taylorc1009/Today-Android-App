@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PresentationLayer.AlarmSystem"
-    android:background="@color/colorAccent"
+    android:background="@drawable/app_gradient"
     android:scrollbars="none"
     android:theme="@style/AppTheme">
 
@@ -285,7 +285,7 @@
                     android:layout_height="25dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:tint="@color/colorPrimaryDark"
+                    android:tint="@color/colorSecondary"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:srcCompat="@drawable/save"

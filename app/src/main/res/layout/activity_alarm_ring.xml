@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF9D00"
+    android:background="@drawable/app_gradient"
     tools:context=".PresentationLayer.AlarmActivity"
     android:theme="@style/AppTheme">
 
@@ -53,7 +53,8 @@
             app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="@+id/alarmIcon"
             app:layout_constraintTop_toBottomOf="@+id/alarmLabel"
-            app:srcCompat="@drawable/cancel" />
+            app:srcCompat="@drawable/cancel"
+            android:contentDescription="@string/imageDescription" />
 
         <TextView
             android:id="@+id/alarmLabel"

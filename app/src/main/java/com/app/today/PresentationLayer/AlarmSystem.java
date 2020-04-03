@@ -384,7 +384,7 @@ public class AlarmSystem extends AppCompatActivity {
         ImageView deleteBtn = new ImageView(getApplicationContext());
         deleteBtn.setId(15+alarmTable.getChildCount());
         deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
-        deleteBtn.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
+        deleteBtn.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
         rowLayout.addView(deleteBtn, 75, 75);
 
         //Add an OnClickListener to the delete button

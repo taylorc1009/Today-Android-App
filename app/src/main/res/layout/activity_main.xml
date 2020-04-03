@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@drawable/app_gradient"
     tools:context=".PresentationLayer.MainActivity"
     android:scrollbars="none"
     android:theme="@style/AppTheme">
@@ -359,7 +359,7 @@
                     android:layout_height="26dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:tint="@color/colorPrimaryDark"
+                    android:tint="@color/colorSecondary"
                     app:fabCustomSize="32dp"
                     app:fabSize="auto"
                     app:layout_constraintEnd_toEndOf="parent"
