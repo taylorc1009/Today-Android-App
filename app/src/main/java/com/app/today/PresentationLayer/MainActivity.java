@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO you should probably take a look at the bitmaps lecture to make this more efficient
+    //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient?
     private void updateArticles() {
         //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
 
