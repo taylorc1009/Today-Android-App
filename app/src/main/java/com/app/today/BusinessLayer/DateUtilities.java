@@ -1,6 +1,11 @@
 package com.app.today.BusinessLayer;
 
+import android.app.Activity;
+import android.content.Context;
 import android.icu.util.Calendar;
+import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 public class DateUtilities {
     //I was going to make a collection of date utilities for the calendar and alarms, but this was the only method I needed across both
@@ -16,5 +21,15 @@ public class DateUtilities {
         day.set(Calendar.MILLISECOND, millis);
 
         return day;
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        try {
+            assert imm != null;
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } catch(NullPointerException e) {
+            Log.e("? could not close keyboard", e.toString());
+        }
     }
 }

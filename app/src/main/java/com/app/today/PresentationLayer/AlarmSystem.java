@@ -35,6 +35,8 @@ import com.app.today.BusinessLayer.DateUtilities;
 import com.app.today.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -206,6 +208,8 @@ public class AlarmSystem extends AppCompatActivity {
                     if (now > alarmTime && !(chkMon.isChecked() || chkTues.isChecked() || chkWed.isChecked() || chkThurs.isChecked() || chkFri.isChecked() || chkSat.isChecked() || chkSun.isChecked())) {
                         Toast.makeText(getApplicationContext(), "Cannot set an alarm for a past time...", Toast.LENGTH_LONG).show();
                     } else {
+                        DateUtilities.hideKeyboardFrom(getApplicationContext(), alarmSave.getRootView().findFocus());
+
                         //This is only used to convert a single integer hour/minute to a 24hr time
                         StringBuilder hr = new StringBuilder(hour.getText().toString());
                         StringBuilder min = new StringBuilder(minute.getText().toString());
