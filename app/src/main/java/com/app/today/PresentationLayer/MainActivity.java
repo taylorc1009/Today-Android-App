@@ -7,18 +7,22 @@
 *   Add tabs? Home and Alarms
 *   Add API keys to a JSON file and encrypt it?
 *   - Could do the same with the google-services.json
+*   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
 * */
 
 package com.app.today.PresentationLayer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -49,7 +53,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import androidx.core.view.ViewCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import me.relex.circleindicator.CircleIndicator3;
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     //UI attributes
-    TextView lastWUpdateTxt, forecastTxt, highsLowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
+    TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
     ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
     TableLayout calTable;
     ViewPager2 headlinePager;
@@ -96,12 +99,13 @@ public class MainActivity extends AppCompatActivity {
             weatherIcon = findViewById(R.id.weatherIcon);
             lastWUpdateTxt = findViewById(R.id.lastWUpdate);
             forecastTxt = findViewById(R.id.forecast);
-            highsLowsTxt = findViewById(R.id.highsLows);
+            highsTxt = findViewById(R.id.highsTxt);
+            lowsTxt = findViewById(R.id.lowsTxt);
             temperatureTxt = findViewById(R.id.temperature);
             windTxt = findViewById(R.id.windSpeed);
             calTitle = findViewById(R.id.calTitle);
             calTable = findViewById(R.id.calTable);
-            alarmMore = findViewById(R.id.alarmMore);
+            alarmMore = findViewById(R.id.alarmIcon);
             newsTitle = findViewById(R.id.newsTitle);
             headlinePager = findViewById(R.id.headlinePager);
             headlineText = findViewById(R.id.headlineText);
@@ -162,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateWeatherView(View.VISIBLE, View.GONE, View.GONE, View.GONE);
+            updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
         }
 
         //doInBackground gets the users location then uses it to retrieve the weather in their location
@@ -230,9 +234,10 @@ public class MainActivity extends AppCompatActivity {
                     //Add the objects main values into a list of strings to be displayed
                     weatherDetails.add(weather.getString("description"));
 
-                    //Convert to integers to display a whole number
+                    //Round numerical values to display a whole number
                     weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
-                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C min / " + Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C max");
+                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
+                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
                     weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
 
                     weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
@@ -262,24 +267,24 @@ public class MainActivity extends AppCompatActivity {
 
                     forecastTxt.setText(weatherDetails.get(0).toUpperCase());
                     temperatureTxt.setText(weatherDetails.get(1));
-                    highsLowsTxt.setText(weatherDetails.get(2));
-                    windTxt.setText(weatherDetails.get(3));
-                    lastWUpdateTxt.setText(weatherDetails.get(4));
-                    updateWeatherView(View.GONE, View.VISIBLE, View.VISIBLE, View.GONE);
+                    highsTxt.setText(weatherDetails.get(2));
+                    lowsTxt.setText(weatherDetails.get(3));
+                    windTxt.setText(weatherDetails.get(4));
+                    lastWUpdateTxt.setText(weatherDetails.get(5));
+                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE);
                 } catch (JSONException e) {
                     Log.e("? weather JSONException", ".json empty?", e);
-                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                    updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
                 }
             }
             else
-                updateWeatherView(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE);
+                updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
         }
     }
 
     //Used to hide/show certain views based on the parameters received
-    private void updateWeatherView(int load, int card, int group, int error) {
+    private void updateWeatherView(int load, int group, int error) {
         findViewById(R.id.weatherLoad).setVisibility(load);
-        findViewById(R.id.weatherCard).setVisibility(card);
         findViewById(R.id.weatherStats).setVisibility(group);
         findViewById(R.id.weatherError).setVisibility(error);
     }
@@ -304,6 +309,12 @@ public class MainActivity extends AppCompatActivity {
                     //Creates a new TableRow to be added to the table
                     TableRow eventRow = new TableRow(getApplicationContext());
 
+                    CardView card = new CardView(getApplicationContext());
+                    TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+                    paramsCrd.setMargins(0, 12, 0, 0);
+                    card.setLayoutParams(paramsCrd);
+                    card.setRadius(8);
+
                     //Creates and defines a TextView to display an event
                     TextView eventTxt = new TextView(getApplicationContext());
                     String output;
@@ -315,16 +326,25 @@ public class MainActivity extends AppCompatActivity {
                         output = event.getTitle() + " | All day";
                     eventTxt.setText(output);
                     eventTxt.setTextSize(15);
+                    eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                    eventTxt.setTypeface(null, Typeface.BOLD);
                     //Define the layout parameters and margins of the event text view
                     //LayoutParameters are basically the width, height and weight (number of lines) of the display
-                    TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-                    params.setMargins(0, 12, 0, 8);
-                    eventTxt.setLayoutParams(params);
+                    CardView.LayoutParams paramsTxt = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
+                    paramsTxt.setMargins(8, 8, 8, 8);
+                    eventTxt.setLayoutParams(paramsTxt);
 
                     //Adds the text to the row, then the row to the table with the layout parameters
-                    eventRow.addView(eventTxt);
+                    card.addView(eventTxt);
+                    eventRow.addView(card);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
+                calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+                /*ConstraintSet setLayout = new ConstraintSet();
+                setLayout.clone((ConstraintLayout) calTable.getParent());
+                setLayout.connect(findViewById(R.id.calIcon).getId(), ConstraintSet.BOTTOM, calTable.getId(), ConstraintSet.TOP);
+                setLayout.connect(((ConstraintLayout) calTable.getParent()).getId(), ConstraintSet.START, calTable.getId(), ConstraintSet.START);
+                setLayout.applyTo((ConstraintLayout) calTable.getParent());*/
             } else
                 calTitle.setText(R.string.calEmpty);
         }
@@ -338,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateHeadlinesView(View.VISIBLE, View.GONE, View.GONE);
+            updateHeadlinesView(View.VISIBLE, View.GONE);
         }
 
         //doInBackground retrieves headlines and passes them to onPostExecute
@@ -370,10 +390,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 updateArticles();
                 newsTitle.setText(R.string.newsTitle);
-                updateHeadlinesView(View.GONE, View.VISIBLE, View.VISIBLE);
+                updateHeadlinesView(View.GONE, View.VISIBLE);
             } else {
                 newsTitle.setText(R.string.newsError);
-                updateHeadlinesView(View.GONE, View.VISIBLE, View.GONE);
+                updateHeadlinesView(View.GONE, View.GONE);
             }
         }
     }
@@ -421,9 +441,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Used to hide/show certain views based on the parameters
-    private void updateHeadlinesView(int load, int card, int headline) {
+    private void updateHeadlinesView(int load, int headline) {
         findViewById(R.id.newsLoad).setVisibility(load);
-        findViewById(R.id.newsCard).setVisibility(card);
+        findViewById(R.id.newsIcon).setVisibility(headline);
+        findViewById(R.id.newsTitle).setVisibility(headline);
         findViewById(R.id.headlinePager).setVisibility(headline);
     }
 
@@ -431,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean reqPermission(int p) {
         //Defines the permission we're looking for
         String per;
-        switch(p) {
+        switch (p) {
             case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
                 per = Manifest.permission.READ_CALENDAR;
                 break;
@@ -452,5 +473,4 @@ public class MainActivity extends AppCompatActivity {
         } else
             return true;
     }
-    
 }

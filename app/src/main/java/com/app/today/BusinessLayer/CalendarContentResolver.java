@@ -66,7 +66,7 @@ public class CalendarContentResolver {
             }
             return events;
         } catch(AssertionError | Exception e ) {
-            Log.e("? Exception", e.toString());
+            Log.e("? Calendar exception", e.toString());
             return null;
         }
     }

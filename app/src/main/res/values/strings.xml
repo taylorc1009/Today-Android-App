@@ -2,12 +2,6 @@
     <string name="app_name">Today</string>
     <string name="imageDescription">(display icon description)</string>
 
-    <string name="menuLogOut">Log out</string>
-    <string name="hardcodeWeather">Hardcode location</string>
-    <string name="refreshWeather">Refresh weather</string>
-    <string name="refreshCalendar">Refresh calendar</string>
-    <string name="refreshNews">Refresh headlines</string>
-
     <string name="emailHint">Email</string>
     <string name="passwordHint">Password</string>
     <string name="registerBtn">Register</string>
@@ -19,17 +13,18 @@
 
     <string name="forecast">Forecast</string>
     <string name="temperature">Temperature</string>
-    <string name="highsLows">Highs/lows</string>
+    <string name="highs">Highs</string>
+    <string name="lows">Lows</string>
     <string name="windSpeed">Wind speed</string>
     <string name="lastWUpdate">last updated</string>
-    <string name="weatherError">Something went wrong…</string>
+    <string name="weatherError">"Couldn't retrieve weather…"</string>
 
     <string name="calTitle">Calendar | happening today…</string>
     <string name="calError">"Couldn't retrieve calendar…"</string>
     <string name="calEmpty">Calendar | nothing today!</string>
     <string name="event">Event</string>
 
-    <string name="newsTitle">News | headlines…</string>
+    <string name="newsTitle">"News | today's headlines…"</string>
     <string name="headlinePlaceholder">Headline</string>
     <string name="newsError">"Couldn't retrieve headlines…"</string>
 

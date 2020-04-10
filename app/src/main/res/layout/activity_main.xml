@@ -50,11 +50,25 @@
             app:layout_constraintBottom_toTopOf="@+id/weatherGroup"
             app:layout_constraintEnd_toStartOf="@id/logOut" />
 
+        <ImageView
+            android:id="@+id/alarmIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="2dp"
+            android:clickable="true"
+            android:contentDescription="@string/imageDescription"
+            android:focusable="true"
+            app:layout_constraintEnd_toStartOf="@id/refresh"
+            app:layout_constraintBottom_toTopOf="@+id/weatherGroup"
+            app:srcCompat="@drawable/alarmwhite" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/weatherGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/heading">
 
             <ProgressBar
@@ -71,128 +85,174 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/weatherCard"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/weatherParent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/weatherParent"
+                    android:id="@+id/weatherStats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <ImageView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="78dp"
+                        android:layout_height="78dp"
+                        android:contentDescription="@string/imageDescription"
+                        android:src="@drawable/info"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lastWUpdate" />
+
+                    <TextView
+                        android:id="@+id/forecast"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/forecast"
+                        android:textStyle="bold"
+                        android:textSize="24sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toStartOf="@+id/weatherIcon"
+                        app:layout_constraintEnd_toEndOf="@id/weatherIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+
+                    <TextView
+                        android:id="@+id/temperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/temperature"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="@+id/forecast"
+                        app:layout_constraintStart_toStartOf="@+id/forecast"
+                        app:layout_constraintTop_toBottomOf="@+id/forecast" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/weatherStats"
-                        android:layout_width="match_parent"
+                        android:id="@+id/highsGroup"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:layout_marginEnd="4dp"
+                        app:layout_constraintEnd_toStartOf="@+id/lowsGroup"
+                        app:layout_constraintStart_toStartOf="@id/temperature"
+                        app:layout_constraintTop_toBottomOf="@id/temperature">
 
                         <ImageView
-                            android:id="@+id/weatherIcon"
-                            android:layout_width="78dp"
-                            android:layout_height="78dp"
+                            android:id="@+id/highsIcon"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
                             android:contentDescription="@string/imageDescription"
-                            android:src="@drawable/info"
+                            android:src="@drawable/up"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0" />
 
                         <TextView
-                            android:id="@+id/forecast"
+                            android:id="@+id/highsTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/forecast"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                            app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
+                            android:text="@string/highs"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            app:layout_constraintBottom_toBottomOf="@id/highsIcon"
+                            app:layout_constraintStart_toEndOf="@+id/highsIcon"
+                            app:layout_constraintTop_toTopOf="@+id/highsIcon" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/lowsGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintStart_toEndOf="@id/highsGroup"
+                        app:layout_constraintEnd_toEndOf="@id/temperature"
+                        app:layout_constraintTop_toBottomOf="@id/temperature">
+
+                        <ImageView
+                            android:id="@+id/lowsIcon"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:contentDescription="@string/imageDescription"
+                            android:src="@drawable/down"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0" />
 
                         <TextView
-                            android:id="@+id/temperature"
+                            android:id="@+id/lowsTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/temperature"
-                            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                            app:layout_constraintTop_toBottomOf="@+id/forecast" />
-
-                        <TextView
-                            android:id="@+id/highsLows"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/highsLows"
-                            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                            app:layout_constraintTop_toBottomOf="@+id/temperature" />
-
-                        <TextView
-                            android:id="@+id/windSpeed"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/windSpeed"
-                            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-                            app:layout_constraintTop_toBottomOf="@+id/highsLows" />
-
-                        <TextView
-                            android:id="@+id/lastWUpdate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="@string/lastWUpdate"
-                            android:textStyle="italic"
-                            app:layout_constraintStart_toStartOf="@+id/weatherIcon"
-                            app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+                            android:text="@string/lows"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            app:layout_constraintBottom_toBottomOf="@id/lowsIcon"
+                            app:layout_constraintStart_toEndOf="@+id/lowsIcon"
+                            app:layout_constraintTop_toTopOf="@+id/lowsIcon" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/weatherError"
+                        android:id="@+id/windSpeed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/weatherError"
-                        android:visibility="gone"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:text="@string/windSpeed"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="@+id/lowsGroup"
+                        app:layout_constraintStart_toStartOf="@+id/highsGroup"
+                        app:layout_constraintTop_toBottomOf="@+id/highsGroup" />
+
+                    <TextView
+                        android:id="@+id/lastWUpdate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/lastWUpdate"
+                        android:textStyle="italic"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/weatherError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/weatherError"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/calendarCard"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/calendarGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/weatherGroup"
-            app:cardCornerRadius="8dp">
+            app:layout_constraintTop_toBottomOf="@id/weatherGroup">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/calendarGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/weatherParent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <ImageView
                     android:id="@+id/calIcon"
@@ -210,26 +270,35 @@
                     android:layout_marginStart="8dp"
                     android:text="@string/calTitle"
                     android:textStyle="bold"
+                    android:textColor="@color/white"
                     app:layout_constraintStart_toEndOf="@+id/calIcon"
                     app:layout_constraintTop_toTopOf="@+id/calIcon"
                     app:layout_constraintBottom_toBottomOf="@id/calIcon"/>
 
-                <TableLayout
-                    android:id="@+id/calTable"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/calIcon"/>
+                    app:layout_constraintTop_toBottomOf="@id/calIcon">
+
+                    <TableLayout
+                        android:id="@+id/calTable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/newsGroup"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/calendarCard">
+            app:layout_constraintTop_toBottomOf="@id/calendarGroup">
 
             <ProgressBar
                 android:id="@+id/newsLoad"
@@ -245,129 +314,123 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/newsCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:cardCornerRadius="8dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/weatherParent">
-
-                    <ImageView
-                        android:id="@+id/newsIcon"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:contentDescription="@string/imageDescription"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/news"/>
-
-                    <TextView
-                        android:id="@+id/newsTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/newsTitle"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@+id/newsIcon"
-                        app:layout_constraintTop_toTopOf="@+id/newsIcon"
-                        app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
-
-                    <me.relex.circleindicator.CircleIndicator3
-                        android:id="@+id/headlineIndicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="14dp"
-                        app:ci_height="7dp"
-                        app:ci_width="7dp"
-                        app:ci_drawable="@drawable/circleindicator_black"
-                        app:layout_constraintTop_toTopOf="@id/newsTitle"
-                        app:layout_constraintBottom_toBottomOf="@id/newsTitle"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/headlinePager"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="@+id/newsIcon"
-                        app:layout_constraintTop_toBottomOf="@+id/newsIcon"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/alarmCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/newsGroup"
-            app:cardCornerRadius="8dp">
-
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/alarmGroup"
+                android:id="@+id/newsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/calendarGroup">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/alarmIcon"
+                    android:id="@+id/newsIcon"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:contentDescription="@string/imageDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/alarm" />
+                    app:srcCompat="@drawable/news"/>
 
                 <TextView
-                    android:id="@+id/alarmTitle"
+                    android:id="@+id/newsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/alarmHomeTitle"
+                    android:text="@string/newsTitle"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/alarmIcon"
-                    app:layout_constraintTop_toTopOf="@+id/alarmIcon"
-                    app:layout_constraintBottom_toBottomOf="@id/alarmIcon"/>
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toEndOf="@+id/newsIcon"
+                    app:layout_constraintTop_toTopOf="@+id/newsIcon"
+                    app:layout_constraintBottom_toBottomOf="@id/newsIcon"/>
 
-                <ImageView
-                    android:id="@+id/alarmMore"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:tint="@color/colorSecondary"
-                    app:fabCustomSize="32dp"
-                    app:fabSize="auto"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/alarmIcon"
-                    app:layout_constraintBottom_toBottomOf="@id/alarmIcon"
-                    app:srcCompat="@drawable/add"
-                    android:contentDescription="@string/imageDescription" />
+                <me.relex.circleindicator.CircleIndicator3
+                    android:id="@+id/headlineIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="14dp"
+                    app:ci_height="7dp"
+                    app:ci_width="7dp"
+                    app:ci_drawable="@drawable/circleindicator_theme"
+                    app:layout_constraintTop_toTopOf="@id/newsTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/newsTitle"
+                    app:layout_constraintEnd_toEndOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/headlinePager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/newsHeading"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--<androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@id/alarmGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/newsGroup">
+
+            &lt;!&ndash;<androidx.cardview.widget.CardView
+                android:id="@+id/alarmCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:cardCornerRadius="8dp">&ndash;&gt;
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/alarmIcon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:contentDescription="@string/imageDescription"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/alarm" />
+
+                    <TextView
+                        android:id="@+id/alarmTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/alarmHomeTitle"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        app:layout_constraintStart_toEndOf="@+id/alarmIcon"
+                        app:layout_constraintTop_toTopOf="@+id/alarmIcon"
+                        app:layout_constraintBottom_toBottomOf="@id/alarmIcon"/>
+
+                    <ImageView
+                        android:id="@+id/alarmMore"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:tint="@color/colorSecondary"
+                        app:fabCustomSize="32dp"
+                        app:fabSize="auto"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/alarmIcon"
+                        app:layout_constraintBottom_toBottomOf="@id/alarmIcon"
+                        app:srcCompat="@drawable/add"
+                        android:contentDescription="@string/imageDescription" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-</androidx.cardview.widget.CardView>&ndash;->
+        </androidx.constraintlayout.widget.ConstraintLayout>-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
