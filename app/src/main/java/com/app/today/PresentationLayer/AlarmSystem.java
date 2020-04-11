@@ -272,7 +272,7 @@ public class AlarmSystem extends AppCompatActivity {
                 //Else show there aren't any in the UI
                 if(alarmList != null && !alarmList.isEmpty()) {
                     for(Alarm alarm : alarmList) {
-                        createTableLayoutRow(alarm.getId(), alarm.getTime(), alarm.getLabel(), alarm.getDays());
+                        createAlarmTableRow(alarm.getId(), alarm.getTime(), alarm.getLabel(), alarm.getDays());
                     }
                     updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
                 }
@@ -313,7 +313,7 @@ public class AlarmSystem extends AppCompatActivity {
     }
 
     //Create a new row to add to the TableLayout in the alarm UI
-    private void createTableLayoutRow(final String id, String time, String label, String days) {
+    private void createAlarmTableRow(final String id, String time, String label, String days) {
         //Create a new row and add it to the TableLayout with the specified width and height
         final TableRow alarmRow = new TableRow(getApplicationContext());
         alarmRow.setId(10+alarmTable.getChildCount());

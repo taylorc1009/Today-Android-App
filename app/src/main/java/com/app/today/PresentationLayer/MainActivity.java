@@ -309,88 +309,10 @@ public class MainActivity extends AppCompatActivity {
             //Else show there are no events today
             if(!calendar.isEmpty()) {
                 calTitle.setText(R.string.calTitle);
-                String output;
-                for(Event event : calendar) {
-                    //Creates a new TableRow to be added to the table
-                    final TableRow eventRow = new TableRow(getApplicationContext());
 
-                    final CardView card = new CardView(getApplicationContext());
-                    TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-                    paramsCrd.setMargins(0, 12, 0, 0);
-                    card.setLayoutParams(paramsCrd);
-                    card.setRadius(8);
+                for(Event event : calendar)
+                    createCalendarTableRow(event.getTitle(), event.getDuration(), event.getDescription());
 
-                    final ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
-                    constraintLayout.setId(20+calTable.getChildCount());
-                    CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
-                    cParams.setMargins(8, 8, 8, 8);
-                    constraintLayout.setLayoutParams(cParams);
-
-                    //Creates and defines a TextView to display an event
-                    TextView eventTxt = new TextView(getApplicationContext());
-                    eventTxt.setId(21+calTable.getChildCount());
-                    output = event.getTitle() + " | " + event.getDuration();
-                    eventTxt.setText(output);
-                    eventTxt.setTextSize(20);
-                    eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
-                    eventTxt.setTypeface(null, Typeface.BOLD);
-                    constraintLayout.addView(eventTxt);
-
-                    final TextView eventDesc = new TextView(getApplicationContext());
-                    eventDesc.setId(22+calTable.getChildCount());
-                    output = event.getDescription();
-                    eventDesc.setText(output);
-                    eventDesc.setTextSize(15);
-                    eventDesc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
-                    eventDesc.setTypeface(null, Typeface.BOLD_ITALIC);
-                    eventDesc.setAlpha(0);
-                    eventDesc.setVisibility(View.GONE);
-                    constraintLayout.addView(eventDesc);
-
-                    final ImageView expand = new ImageView(getApplicationContext());
-                    expand.setId(23+calTable.getChildCount());
-                    expand.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.expand));
-                    expand.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
-                    ConstraintLayout.LayoutParams paramsImg = new ConstraintLayout.LayoutParams(40, 40);
-                    paramsImg.setMargins(0, 0, 8, 0);
-                    constraintLayout.addView(expand, 40, 40);
-
-                    expand.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(eventDesc.getVisibility() == View.GONE) {
-                                expand.animate().rotation(180);
-                                eventDesc.setVisibility(View.VISIBLE);
-                                eventDesc.animate().alpha(1).setDuration(300).setListener(null);
-                            }
-                            else {
-                                expand.animate().rotation(0);
-                                eventDesc.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        eventDesc.setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                        }
-                    });
-
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-
-                    constraintSet.connect(expand.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 8);
-                    constraintSet.connect(expand.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.TOP);
-                    constraintSet.connect(expand.getId(), ConstraintSet.BOTTOM, eventTxt.getId(), ConstraintSet.BOTTOM);
-
-                    constraintSet.connect(eventDesc.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
-                    constraintSet.connect(eventDesc.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.BOTTOM, 8);
-
-                    constraintSet.applyTo(constraintLayout);
-
-                    card.addView(constraintLayout);
-                    eventRow.addView(card);
-                    calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                }
                 calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
                 /* This should be used to fix the layout constraints as for some reason they're removed after using 'view.setLayoutParams'
@@ -405,6 +327,100 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             calTitle.setText(R.string.calError);
+    }
+
+    private void createCalendarTableRow(String title, String duration, String description) {
+        String output;
+
+        //Creates a new TableRow to be added to the table
+        final TableRow eventRow = new TableRow(getApplicationContext());
+
+        final CardView card = new CardView(getApplicationContext());
+        TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+        paramsCrd.setMargins(8, 8, 8, 8);
+        card.setLayoutParams(paramsCrd);
+        card.setRadius(8);
+
+        final ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
+        constraintLayout.setId(20+calTable.getChildCount());
+        CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
+        cParams.setMargins(8, 8, 8, 8);
+        constraintLayout.setLayoutParams(cParams);
+
+        //Creates and defines a TextView to display an event
+        TextView eventTxt = new TextView(getApplicationContext());
+        eventTxt.setId(21+calTable.getChildCount());
+        output = title + " | " + duration;
+        eventTxt.setText(output);
+        eventTxt.setTextSize(16);
+        eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
+        eventTxt.setTypeface(null, Typeface.BOLD);
+        constraintLayout.addView(eventTxt);
+
+        final TextView eventDesc = new TextView(getApplicationContext());
+        eventDesc.setId(22+calTable.getChildCount());
+        output = description;
+        eventDesc.setText(output);
+        eventDesc.setTextSize(15);
+        eventDesc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+        eventDesc.setTypeface(null, Typeface.BOLD_ITALIC);
+        eventDesc.setAlpha(0);
+        eventDesc.setVisibility(View.GONE);
+        constraintLayout.addView(eventDesc);
+
+        final ImageView expand = new ImageView(getApplicationContext());
+        expand.setId(23+calTable.getChildCount());
+        expand.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.expand));
+        expand.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
+        ConstraintLayout.LayoutParams paramsImg = new ConstraintLayout.LayoutParams(40, 40);
+        paramsImg.setMargins(0, 0, 8, 0);
+        constraintLayout.addView(expand, 48, 48);
+
+        expand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(eventDesc.getVisibility() == View.GONE) {
+                    expand.animate().rotation(180);
+                    eventDesc.setVisibility(View.VISIBLE);
+                    eventDesc.animate().alpha(1).setDuration(300).setListener(null);
+                }
+                else {
+                    expand.animate().rotation(0);
+                    eventDesc.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            eventDesc.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        });
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+
+        constraintSet.connect(expand.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 8);
+        constraintSet.connect(expand.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.TOP);
+        constraintSet.connect(expand.getId(), ConstraintSet.BOTTOM, eventTxt.getId(), ConstraintSet.BOTTOM);
+
+        constraintSet.connect(eventTxt.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
+        constraintSet.connect(eventTxt.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
+        constraintSet.connect(eventTxt.getId(), ConstraintSet.END, expand.getId(), ConstraintSet.START, 8);
+        constraintSet.setHorizontalBias(eventTxt.getId(), 0f);
+
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.BOTTOM);
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END);
+        constraintSet.setHorizontalBias(eventDesc.getId(), 0f);
+
+        constraintSet.setHorizontalWeight(eventTxt.getId(), 1.0f);
+        constraintSet.setHorizontalWeight(eventDesc.getId(), 1.0f);
+
+        constraintSet.applyTo(constraintLayout);
+
+        card.addView(constraintLayout);
+        eventRow.addView(card);
+        calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
 
     //AsyncTask for getting headlines

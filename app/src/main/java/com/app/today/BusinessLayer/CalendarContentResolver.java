@@ -60,7 +60,7 @@ public class CalendarContentResolver {
                                 if((description = cursor.getString(1)).equals(""))
                                     description = "Sorry! This event has no description provided…";
 
-                                if(cursor.getString(4).equals("0"))
+                                if(!cursor.getString(4).equals("0"))
                                     duration = "ALL DAY";
                                 else
                                     duration = getTimeString(new Date(cursor.getLong(2)).getTime()) + "-" + getTimeString(new Date(cursor.getLong(3)).getTime());
