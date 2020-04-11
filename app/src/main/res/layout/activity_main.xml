@@ -76,14 +76,14 @@
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="78dp"
                 android:layout_height="78dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:indeterminate="true"
                 android:indeterminateTint="@color/white"
                 android:indeterminateTintMode="src_in"
                 android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/weatherParent"
@@ -116,7 +116,6 @@
                         android:id="@+id/forecast"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:text="@string/forecast"
                         android:textStyle="bold"
                         android:textSize="24sp"
@@ -219,7 +218,6 @@
                         android:id="@+id/lastWUpdate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="@string/lastWUpdate"
                         android:textStyle="italic"
                         android:textColor="@color/white"
