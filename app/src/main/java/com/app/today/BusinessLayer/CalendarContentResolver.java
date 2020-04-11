@@ -47,7 +47,7 @@ public class CalendarContentResolver {
                 ContentUris.appendId(builder, dayEnd.getTimeInMillis());
                 //Finally we query the calendar for instances, using the URI, for the fields "title", "begin", "end", and "allDay"
                 //in ASC (oldest to newest) order
-                cursor = resolver.query(builder.build(), new String[]{ "title", "begin", "end", "allDay" }, null, null, "startDay ASC, startMinute ASC");
+                cursor = resolver.query(builder.build(), new String[]{ "title", "description", "begin", "end", "allDay" }, null, null, "startDay ASC, startMinute ASC");
 
                 //Now we iterate through the results and store them in a list to be returned
                 assert cursor != null;
@@ -55,9 +55,20 @@ public class CalendarContentResolver {
                     if (cursor.getCount() > 0) {
                         if (cursor.moveToFirst()) {
                             do {
-                                Event event = new Event(cursor.getString(0), new Date(cursor.getLong(1)), new Date(cursor.getLong(2)), cursor.getString(3).equals("0"));
-                                Log.i("! event found", event.toString() + ", " + getTimeString(event.getBegin().getTime()));
+                                String duration, description;
+
+                                if((description = cursor.getString(1)).equals(""))
+                                    description = "Sorry! This event has no description provided…";
+
+                                if(cursor.getString(4).equals("0"))
+                                    duration = "ALL DAY";
+                                else
+                                    duration = getTimeString(new Date(cursor.getLong(2)).getTime()) + "-" + getTimeString(new Date(cursor.getLong(3)).getTime());
+
+                                Event event = new Event(cursor.getString(0), description, duration);
                                 events.add(event);
+
+                                Log.i("! calendar event found", event.getTitle() + ", " + event.getDuration() + ", description: \"" + event.getDescription() + "\"");
                             } while (cursor.moveToNext());
                         }
                     }
@@ -71,7 +82,7 @@ public class CalendarContentResolver {
         }
     }
 
-    //Converts the time of a calendar instance to a more user friendly, String value
+    //Converts the time of a calendar instance to a String value, used for displaying the time to the user
     public String getTimeString(long milliSeconds) {
         //Defines the format we want
         String format = "HH:mm";

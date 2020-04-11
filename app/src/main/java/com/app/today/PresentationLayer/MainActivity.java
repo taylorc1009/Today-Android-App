@@ -8,6 +8,9 @@
 *   Add API keys to a JSON file and encrypt it?
 *   - Could do the same with the google-services.json
 *   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
+*   Get reminders from calendar
+*   Fix EditText handle colours in sign in activity
+*   Have the calendar display event locations
 * */
 
 package com.app.today.PresentationLayer;
@@ -16,9 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,7 +41,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.util.Log;
-import android.widget.Toast;
 import com.androdocs.httprequest.HttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +59,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import androidx.viewpager2.widget.ViewPager2;
-
 import me.relex.circleindicator.CircleIndicator3;
 
 public class MainActivity extends AppCompatActivity {
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     //Refreshes the weather (requests location access beforehand)
                     if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
                         new weatherTask().execute();
-                        Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                     }
                     //Refreshes the calendar (requests location access beforehand)
                     if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
@@ -197,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
                 t.start();
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                assert location != null;
                 try {
+                    assert location != null;
                     longitude = location.getLongitude();
                     latitude = location.getLatitude();
                     Log.i("? latitude, longitude", latitude + ", " + longitude);
@@ -238,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                     weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
                     weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
                     weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
-                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " mph winds");
+                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " MPH WINDS");
 
                     weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
@@ -305,42 +309,93 @@ public class MainActivity extends AppCompatActivity {
             //Else show there are no events today
             if(!calendar.isEmpty()) {
                 calTitle.setText(R.string.calTitle);
+                String output;
                 for(Event event : calendar) {
                     //Creates a new TableRow to be added to the table
-                    TableRow eventRow = new TableRow(getApplicationContext());
+                    final TableRow eventRow = new TableRow(getApplicationContext());
 
-                    CardView card = new CardView(getApplicationContext());
+                    final CardView card = new CardView(getApplicationContext());
                     TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
                     paramsCrd.setMargins(0, 12, 0, 0);
                     card.setLayoutParams(paramsCrd);
                     card.setRadius(8);
 
+                    final ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
+                    constraintLayout.setId(20+calTable.getChildCount());
+                    CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
+                    cParams.setMargins(8, 8, 8, 8);
+                    constraintLayout.setLayoutParams(cParams);
+
                     //Creates and defines a TextView to display an event
                     TextView eventTxt = new TextView(getApplicationContext());
-                    String output;
-                    //If the current event is not happening all day, display its start and end times
-                    //Else display it as an all day event
-                    if(!event.isAllDay())
-                        output = event.getTitle() + " | " + resolver.getTimeString(event.getBegin().getTime()) + "-" + resolver.getTimeString(event.getEnd().getTime());
-                    else
-                        output = event.getTitle() + " | All day";
+                    eventTxt.setId(21+calTable.getChildCount());
+                    output = event.getTitle() + " | " + event.getDuration();
                     eventTxt.setText(output);
-                    eventTxt.setTextSize(15);
-                    eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                    eventTxt.setTextSize(20);
+                    eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
                     eventTxt.setTypeface(null, Typeface.BOLD);
-                    //Define the layout parameters and margins of the event text view
-                    //LayoutParameters are basically the width, height and weight (number of lines) of the display
-                    CardView.LayoutParams paramsTxt = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
-                    paramsTxt.setMargins(8, 8, 8, 8);
-                    eventTxt.setLayoutParams(paramsTxt);
+                    constraintLayout.addView(eventTxt);
 
-                    //Adds the text to the row, then the row to the table with the layout parameters
-                    card.addView(eventTxt);
+                    final TextView eventDesc = new TextView(getApplicationContext());
+                    eventDesc.setId(22+calTable.getChildCount());
+                    output = event.getDescription();
+                    eventDesc.setText(output);
+                    eventDesc.setTextSize(15);
+                    eventDesc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+                    eventDesc.setTypeface(null, Typeface.BOLD_ITALIC);
+                    eventDesc.setAlpha(0);
+                    eventDesc.setVisibility(View.GONE);
+                    constraintLayout.addView(eventDesc);
+
+                    final ImageView expand = new ImageView(getApplicationContext());
+                    expand.setId(23+calTable.getChildCount());
+                    expand.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.expand));
+                    expand.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
+                    ConstraintLayout.LayoutParams paramsImg = new ConstraintLayout.LayoutParams(40, 40);
+                    paramsImg.setMargins(0, 0, 8, 0);
+                    constraintLayout.addView(expand, 40, 40);
+
+                    expand.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(eventDesc.getVisibility() == View.GONE) {
+                                expand.animate().rotation(180);
+                                eventDesc.setVisibility(View.VISIBLE);
+                                eventDesc.animate().alpha(1).setDuration(300).setListener(null);
+                            }
+                            else {
+                                expand.animate().rotation(0);
+                                eventDesc.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        eventDesc.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+
+                    constraintSet.connect(expand.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 8);
+                    constraintSet.connect(expand.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.TOP);
+                    constraintSet.connect(expand.getId(), ConstraintSet.BOTTOM, eventTxt.getId(), ConstraintSet.BOTTOM);
+
+                    constraintSet.connect(eventDesc.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
+                    constraintSet.connect(eventDesc.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.BOTTOM, 8);
+
+                    constraintSet.applyTo(constraintLayout);
+
+                    card.addView(constraintLayout);
                     eventRow.addView(card);
                     calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 }
                 calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
-                /*ConstraintSet setLayout = new ConstraintSet();
+
+                /* This should be used to fix the layout constraints as for some reason they're removed after using 'view.setLayoutParams'
+                Instead, I've cheated and put the table in its own ConstraintLayout - this isn't the most practical fix
+                ConstraintSet setLayout = new ConstraintSet();
                 setLayout.clone((ConstraintLayout) calTable.getParent());
                 setLayout.connect(findViewById(R.id.calIcon).getId(), ConstraintSet.BOTTOM, calTable.getId(), ConstraintSet.TOP);
                 setLayout.connect(((ConstraintLayout) calTable.getParent()).getId(), ConstraintSet.START, calTable.getId(), ConstraintSet.START);
@@ -378,12 +433,10 @@ public class MainActivity extends AppCompatActivity {
             //Else show headline error
             if(result != null) {
                 //Integer used just to label the headlines with a number
-                int i = 0;
                 for(Headline headline : result) {
                     try {
                         assert headlines != null;
                         headlines.add(headline);
-                        i++;
                     } catch(NullPointerException e) {
                         Log.e("? headlines ArrayList result equals null", e.toString());
                     }
@@ -436,7 +489,6 @@ public class MainActivity extends AppCompatActivity {
 
         CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
         indicator.setViewPager(headlinePager);
-        // optional
         adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
     }
 

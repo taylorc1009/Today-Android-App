@@ -3,6 +3,9 @@ package com.app.today.PresentationLayer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.app.today.BusinessLayer.AppUtilities;
 import com.app.today.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -74,13 +76,18 @@ public class SignInActivity extends AppCompatActivity {
                     //Animates the reveal of the register views
                     regArrow.animate().rotation(180);
                     registerGroup.setVisibility(View.VISIBLE);
-                    registerGroup.animate().alpha(1);
+                    registerGroup.animate().alpha(1).setDuration(300).setListener(null);
                     //Changes the sign-in button text
                     signIn.setText(R.string.registerBtn);
                 }
                 else {
                     regArrow.animate().rotation(0);
-                    registerGroup.animate().alpha(0).setDuration(1).withEndAction(cleanView()); // doesn't fade out then clear
+                    registerGroup.animate().alpha(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            cleanView();
+                        }
+                    }); // doesn't fade out then clear
                 }
             }
         });

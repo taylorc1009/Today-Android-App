@@ -132,6 +132,7 @@
                         android:text="@string/temperature"
                         android:textSize="20sp"
                         android:textColor="@color/white"
+                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="@+id/forecast"
                         app:layout_constraintStart_toStartOf="@+id/forecast"
                         app:layout_constraintTop_toBottomOf="@+id/forecast" />
@@ -140,7 +141,7 @@
                         android:id="@+id/highsGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
+                        android:layout_marginEnd="8dp"
                         app:layout_constraintEnd_toStartOf="@+id/lowsGroup"
                         app:layout_constraintStart_toStartOf="@id/temperature"
                         app:layout_constraintTop_toBottomOf="@id/temperature">
@@ -163,6 +164,7 @@
                             android:text="@string/highs"
                             android:textColor="@color/white"
                             android:textSize="14sp"
+                            android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@id/highsIcon"
                             app:layout_constraintStart_toEndOf="@+id/highsIcon"
                             app:layout_constraintTop_toTopOf="@+id/highsIcon" />
@@ -172,7 +174,7 @@
                         android:id="@+id/lowsGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="8dp"
                         app:layout_constraintStart_toEndOf="@id/highsGroup"
                         app:layout_constraintEnd_toEndOf="@id/temperature"
                         app:layout_constraintTop_toBottomOf="@id/temperature">
@@ -195,6 +197,7 @@
                             android:text="@string/lows"
                             android:textColor="@color/white"
                             android:textSize="14sp"
+                            android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@id/lowsIcon"
                             app:layout_constraintStart_toEndOf="@+id/lowsIcon"
                             app:layout_constraintTop_toTopOf="@+id/lowsIcon" />
@@ -207,6 +210,7 @@
                         android:text="@string/windSpeed"
                         android:textSize="14sp"
                         android:textColor="@color/white"
+                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="@+id/lowsGroup"
                         app:layout_constraintStart_toStartOf="@+id/highsGroup"
                         app:layout_constraintTop_toBottomOf="@+id/highsGroup" />

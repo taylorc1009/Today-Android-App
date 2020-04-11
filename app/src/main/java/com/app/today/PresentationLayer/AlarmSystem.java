@@ -322,10 +322,10 @@ public class AlarmSystem extends AppCompatActivity {
         alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
         //Create a ConstraintLayout added to the TableRow to allow us to constrain the views to where we need them
-        ConstraintLayout rowLayout = new ConstraintLayout(getApplicationContext());
-        rowLayout.setId(11+alarmTable.getChildCount());
-        rowLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        alarmRow.addView(rowLayout);
+        ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
+        constraintLayout.setId(11+alarmTable.getChildCount());
+        constraintLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        alarmRow.addView(constraintLayout);
 
         //Create a TextView for the alarm time and define its visual parameters
         TextView timeTxt = new TextView(getApplicationContext());
@@ -333,7 +333,7 @@ public class AlarmSystem extends AppCompatActivity {
         timeTxt.setText(time);
         timeTxt.setTextSize(40);
         timeTxt.setTypeface(null, Typeface.BOLD);
-        rowLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //Same as the timeTxt except here we're building the string we want to display
         TextView daysTxt = new TextView(getApplicationContext());
@@ -366,7 +366,7 @@ public class AlarmSystem extends AppCompatActivity {
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
         daysTxt.setTypeface(null, Typeface.ITALIC);
-        rowLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //Create a TextView for the alarm time and define its visual parameters only if the label isn't empty
         TextView labelTxt = new TextView(getApplicationContext());
@@ -380,14 +380,13 @@ public class AlarmSystem extends AppCompatActivity {
         labelTxt.setText(output);
         labelTxt.setTextSize(12);
         labelTxt.setTypeface(null, Typeface.ITALIC);
-        rowLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //A button used to delete an alarm shown in the list
         ImageView deleteBtn = new ImageView(getApplicationContext());
         deleteBtn.setId(15+alarmTable.getChildCount());
         deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
-        deleteBtn.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
-        rowLayout.addView(deleteBtn, 75, 75);
+        constraintLayout.addView(deleteBtn, 75, 75);
 
         //Add an OnClickListener to the delete button
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -417,28 +416,28 @@ public class AlarmSystem extends AppCompatActivity {
         });
 
         //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
-        ConstraintSet setLayout = new ConstraintSet();
+        ConstraintSet constraintSet = new ConstraintSet();
         //We need to clone the current condition of the ConstraintLayout to the Set before we can add constraints to them
-        setLayout.clone(rowLayout);
+        constraintSet.clone(constraintLayout);
 
         //Use setLayout to constrain the timeTxt start to the ConstraintLayout start, and top to top
-        setLayout.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
-        setLayout.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+        constraintSet.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
+        constraintSet.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
 
         //Constrains the daysTxt to the end and top of timeTxt
-        setLayout.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
-        setLayout.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
+        constraintSet.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        constraintSet.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
 
         //Constrains the deleteBtn to the end of daysTxt
-        setLayout.connect(deleteBtn.getId(), ConstraintSet.LEFT, daysTxt.getId(), ConstraintSet.RIGHT, 8);
-        setLayout.connect(deleteBtn.getId(), ConstraintSet.TOP, rowLayout.getId(), ConstraintSet.TOP, 0);
+        constraintSet.connect(deleteBtn.getId(), ConstraintSet.LEFT, daysTxt.getId(), ConstraintSet.RIGHT, 8);
+        constraintSet.connect(deleteBtn.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP, 0);
 
         //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
-        setLayout.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
-        setLayout.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
+        constraintSet.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        constraintSet.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
 
         //Applies our constraints we defined using setLayout.connect
-        setLayout.applyTo(rowLayout);
+        constraintSet.applyTo(constraintLayout);
     }
 
     //Empties the view to add an alarm
