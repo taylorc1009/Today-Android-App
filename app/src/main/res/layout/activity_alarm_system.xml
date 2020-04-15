@@ -169,6 +169,7 @@
                     android:textAlignment="center"
                     android:textSize="40sp"
                     android:textStyle="bold"
+                    android:textColorHint="#30000000"
                     android:backgroundTint="@color/black"
                     app:layout_constraintEnd_toStartOf="@+id/guideline"
                     app:layout_constraintTop_toBottomOf="@id/newAlarmTxt" />
@@ -198,6 +199,7 @@
                     android:textSize="40sp"
                     android:textStyle="bold"
                     android:backgroundTint="@color/black"
+                    android:textColorHint="#30000000"
                     android:focusableInTouchMode="true"
                     app:layout_constraintStart_toStartOf="@+id/guideline"
                     app:layout_constraintTop_toTopOf="@+id/hour" />
