@@ -83,6 +83,9 @@ public class AlarmSystem extends AppCompatActivity {
         alarmsCard = findViewById(R.id.alarmsCard);
         alarmEmpty = findViewById(R.id.alarmEmpty);
 
+        //Initialize alarmManager with the system AlarmManager class
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
         //Update the list of alarms and the table UI
         retrieveAlarms();
 
@@ -90,6 +93,7 @@ public class AlarmSystem extends AppCompatActivity {
         alarmBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clearAddAlarmUI();
+                AppUtilities.hideKeyboardFrom(getApplicationContext(), alarmBack.getRootView().findFocus());
                 Intent mainReturn = new Intent(AlarmSystem.this, MainActivity.class);
                 //On return to the MainActivity, clear the previous instance of MainActivity on the stack
                 mainReturn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -106,6 +110,7 @@ public class AlarmSystem extends AppCompatActivity {
                     alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.cancel));
                 }
                 else {
+                    AppUtilities.hideKeyboardFrom(getApplicationContext(), alarmAdd.getRootView().findFocus());
                     addCard.setVisibility(View.GONE);
                     alarmAdd.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.add));
                 }
@@ -261,19 +266,18 @@ public class AlarmSystem extends AppCompatActivity {
                 super.onComplete(task);
                 //If the query was successful, store the data in the List
                 //Else return null so the UI knows to say otherwise
-                if(task.isSuccessful()) {
-                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren()) {
+                if(task.isSuccessful())
+                    for (DataSnapshot snapshot : Objects.requireNonNull(load.getResult()).getChildren())
                         alarmList.add(snapshot.getValue(Alarm.class));
-                    }
-                }
                 else
                     alarmList = null;
                 //If there are results, list them in the UI
                 //Else show there aren't any in the UI
                 if(alarmList != null && !alarmList.isEmpty()) {
-                    for(Alarm alarm : alarmList) {
+                    for(Alarm alarm : alarmList)
                         createAlarmTableRow(alarm.getId(), alarm.getTime(), alarm.getLabel(), alarm.getDays());
-                    }
+
+                    //alarmTable.setLayoutParams(new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT));
                     updateAlarmsView(View.VISIBLE, View.GONE, View.GONE);
                 }
                 else
@@ -314,30 +318,32 @@ public class AlarmSystem extends AppCompatActivity {
 
     //Create a new row to add to the TableLayout in the alarm UI
     private void createAlarmTableRow(final String id, String time, String label, String days) {
+        String output;
+
         //Create a new row and add it to the TableLayout with the specified width and height
         final TableRow alarmRow = new TableRow(getApplicationContext());
-        alarmRow.setId(10+alarmTable.getChildCount());
         //Store the ID of the alarm displayed in this row to allow us to know which one the user chooses to delete later
         alarmRow.setTag(id);
-        alarmTable.addView(alarmRow, TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
         //Create a ConstraintLayout added to the TableRow to allow us to constrain the views to where we need them
         ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
-        constraintLayout.setId(11+alarmTable.getChildCount());
-        constraintLayout.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        alarmRow.addView(constraintLayout);
+        constraintLayout.setId(10+alarmTable.getChildCount());
+        TableRow.LayoutParams cParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+        //cParams.setMargins(8, 8, 8, 8);
+        constraintLayout.setLayoutParams(cParams);
 
         //Create a TextView for the alarm time and define its visual parameters
         TextView timeTxt = new TextView(getApplicationContext());
-        timeTxt.setId(12+alarmTable.getChildCount());
+        timeTxt.setId(11+alarmTable.getChildCount());
         timeTxt.setText(time);
         timeTxt.setTextSize(40);
+        timeTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
         timeTxt.setTypeface(null, Typeface.BOLD);
-        constraintLayout.addView(timeTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(timeTxt);
 
         //Same as the timeTxt except here we're building the string we want to display
         TextView daysTxt = new TextView(getApplicationContext());
-        daysTxt.setId(13+alarmTable.getChildCount());
+        daysTxt.setId(12+alarmTable.getChildCount());
         //Uses the Calendar days stored in the Firebase database to determine which days, if any, this alarm
         //will repeat on for this to be shown to the user
         StringBuilder daysOutput = new StringBuilder("Days:");
@@ -366,12 +372,11 @@ public class AlarmSystem extends AppCompatActivity {
         daysTxt.setText(daysOutput);
         daysTxt.setTextSize(12);
         daysTxt.setTypeface(null, Typeface.ITALIC);
-        constraintLayout.addView(daysTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(daysTxt);
 
         //Create a TextView for the alarm time and define its visual parameters only if the label isn't empty
         TextView labelTxt = new TextView(getApplicationContext());
-        labelTxt.setId(14 + alarmTable.getChildCount());
-        String output;
+        labelTxt.setId(13+alarmTable.getChildCount());
         //Shows alarm label only if it's defined, otherwise indicate there isn't one
         if(!(label == null || label.equals("")))
             output = "Label: " + label;
@@ -380,11 +385,11 @@ public class AlarmSystem extends AppCompatActivity {
         labelTxt.setText(output);
         labelTxt.setTextSize(12);
         labelTxt.setTypeface(null, Typeface.ITALIC);
-        constraintLayout.addView(labelTxt, ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        constraintLayout.addView(labelTxt);
 
         //A button used to delete an alarm shown in the list
         ImageView deleteBtn = new ImageView(getApplicationContext());
-        deleteBtn.setId(15+alarmTable.getChildCount());
+        deleteBtn.setId(14+alarmTable.getChildCount());
         deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
         constraintLayout.addView(deleteBtn, 75, 75);
 
@@ -408,12 +413,17 @@ public class AlarmSystem extends AppCompatActivity {
                     alarmManager.cancel(alarmSender);
                     alarmSender.cancel();
                 } catch (NullPointerException e) {
-                    Log.e("? Local PendingIntent was null", "new instance of AlarmManager?");
+                    Log.e("? AlarmManager PendingIntent was null", e.toString());
                 }
 
                 retrieveAlarms();
             }
         });
+
+        ImageView editBtn = new ImageView(getApplicationContext());
+        editBtn.setId(15+alarmTable.getChildCount());
+        editBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.edit));
+        constraintLayout.addView(editBtn, 50, 50);
 
         //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
         ConstraintSet constraintSet = new ConstraintSet();
@@ -421,23 +431,35 @@ public class AlarmSystem extends AppCompatActivity {
         constraintSet.clone(constraintLayout);
 
         //Use setLayout to constrain the timeTxt start to the ConstraintLayout start, and top to top
-        constraintSet.connect(timeTxt.getId(), ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.LEFT, 0);
-        constraintSet.connect(timeTxt.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+        constraintSet.connect(timeTxt.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
+        constraintSet.connect(timeTxt.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
 
         //Constrains the daysTxt to the end and top of timeTxt
-        constraintSet.connect(daysTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        constraintSet.connect(daysTxt.getId(), ConstraintSet.START, timeTxt.getId(), ConstraintSet.END, 8);
+        constraintSet.connect(daysTxt.getId(), ConstraintSet.END, editBtn.getId(), ConstraintSet.START, 8);
         constraintSet.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
-
-        //Constrains the deleteBtn to the end of daysTxt
-        constraintSet.connect(deleteBtn.getId(), ConstraintSet.LEFT, daysTxt.getId(), ConstraintSet.RIGHT, 8);
-        constraintSet.connect(deleteBtn.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP, 0);
+        constraintSet.setHorizontalBias(daysTxt.getId(), 0f);
 
         //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
-        constraintSet.connect(labelTxt.getId(), ConstraintSet.LEFT, timeTxt.getId(), ConstraintSet.RIGHT, 8);
+        constraintSet.connect(labelTxt.getId(), ConstraintSet.START, timeTxt.getId(), ConstraintSet.END, 8);
+        constraintSet.connect(labelTxt.getId(), ConstraintSet.END, editBtn.getId(), ConstraintSet.START, 8);
         constraintSet.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
+        constraintSet.setHorizontalBias(labelTxt.getId(), 0f);
+
+        constraintSet.connect(deleteBtn.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
+        constraintSet.connect(deleteBtn.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM);
+        constraintSet.connect(deleteBtn.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END);
+
+        constraintSet.connect(editBtn.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
+        constraintSet.connect(editBtn.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM);
+        constraintSet.connect(editBtn.getId(), ConstraintSet.END, deleteBtn.getId(), ConstraintSet.START, 16);
+
 
         //Applies our constraints we defined using setLayout.connect
         constraintSet.applyTo(constraintLayout);
+
+        alarmRow.addView(constraintLayout);
+        alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
 
     //Empties the view to add an alarm
@@ -475,7 +497,6 @@ public class AlarmSystem extends AppCompatActivity {
 
         Log.i("? attempted to invoke AlarmManager with ID", alarm.getId());
         //Get an instance of the alarm manager to store our alarm
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
         //Set the alarm to repeat at the same time every day with our PendingIntent, we will check upon ring if
         //the alarm is meant to ring that day, if not then cancel the process
