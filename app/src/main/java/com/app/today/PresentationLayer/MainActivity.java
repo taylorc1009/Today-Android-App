@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         paramsCrd.setMargins(8, 8, 8, 8);
         card.setLayoutParams(paramsCrd);
-        card.setRadius(8);
+        card.setRadius(16);
 
         final ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
         constraintLayout.setId(20+calTable.getChildCount());
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         output = title + " | " + duration;
         eventTxt.setText(output);
         eventTxt.setTextSize(16);
-        eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
+        eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
         eventTxt.setTypeface(null, Typeface.BOLD);
         constraintLayout.addView(eventTxt);
 
@@ -403,14 +403,14 @@ public class MainActivity extends AppCompatActivity {
         constraintSet.connect(expand.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.TOP);
         constraintSet.connect(expand.getId(), ConstraintSet.BOTTOM, eventTxt.getId(), ConstraintSet.BOTTOM);
 
-        constraintSet.connect(eventTxt.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
+        constraintSet.connect(eventTxt.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START, 8);
         constraintSet.connect(eventTxt.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
         constraintSet.connect(eventTxt.getId(), ConstraintSet.END, expand.getId(), ConstraintSet.START, 8);
         constraintSet.setHorizontalBias(eventTxt.getId(), 0f);
 
-        constraintSet.connect(eventDesc.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START);
-        constraintSet.connect(eventDesc.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.BOTTOM);
-        constraintSet.connect(eventDesc.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END);
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START, 8);
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.TOP, eventTxt.getId(), ConstraintSet.BOTTOM, 8);
+        constraintSet.connect(eventDesc.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 8);
         constraintSet.setHorizontalBias(eventDesc.getId(), 0f);
 
         constraintSet.setHorizontalWeight(eventTxt.getId(), 1.0f);
@@ -511,8 +511,7 @@ public class MainActivity extends AppCompatActivity {
     //Used to hide/show certain views based on the parameters
     private void updateHeadlinesView(int load, int headline) {
         findViewById(R.id.newsLoad).setVisibility(load);
-        findViewById(R.id.newsIcon).setVisibility(headline);
-        findViewById(R.id.newsTitle).setVisibility(headline);
+        findViewById(R.id.newsHeading).setVisibility(headline);
         findViewById(R.id.headlinePager).setVisibility(headline);
     }
 
