@@ -4,11 +4,13 @@
 *   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Add a task to detect when the devices location has been retrieved
 *   Fix alarm not ringing on app kill
+*   - Add an edit alarm option to AlarmSystem
 *   Add tabs? Home and Alarms
 *   Add API keys to a JSON file and encrypt it?
 *   - Could do the same with the google-services.json
 *   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
 *   Get reminders from calendar
+*   - Possibly more details too, for example location
 *   Fix EditText handle colours in sign in activity
 *   Have the calendar display event locations
 * */
