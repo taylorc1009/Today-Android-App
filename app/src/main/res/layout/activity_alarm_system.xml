@@ -65,31 +65,35 @@
 
                 <ProgressBar
                     android:id="@+id/alarmLoad"
+                    style="?android:attr/progressBarStyleLarge"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/white"
+                    android:indeterminateTintMode="src_in"
                     android:visibility="gone"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:indeterminate="true"
-                    android:indeterminateTintMode="src_in"
-                    android:indeterminateTint="@color/white" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/alarmEmpty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
                     android:text="@string/alarmEmpty"
-                    android:textSize="20sp"
                     android:textColor="@color/white"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.cardview.widget.CardView
+                <!--<androidx.cardview.widget.CardView
                     android:id="@+id/alarmsCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,28 +101,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:cardCornerRadius="8dp">
+                    app:cardCornerRadius="8dp">-->
 
                     <TableLayout
                         android:id="@+id/alarmTable"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/alarmGroup"/>
-            </androidx.cardview.widget.CardView>
+            <!--</androidx.cardview.widget.CardView>-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/addCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_margin="8dp"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -80,7 +80,7 @@ public class AlarmSystem extends AppCompatActivity {
         minute = findViewById(R.id.minute);
         alarmLabel = findViewById(R.id.alarmLabel);
         alarmLoad = findViewById(R.id.alarmLoad);
-        alarmsCard = findViewById(R.id.alarmsCard);
+        //alarmsCard = findViewById(R.id.alarmsCard);
         alarmEmpty = findViewById(R.id.alarmEmpty);
 
         //Initialize alarmManager with the system AlarmManager class
@@ -289,7 +289,7 @@ public class AlarmSystem extends AppCompatActivity {
     //Used to show/hide parts of the UI based on the parameters
     private void updateAlarmsView(int table, int load, int error) {
         alarmLoad.setVisibility(load);
-        alarmsCard.setVisibility(table);
+        alarmTable.setVisibility(table);
         alarmEmpty.setVisibility(error);
     }
 
@@ -325,11 +325,17 @@ public class AlarmSystem extends AppCompatActivity {
         //Store the ID of the alarm displayed in this row to allow us to know which one the user chooses to delete later
         alarmRow.setTag(id);
 
+        final CardView card = new CardView(getApplicationContext());
+        TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+        paramsCrd.setMargins(0, 8, 0, 8);
+        card.setLayoutParams(paramsCrd);
+        card.setRadius(16);
+
         //Create a ConstraintLayout added to the TableRow to allow us to constrain the views to where we need them
         ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
         constraintLayout.setId(10+alarmTable.getChildCount());
-        TableRow.LayoutParams cParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-        //cParams.setMargins(8, 8, 8, 8);
+        CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
+        cParams.setMargins(8, 8, 8, 8);
         constraintLayout.setLayoutParams(cParams);
 
         //Create a TextView for the alarm time and define its visual parameters
@@ -438,13 +444,13 @@ public class AlarmSystem extends AppCompatActivity {
         constraintSet.connect(daysTxt.getId(), ConstraintSet.START, timeTxt.getId(), ConstraintSet.END, 8);
         constraintSet.connect(daysTxt.getId(), ConstraintSet.END, editBtn.getId(), ConstraintSet.START, 8);
         constraintSet.connect(daysTxt.getId(), ConstraintSet.TOP, timeTxt.getId(), ConstraintSet.TOP, 22);
-        constraintSet.setHorizontalBias(daysTxt.getId(), 0f);
+        constraintSet.setHorizontalBias(daysTxt.getId(), 0.0f);
 
         //Constrains the label to the end of timeTxt and bottom of daysTxt, only if labelTxt was defined
         constraintSet.connect(labelTxt.getId(), ConstraintSet.START, timeTxt.getId(), ConstraintSet.END, 8);
         constraintSet.connect(labelTxt.getId(), ConstraintSet.END, editBtn.getId(), ConstraintSet.START, 8);
         constraintSet.connect(labelTxt.getId(), ConstraintSet.TOP, daysTxt.getId(), ConstraintSet.BOTTOM, 8);
-        constraintSet.setHorizontalBias(labelTxt.getId(), 0f);
+        constraintSet.setHorizontalBias(labelTxt.getId(), 0.0f);
 
         constraintSet.connect(deleteBtn.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
         constraintSet.connect(deleteBtn.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM);
@@ -454,12 +460,12 @@ public class AlarmSystem extends AppCompatActivity {
         constraintSet.connect(editBtn.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM);
         constraintSet.connect(editBtn.getId(), ConstraintSet.END, deleteBtn.getId(), ConstraintSet.START, 16);
 
-
         //Applies our constraints we defined using setLayout.connect
         constraintSet.applyTo(constraintLayout);
 
-        alarmRow.addView(constraintLayout);
-        alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        card.addView(constraintLayout);
+        alarmRow.addView(card);
+        alarmTable.addView(alarmRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT, 1.0f));
     }
 
     //Empties the view to add an alarm
