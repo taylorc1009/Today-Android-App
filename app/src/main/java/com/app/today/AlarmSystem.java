@@ -18,6 +18,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -314,39 +315,24 @@ public class AlarmSystem extends AppCompatActivity {
     //Create a new row to add to the TableLayout in the alarm UI
     private void createAlarmTableRow(final String id, String time, String label, String days) {
         String output;
+        Context context = getApplicationContext();
+        int rowId = alarmTable.getChildCount();
 
         //Create a new row and add it to the TableLayout with the specified width and height
         final TableRow alarmRow = new TableRow(getApplicationContext());
         //Store the ID of the alarm displayed in this row to allow us to know which one the user chooses to delete later
         alarmRow.setTag(id);
 
-        final CardView card = new CardView(getApplicationContext());
-        TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-        paramsCrd.setMargins(0, 8, 0, 8);
-        card.setLayoutParams(paramsCrd);
-        card.setRadius(16);
+        CardView card = AppUtilities.createTableCard(context, 16, 0, 8, 0, 8);
 
-        //Create a ConstraintLayout added to the TableRow to allow us to constrain the views to where we need them
-        ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
-        constraintLayout.setId(10+alarmTable.getChildCount());
-        CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
-        cParams.setMargins(8, 8, 8, 8);
-        constraintLayout.setLayoutParams(cParams);
+        ConstraintLayout constraintLayout = AppUtilities.createConstraintLayout(context, 1000+rowId, 8, 8, 8, 8);
 
         //Create a TextView for the alarm time and define its visual parameters
-        TextView timeTxt = new TextView(getApplicationContext());
-        timeTxt.setId(11+alarmTable.getChildCount());
-        timeTxt.setText(time);
-        timeTxt.setTextSize(40);
-        timeTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
-        timeTxt.setTypeface(null, Typeface.BOLD);
+        TextView timeTxt = AppUtilities.createText(context, 1100+rowId, time, 40, R.color.black, Typeface.BOLD);
         constraintLayout.addView(timeTxt);
 
-        //Same as the timeTxt except here we're building the string we want to display
-        TextView daysTxt = new TextView(getApplicationContext());
-        daysTxt.setId(12+alarmTable.getChildCount());
         //Uses the Calendar days stored in the Firebase database to determine which days, if any, this alarm
-        //will repeat on for this to be shown to the user
+        //will repeat on and build an output string
         StringBuilder daysOutput = new StringBuilder("Days:");
         if(!days.equals("")) {
             String[] tokenized = days.split(" ");
@@ -370,29 +356,23 @@ public class AlarmSystem extends AppCompatActivity {
         }
         else
             daysOutput.append(" NON-REPEATING");
-        daysTxt.setText(daysOutput);
-        daysTxt.setTextSize(12);
-        daysTxt.setTypeface(null, Typeface.ITALIC);
+        TextView daysTxt = AppUtilities.createText(context, 1200+rowId, daysOutput.toString(), 12, R.color.black, Typeface.ITALIC);
         constraintLayout.addView(daysTxt);
 
-        //Create a TextView for the alarm time and define its visual parameters only if the label isn't empty
-        TextView labelTxt = new TextView(getApplicationContext());
-        labelTxt.setId(13+alarmTable.getChildCount());
         //Shows alarm label only if it's defined, otherwise indicate there isn't one
         if(!(label == null || label.equals("")))
             output = "Label: " + label;
         else
             output = "Label: (n/a)";
-        labelTxt.setText(output);
-        labelTxt.setTextSize(12);
-        labelTxt.setTypeface(null, Typeface.ITALIC);
+        TextView labelTxt = AppUtilities.createText(context, 1300+rowId, output, 12, R.color.black, Typeface.ITALIC);
         constraintLayout.addView(labelTxt);
 
+        ImageView editBtn = AppUtilities.createDrawableImage(context, 1400+rowId, R.drawable.edit, 50, 50);
+        constraintLayout.addView(editBtn);
+
         //A button used to delete an alarm shown in the list
-        ImageView deleteBtn = new ImageView(getApplicationContext());
-        deleteBtn.setId(14+alarmTable.getChildCount());
-        deleteBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bin));
-        constraintLayout.addView(deleteBtn, 75, 75);
+        ImageView deleteBtn = AppUtilities.createDrawableImage(context, 1500+rowId, R.drawable.bin, 75, 75);
+        constraintLayout.addView(deleteBtn);
 
         //Add an OnClickListener to the delete button
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -416,15 +396,9 @@ public class AlarmSystem extends AppCompatActivity {
                 } catch (NullPointerException e) {
                     Log.e("? AlarmManager PendingIntent was null", e.toString());
                 }
-
                 retrieveAlarms();
             }
         });
-
-        ImageView editBtn = new ImageView(getApplicationContext());
-        editBtn.setId(15+alarmTable.getChildCount());
-        editBtn.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.edit));
-        constraintLayout.addView(editBtn, 50, 50);
 
         //ConstraintSet setLayout is used to set constraints on views which we tell it to, you will see setLayout.connect below
         ConstraintSet constraintSet = new ConstraintSet();

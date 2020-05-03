@@ -329,50 +329,29 @@ public class MainActivity extends AppCompatActivity {
 
     private void createCalendarTableRow(String title, String duration, String description) {
         String output;
+        Context context = getApplicationContext();
+        int rowId = calTable.getChildCount();
 
         //Creates a new TableRow to be added to the table
         final TableRow eventRow = new TableRow(getApplicationContext());
 
-        final CardView card = new CardView(getApplicationContext());
-        TableRow.LayoutParams paramsCrd = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
-        paramsCrd.setMargins(8, 8, 8, 8);
-        card.setLayoutParams(paramsCrd);
-        card.setRadius(16);
+        CardView card = AppUtilities.createTableCard(context, 16, 8, 8, 8, 8);
 
-        final ConstraintLayout constraintLayout = new ConstraintLayout(getApplicationContext());
-        constraintLayout.setId(20+calTable.getChildCount());
-        CardView.LayoutParams cParams = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
-        cParams.setMargins(8, 8, 8, 8);
-        constraintLayout.setLayoutParams(cParams);
+        ConstraintLayout constraintLayout = AppUtilities.createConstraintLayout(context, 2000+rowId, 8, 8, 8, 8);
 
-        //Creates and defines a TextView to display an event
-        TextView eventTxt = new TextView(getApplicationContext());
-        eventTxt.setId(21+calTable.getChildCount());
         output = title + " | " + duration;
-        eventTxt.setText(output);
-        eventTxt.setTextSize(16);
-        eventTxt.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
-        eventTxt.setTypeface(null, Typeface.BOLD);
+        TextView eventTxt = AppUtilities.createText(context, 2100+rowId, output, 16, R.color.black, Typeface.BOLD);
         constraintLayout.addView(eventTxt);
 
-        final TextView eventDesc = new TextView(getApplicationContext());
-        eventDesc.setId(22+calTable.getChildCount());
         output = description;
-        eventDesc.setText(output);
-        eventDesc.setTextSize(15);
-        eventDesc.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
-        eventDesc.setTypeface(null, Typeface.BOLD_ITALIC);
+        final TextView eventDesc = AppUtilities.createText(context, 2200+rowId, output, 15, R.color.black, Typeface.BOLD);
         eventDesc.setAlpha(0);
         eventDesc.setVisibility(View.GONE);
         constraintLayout.addView(eventDesc);
 
-        final ImageView expand = new ImageView(getApplicationContext());
-        expand.setId(23+calTable.getChildCount());
-        expand.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.expand));
-        expand.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorSecondary));
-        ConstraintLayout.LayoutParams paramsImg = new ConstraintLayout.LayoutParams(40, 40);
-        paramsImg.setMargins(0, 0, 8, 0);
-        constraintLayout.addView(expand, 48, 48);
+        final ImageView expand = AppUtilities.createDrawableImage(context, 2300+rowId, R.drawable.expand, 48, 48);
+        expand.setColorFilter(ContextCompat.getColor(context, R.color.colorSecondary));
+        constraintLayout.addView(expand);
 
         expand.setOnClickListener(new View.OnClickListener() {
             @Override
