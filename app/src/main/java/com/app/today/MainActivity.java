@@ -3,6 +3,7 @@
 *  TODO
 *   Since the AsyncTask was separated, it appears to be happening on the UI thread (you'll notice the views don't change)
 *   - You could probably change the refresh to a 'pull down to refresh' option
+*   - Also, since this was added, news headlines can't be opened without being flagged as a new task (could this be due to the merging of the 2 methods?)
 *   Add a wait between alarmGreet animIn and animOut
 *   Fix alarm not ringing on app kill
 *   - Add an edit alarm option to AlarmSystem
