@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.github.androdocs:Simple-HTTP-Request:v1.0'
 
     //Firebase
-    implementation 'com.google.firebase:firebase-database:19.2.1'
-    implementation 'com.google.firebase:firebase-auth:19.3.0'
-    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-database:19.3.0'
+    implementation 'com.google.firebase:firebase-auth:19.3.1'
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
 }

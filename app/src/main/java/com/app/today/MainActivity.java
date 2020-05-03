@@ -53,11 +53,15 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 import androidx.viewpager2.widget.ViewPager2;
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Used to store retrieved headlines
     private ArrayList<Headline> headlines = new ArrayList<>();
+    HttpRequestTask httpRequestTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
             //Request required permissions then begin UI operations
             // << permission request Task should be added here >> should probably put this in onStart then?
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-                new weatherTask().execute();
+                weatherTask();
+                //new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendarView();
             new headlineReceiver().execute();
@@ -147,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     //Refreshes the weather (requests location access beforehand)
                     if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
-                        new weatherTask().execute();
+                        weatherTask();
+
+                        //new weatherTask().execute();
                         //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
                     }
                     //Refreshes the calendar (requests location access beforehand)
@@ -160,9 +168,86 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void weatherTask() {
+        List<String> weatherDetails = new ArrayList<>();
+
+        updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            //Creates an instance of the location service and retrieves the last know location
+            //We do this so the system can determine later if there's a location update, and if
+            //there is, request a weather update for the new location
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            assert lm != null;
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            try {
+                assert location != null;
+                double longitude = location.getLongitude(), latitude = location.getLatitude();
+                String result = new HttpRequestTask().execute("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API).get();
+
+                JSONObject jsonObj = new JSONObject(result);
+                //Organises the results into suitable Objects
+                JSONObject main = jsonObj.getJSONObject("main");
+                JSONObject wind = jsonObj.getJSONObject("wind");
+                JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
+                long updatedAt = jsonObj.getLong("dt");
+
+                //Add the objects main values into a list of strings to be displayed
+                weatherDetails.add(weather.getString("description"));
+
+                //Round numerical values to display a whole number
+                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
+                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
+                weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
+                weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " MPH WINDS");
+
+                weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
+
+                weatherDetails.add(weather.getString("id"));
+            } catch (NullPointerException | JSONException e) {
+                Log.e("? NullPointerException upon retrieving location", e.toString());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (!weatherDetails.isEmpty()) {
+                int weatherID = Integer.parseInt(weatherDetails.get(6));
+                //Based on the weather ID, this will determine which drawable weather icon to use
+                if (weatherID == 800)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
+                else if (weatherID == 801)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
+                else if (weatherID == 802)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
+                else if (weatherID == 803 || weatherID == 804)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
+                else if (weatherID >= 500 && weatherID <= 504)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
+                else if (weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
+                else if ((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
+                else if ((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
+                else if (weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
+                else
+                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
+
+                //Displays our weather details
+                forecastTxt.setText(weatherDetails.get(0).toUpperCase());
+                temperatureTxt.setText(weatherDetails.get(1));
+                highsTxt.setText(weatherDetails.get(2));
+                lowsTxt.setText(weatherDetails.get(3));
+                windTxt.setText(weatherDetails.get(4));
+                lastWUpdateTxt.setText(weatherDetails.get(5));
+                updateWeatherView(View.GONE, View.VISIBLE, View.GONE);
+            } else
+                updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
+        }
+    }
+
     //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
     //action (doInBackground, which as the name implies can be done in the background)
-    class weatherTask extends AsyncTask<String, Void, String> {
+    /*class weatherTask extends AsyncTask<String, Void, String> {
         //Attributes defined globally for this subclass so they can be accessed by inner classes
         //private double longitude, latitude;
 
@@ -265,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
             else
                 updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
         }
-    }
+    }*/
 
     //Used to hide/show certain views based on the parameters received
     private void updateWeatherView(int load, int group, int error) {
