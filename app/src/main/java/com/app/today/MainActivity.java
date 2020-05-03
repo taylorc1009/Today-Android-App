@@ -14,9 +14,11 @@
 *   Get reminders from calendar
 *   - Possibly more details too, for example location
 *   Fix EditText handle colours in sign in activity
-*   Have the calendar display event locations
+*   Improve calendar event layouts
+*   - Have the calendar display event locations
 *   Add a sliding down expand animation
 *   Move the change alpha animation to AppUtilities
+*   Fix AsyncTask memory leaks
 * */
 
 package com.app.today;
