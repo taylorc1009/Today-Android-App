@@ -2,11 +2,11 @@ package com.app.today;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,16 +19,16 @@ import java.util.Objects;
 class DatabaseUtilities {
     //Initialize a Firebase database reference to allow us to contact it
     //This is a NoSQL database which stores data in the format of .json files,
-    //so we will need to use code here to query it
+    //so we will need to use code to query it
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference("alarms");
+    //Will be used to access/create the directory for the current user in the database
+    DatabaseReference myRef = database.getReference(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
 
     List<Alarm> alarms = new ArrayList<>();
 
     //Method used to store an alarm in the child path which matches the passed alarm's ID
     void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
-        Log.i("TTTime", alarm.getTime());
     }
 
     //Used to return a new key of (and also create) a new child in the database

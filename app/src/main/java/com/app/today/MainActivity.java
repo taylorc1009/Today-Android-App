@@ -3,6 +3,7 @@
 *  TODO
 *   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Add a task to detect when the devices location has been retrieved
+*   - These 2 may not be necessary after removing the location request thread, research shows the AsyncTask is supposed to do this for us
 *   Add a wait between alarmGreet animIn and animOut
 *   Fix alarm not ringing on app kill
 *   - Add an edit alarm option to AlarmSystem
@@ -162,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
     //action (doInBackground, which as the name implies can be done in the background)
     class weatherTask extends AsyncTask<String, Void, String> {
         //Attributes defined globally for this subclass so they can be accessed by inner classes
-        private double longitude, latitude;
-
+        //private double longitude, latitude;
 
         //onPreExecute instructs the UI to show that the weather is loading
         @Override
@@ -203,8 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     assert location != null;
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
+                    double longitude = location.getLongitude(), latitude = location.getLatitude();
                     //t.quit();// <-- causes a dead thread warning, critical?
 
                     return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API);
@@ -466,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient?
+    //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient? I don't imagine the ViewPager will do this for you
     private void updateArticles() {
         //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
 
