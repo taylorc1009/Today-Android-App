@@ -47,14 +47,13 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.util.Log;
-import com.androdocs.httprequest.HttpRequest;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
@@ -76,16 +75,14 @@ public class MainActivity extends AppCompatActivity {
     TableLayout calTable;
     ViewPager2 headlinePager;
 
-    //Used to get and store weather details
+    //OpenWeatherMap key, used to get the weather details
     private static final String WEATHER_API = "2a2d2e85e492fe3c92b568f4fe3ce854";
+    //The Guardian API key, used to get news headlines
+    private static final String NEWS_API = "07f8c2ea-493e-4429-ae47-74ade74d113c";
 
     //Used to verify Firebase sign in
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
-
-    //Used to store retrieved headlines
-    private ArrayList<Headline> headlines = new ArrayList<>();
-    HttpRequestTask httpRequestTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,13 +120,14 @@ public class MainActivity extends AppCompatActivity {
             refresh = findViewById(R.id.refresh);
 
             //Request required permissions then begin UI operations
-            // << permission request Task should be added here >> should probably put this in onStart then?
+            //TODO << permission request Task should be added here >> should probably put this in onStart then?
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-                weatherTask();
+                weatherReceiver();
                 //new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendarView();
-            new headlineReceiver().execute();
+            headlineReceiver();
+            //new headlineReceiver().execute();
 
             //If the user clicks the alarm icon, go to AlarmSystem
             alarmMore.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     //Refreshes the weather (requests location access beforehand)
                     if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
-                        weatherTask();
+                        weatherReceiver();
 
                         //new weatherTask().execute();
                         //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
@@ -162,13 +160,14 @@ public class MainActivity extends AppCompatActivity {
                     if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                         updateCalendarView();
                     //Refreshes the news headlines
-                    new headlineReceiver().execute();
+                    headlineReceiver();
+                    //new headlineReceiver().execute();
                 }
             });
         }
     }
 
-    private void weatherTask() {
+    private void weatherReceiver() {
         List<String> weatherDetails = new ArrayList<>();
 
         updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
@@ -468,8 +467,89 @@ public class MainActivity extends AppCompatActivity {
         calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
 
+    private void headlineReceiver() {
+        ArrayList<Headline> headlines = new ArrayList<>();
+
+        updateHeadlinesView(View.VISIBLE, View.GONE);
+        //Try to get the news headlines from a requested .json file
+        //Else return null so the UI thread knows there was an error
+        try {
+            String result = new HttpRequestTask().execute("https://content.guardianapis.com/search?section=world&show-fields=thumbnail&api-key=" + NEWS_API).get();
+
+            JSONObject results = new JSONObject(result);
+            JSONArray resultsArray = results.getJSONObject("response").getJSONArray("results");
+
+            //Store the results into a list
+            for(int i = 0; i < resultsArray.length(); i++) {
+                JSONObject jsonObj = resultsArray.getJSONObject(i);
+                Log.i("? results obj " + i, String.valueOf(jsonObj));
+
+                //Used to remove system char indicators from the URL string
+                StringBuilder thumbnail = new StringBuilder("");
+                for(char c : jsonObj.getJSONObject("fields").getString("thumbnail").toCharArray())
+                    if(c != '\\')
+                        thumbnail.append(c);
+
+                headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"), thumbnail.toString()));
+            }
+        } catch (JSONException e) {
+            Log.e("? JSONException", "failed to parse request/result", e);
+        } catch (NullPointerException e) {
+            Log.e("? NullPointerException", ".json result was not populated", e);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        //If results aren't empty, display them in the headline table
+        //Else show headline error
+        if(!headlines.isEmpty()) {
+            //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
+            //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient? I don't imagine the ViewPager will do this for you
+            HeadlineAdapter adapter = new HeadlineAdapter(getApplicationContext(), headlines);
+            headlinePager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+            headlinePager.setAdapter(adapter);
+            headlinePager.setOffscreenPageLimit(3);
+
+            headlinePager.setPageTransformer(new ViewPager2.PageTransformer() {
+                @Override
+                public void transformPage(@NonNull View page, float position) {
+                    float offset = position * - 30;
+                    if (position < -1) {
+                        page.setTranslationX(-offset);
+                    } else if (position <= 1) {
+                        float scaleFactor = Math.max(0.7f, 1 - Math.abs(position));
+                        page.setTranslationX(offset);
+                        page.setScaleY(scaleFactor);
+                        page.setAlpha(scaleFactor);
+                    } else {
+                        page.setAlpha(0);
+                        page.setTranslationX(offset);
+                    }
+
+                    // NO ZOOM TRANSITION
+                /*if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
+                    if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
+                        page.setTranslationX(-offset);
+                    else
+                        page.setTranslationX(offset);
+                else
+                    page.setTranslationY(offset);*/
+                }
+            });
+            CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
+            indicator.setViewPager(headlinePager);
+            adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
+
+            newsTitle.setText(R.string.newsTitle);
+            updateHeadlinesView(View.GONE, View.VISIBLE);
+        } else {
+            newsTitle.setText(R.string.newsError);
+            updateHeadlinesView(View.GONE, View.GONE);
+        }
+    }
+
     //AsyncTask for getting headlines
-    class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
+    /*class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
         //onPreExecute shows the user the weather is loading
         @Override
         protected void onPreExecute() {
@@ -512,7 +592,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient? I don't imagine the ViewPager will do this for you
     private void updateArticles() {
         //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
 
@@ -544,14 +623,14 @@ public class MainActivity extends AppCompatActivity {
                     else
                         page.setTranslationX(offset);
                 else
-                    page.setTranslationY(offset);*/
+                    page.setTranslationY(offset);*
             }
         });
 
         CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
         indicator.setViewPager(headlinePager);
         adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
-    }
+    }*/
 
     //Used to hide/show certain views based on the parameters
     private void updateHeadlinesView(int load, int headline) {
