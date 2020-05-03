@@ -1,9 +1,8 @@
 /*  40398643 | Taylor Courtney
 *
 *  TODO
-*   Add a task to detect when permission requests complete + request multiple permissions at once
-*   Add a task to detect when the devices location has been retrieved
-*   - These 2 may not be necessary after removing the location request thread, research shows the AsyncTask is supposed to do this for us
+*   Since the AsyncTask was separated, it appears to be happening on the UI thread (you'll notice the views don't change)
+*   - You could probably change the refresh to a 'pull down to refresh' option
 *   Add a wait between alarmGreet animIn and animOut
 *   Fix alarm not ringing on app kill
 *   - Add an edit alarm option to AlarmSystem
@@ -39,7 +38,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -47,7 +45,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +57,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
 import androidx.viewpager2.widget.ViewPager2;
 import me.relex.circleindicator.CircleIndicator3;
 
