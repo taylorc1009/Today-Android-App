@@ -18,7 +18,6 @@
 *   - Have the calendar display event locations
 *   Add a sliding down expand animation
 *   Move the change alpha animation to AppUtilities
-*   Fix AsyncTask memory leaks
 * */
 
 package com.app.today;
