@@ -1,5 +1,3 @@
-// Google News API - 3906607150f944d0a94a74da4c17f51b << results appear to require a Google library to parse the .json response
-
 package com.app.today;
 
 import android.util.Log;
@@ -21,7 +19,7 @@ class HeadlineReceiver {
         //Try to get the news headlines from a requested .json file
         //Else return null so the UI thread knows there was an error
         try {
-            JSONObject results = new JSONObject(makeRequest());//.getJSONObject("response").getJSONArray("results");
+            JSONObject results = new JSONObject(makeRequest());
             JSONArray resultsArray = results.getJSONObject("response").getJSONArray("results");
 
             //Store the results into a list

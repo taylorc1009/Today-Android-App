@@ -1,5 +1,5 @@
-/*
-*       40398643 | Taylor Courtney
+/*  40398643 | Taylor Courtney
+*
 *  TODO
 *   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Add a task to detect when the devices location has been retrieved
@@ -15,6 +15,8 @@
 *   - Possibly more details too, for example location
 *   Fix EditText handle colours in sign in activity
 *   Have the calendar display event locations
+*   Add a sliding down expand animation
+*   Move the change alpha animation to AppUtilities
 * */
 
 package com.app.today;
@@ -34,11 +36,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -51,7 +51,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 updateCalendarView();
             new headlineReceiver().execute();
 
-            //If the user clicks the Alarms "+", go to AlarmSystem
+            //If the user clicks the alarm icon, go to AlarmSystem
             alarmMore.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent alarmActivity = new Intent(MainActivity.this, AlarmSystem.class);
@@ -175,20 +174,6 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
-            /*final LocationListener locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                }
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {}
-                @Override
-                public void onProviderEnabled(String provider) {}
-                @Override
-                public void onProviderDisabled(String provider) {}
-            };*/
-
             //The GPS permission is required for the completion of weather retrieval in the current location
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 //Creates an instance of the location service and retrieves the last know location
@@ -196,15 +181,11 @@ public class MainActivity extends AppCompatActivity {
                 //there is, request a weather update for the new location
                 LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 assert lm != null;
-                /*HandlerThread t = new HandlerThread("handlerThread");
-                t.start();
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());*/
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 try {
                     assert location != null;
                     double longitude = location.getLongitude(), latitude = location.getLatitude();
-                    //t.quit();// <-- causes a dead thread warning, critical?
 
                     return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API);
                 } catch (NullPointerException e) {
@@ -214,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
-        //onPostExecute basically handles the weather response:
+        //onPostExecute handles the weather response
         @Override
         protected void onPostExecute(String result) {
             //Detects whether or not we actually got a result
