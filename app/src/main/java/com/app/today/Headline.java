@@ -1,6 +1,6 @@
-package com.app.today.BusinessLayer;
+package com.app.today;
 
-public class Headline {
+class Headline {
     //Headline class to store the article title, bitmap and URL so we can
     //open it in the browser
 
@@ -14,13 +14,13 @@ public class Headline {
         this.bmp = bmp;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
-    public String getUrl() {
+    String getUrl() {
         return url;
     }
-    public String getBmp() {
+    String getBmp() {
         return bmp;
     }
 }

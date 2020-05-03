@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/app_gradient"
-    tools:context=".PresentationLayer.SignInActivity"
+    tools:context=".SignInActivity"
     android:theme="@style/AppTheme">
 
     <androidx.constraintlayout.widget.ConstraintLayout

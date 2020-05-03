@@ -1,4 +1,4 @@
-package com.app.today.PresentationLayer;
+package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,11 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import android.icu.util.Calendar;
-import com.app.today.BusinessLayer.Alarm;
-import com.app.today.BusinessLayer.AppUtilities;
-import com.app.today.PresentationLayer.Utilities.AlarmRing;
-import com.app.today.DataLayer.DatabaseUtilities;
-import com.app.today.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.app.today.PresentationLayer;
+package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,10 +14,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.app.today.PresentationLayer.Utilities.AlarmRing;
-import com.app.today.BusinessLayer.Alarm;
-import com.app.today.DataLayer.DatabaseUtilities;
-import com.app.today.R;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -187,7 +184,7 @@ public class AlarmActivity extends AppCompatActivity {
 
         //Creates an animation to fade in the greeting
         AlphaAnimation animIn = new AlphaAnimation(0.0f, 1.0f);
-        animIn.setDuration(2000);
+        animIn.setDuration(1000);
 
         //Adds a state listener to the animation
         //Once the fade in animation has completed, begin fade out
@@ -199,7 +196,7 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 AlphaAnimation animOut = new AlphaAnimation(1.0f, 0.0f);
-                animOut.setDuration(2000);
+                animOut.setDuration(1000);
                 animOut.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {}

@@ -1,4 +1,4 @@
-package com.app.today.BusinessLayer;
+package com.app.today;
 
 import java.io.Serializable;
 
@@ -14,13 +14,14 @@ public class Alarm implements Serializable {
 
     Alarm() {} //Firebase serializer requires a non-parameter constructor
 
-    public Alarm(String id, String days, String label, String time) {
+    Alarm(String id, String days, String label, String time) {
         this.id = id;
         this.days = days;
         this.label = label;
         this.time = time;
     }
 
+    //These must be public in order to allow Firebase to access the values
     public String getId() {
         return id;
     }

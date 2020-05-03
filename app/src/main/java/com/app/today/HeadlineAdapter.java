@@ -1,4 +1,4 @@
-package com.app.today.PresentationLayer.Utilities;
+package com.app.today;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-import com.app.today.BusinessLayer.Headline;
-import com.app.today.R;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,7 +24,7 @@ public class HeadlineAdapter extends RecyclerView.Adapter<HeadlineAdapter.Headli
     private Context context;
     private ArrayList<Headline> headlines;
 
-    public HeadlineAdapter(Context context, ArrayList<Headline> headlines) {
+    HeadlineAdapter(Context context, ArrayList<Headline> headlines) {
         this.context = context;
         this.headlines = headlines;
     }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PresentationLayer.AlarmSystem"
+    tools:context=".AlarmSystem"
     android:background="@drawable/app_gradient"
     android:scrollbars="none"
     android:theme="@style/AppTheme">

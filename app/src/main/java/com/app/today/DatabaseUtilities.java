@@ -1,9 +1,8 @@
-package com.app.today.DataLayer;
+package com.app.today;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
 
-import com.app.today.BusinessLayer.Alarm;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -17,42 +16,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DatabaseUtilities {
+class DatabaseUtilities {
     //Initialize a Firebase database reference to allow us to contact it
     //This is a NoSQL database which stores data in the format of .json files,
     //so we will need to use code here to query it
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    public DatabaseReference myRef = database.getReference("alarms");
+    DatabaseReference myRef = database.getReference("alarms");
 
     List<Alarm> alarms = new ArrayList<>();
 
     //Method used to store an alarm in the child path which matches the passed alarm's ID
-    public void store(Alarm alarm) {
+    void store(Alarm alarm) {
         myRef.child(alarm.getId()).setValue(alarm);
+        Log.i("TTTime", alarm.getTime());
     }
 
     //Used to return a new key of (and also create) a new child in the database
-    public String newKey() {
+    String newKey() {
         return myRef.push().getKey();
     }
 
     //Used to remove the value of the child path specified
-    public void delete(String id) {
+    void delete(String id) {
         myRef.child(id).removeValue();
     }
 
     //This is where we create our query task to be executed
     //We need to make querying the database for results into a task as the app
     //will not wait for the results to be pulled before continuing
-    public static class FirebaseQuery {
+    static class FirebaseQuery {
         //We first initialise the reference which we want to query
         private DatabaseReference ref;
-        public FirebaseQuery(DatabaseReference ref) {
+        FirebaseQuery(DatabaseReference ref) {
             this.ref = ref;
         }
 
         //Then we build the task we want to start
-        public Task<DataSnapshot> start() {
+        Task<DataSnapshot> start() {
             Task<DataSnapshot> task;
 
             //Specifies the result we need from the task, in our case a DataSnapshot from the database

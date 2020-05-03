@@ -3,6 +3,7 @@
 *  TODO
 *   Add a task to detect when permission requests complete + request multiple permissions at once
 *   Add a task to detect when the devices location has been retrieved
+*   Add a wait between alarmGreet animIn and animOut
 *   Fix alarm not ringing on app kill
 *   - Add an edit alarm option to AlarmSystem
 *   Add tabs? Home and Alarms
@@ -15,7 +16,7 @@
 *   Have the calendar display event locations
 * */
 
-package com.app.today.PresentationLayer;
+package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,12 +50,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import com.app.today.BusinessLayer.CalendarContentResolver;
-import com.app.today.BusinessLayer.Event;
-import com.app.today.BusinessLayer.Headline;
-import com.app.today.PresentationLayer.Utilities.HeadlineAdapter;
-import com.app.today.BusinessLayer.HeadlineReceiver;
-import com.app.today.R;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
@@ -168,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         //Attributes defined globally for this subclass so they can be accessed by inner classes
         private double longitude, latitude;
 
+
         //onPreExecute instructs the UI to show that the weather is loading
         @Override
         protected void onPreExecute() {
@@ -178,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         //doInBackground gets the users location then uses it to retrieve the weather in their location
         @Override
         protected String doInBackground(String... args) {
-            final LocationListener locationListener = new LocationListener() {
+            /*final LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     longitude = location.getLongitude();
@@ -190,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onProviderEnabled(String provider) {}
                 @Override
                 public void onProviderDisabled(String provider) {}
-            };
+            };*/
 
             //The GPS permission is required for the completion of weather retrieval in the current location
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -199,20 +196,20 @@ public class MainActivity extends AppCompatActivity {
                 //there is, request a weather update for the new location
                 LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 assert lm != null;
-                HandlerThread t = new HandlerThread("handlerThread");
+                /*HandlerThread t = new HandlerThread("handlerThread");
                 t.start();
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener, t.getLooper());*/
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
                 try {
                     assert location != null;
                     longitude = location.getLongitude();
                     latitude = location.getLatitude();
-                    Log.i("? latitude, longitude", latitude + ", " + longitude);
-                    //t.quit(); <-- causes a dead thread warning, critical?
+                    //t.quit();// <-- causes a dead thread warning, critical?
+
                     return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API);
                 } catch (NullPointerException e) {
-                    Log.e("? NullPointerException", ".getLongitude()/.getLatitude() returned 'null'", e);
-                    return null;
+                    Log.e("? NullPointerException upon retrieving location", e.toString());
                 }
             }
             return null;

@@ -1,4 +1,4 @@
-package com.app.today.BusinessLayer;
+package com.app.today;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,7 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class AppUtilities {
     //I was going to make a collection of date utilities for the calendar and alarms, but this was the only method I needed across both
-    public static Calendar buildTime(int hour, int minute, int second, int millis) {
+    static Calendar buildTime(int hour, int minute, int second, int millis) {
         //Create an instance of the exact current time in milliseconds
         Calendar day = Calendar.getInstance();
         day.setTimeInMillis(System.currentTimeMillis());
@@ -30,7 +30,7 @@ public class AppUtilities {
         return day;
     }
 
-    public static void hideKeyboardFrom(Context context, View view) {
+    static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         try {
             assert imm != null;
@@ -40,7 +40,8 @@ public class AppUtilities {
         }
     }
 
-    public static void setVisibleWithAnim(final View view) {
+    //Used to expand views with a slide animation
+    /*public static void setVisibleWithAnim(final View view) {
         view.measure(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
         final int targetHeight = view.getMeasuredHeight();
 
@@ -69,5 +70,5 @@ public class AppUtilities {
             }
         });
         anim.start();
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-package com.app.today.PresentationLayer;
+package com.app.today;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,8 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.app.today.BusinessLayer.AppUtilities;
-import com.app.today.R;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -221,7 +220,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     //Used to clean the register views
-    private Runnable cleanView() {
+    private void cleanView() {
         if(isRegistering) {
             isRegistering = false;
             registerGroup.setVisibility(View.GONE);
@@ -230,6 +229,5 @@ public class SignInActivity extends AppCompatActivity {
             registerGroup.setAlpha(0);
             signIn.setText(R.string.signInBtn);
         }
-        return null;
     }
 }
