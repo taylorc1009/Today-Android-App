@@ -5,14 +5,14 @@
 *   Fix alarm not ringing on app kill
 *   - Add an edit alarm option to AlarmSystem
 *   Add tabs? Home and Alarms
+*   - A side menu may be better, so you can have the log out option in there too
 *   Add API keys to a JSON file and encrypt it?
 *   - Could do the same with the google-services.json
 *   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
 *   Get reminders from calendar
-*   - Possibly more details too, for example location
-*   Fix EditText handle colours in sign in activity
-*   Improve calendar event layouts
-*   - Have the calendar display event locations
+*   - Possibly more details too, for example locations
+*   - Improve calendar event layouts
+*   Fix EditText handle colours in SignInActivity
 *   Add a sliding down expand animation
 *   Move the change alpha animation to AppUtilities
 * */
