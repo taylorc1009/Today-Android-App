@@ -34,8 +34,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -245,11 +247,11 @@ public class MainActivity extends AppCompatActivity {
         List<String> weatherDetails = new ArrayList<>();
 
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            /*final LocationListener locationListener = new LocationListener() {
+            final LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
+                    /*longitude = location.getLongitude();
+                    latitude = location.getLatitude();*/
                 }
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -257,19 +259,20 @@ public class MainActivity extends AppCompatActivity {
                 public void onProviderEnabled(String provider) {}
                 @Override
                 public void onProviderDisabled(String provider) {}
-            };*/
+            };
 
             //Creates an instance of the location service and retrieves the last know location
             //We do this so the system can determine later if there's a location update, and if
             //there is, request a weather update for the new location
             final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             assert locationManager != null;
-            //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener, Looper.getMainLooper());
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            assert location != null;
-            double longitude = location.getLongitude(), latitude = location.getLatitude();
 
             try {
+                assert location != null;
+                double longitude = location.getLongitude(), latitude = location.getLatitude();
+
                 String result = new HttpRequestTask().execute("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API).get();
                 JSONObject jsonObj = new JSONObject(result);
 
