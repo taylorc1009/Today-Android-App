@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
     static final int PERMISSIONS_REQUEST_CODE = 0;
 
     //UI attributes
-    TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText, weatherError;
-    ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
+    TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, weatherError;
+    ImageView alarmMore, weatherIcon, logOut, refresh;
     ConstraintLayout weatherStats, calendarDetails, newsHeadingGroup;
     ProgressBar weatherLoad, calLoad, newsLoad;
     TableLayout calTable;
@@ -117,22 +117,8 @@ public class MainActivity extends AppCompatActivity {
             newsHeadingGroup = findViewById(R.id.newsHeadingGroup);
             headlinePager = findViewById(R.id.headlinePager);
             headlineIndicator = findViewById(R.id.headlineIndicator);
-            headlineText = findViewById(R.id.headlineText);
-            headlineThumb = findViewById(R.id.headlineThumb);
             logOut = findViewById(R.id.logOut);
             refresh = findViewById(R.id.refresh);
-
-            //Request required permissions then begin UI operations
-            //TODO << permission request Task should be added here >> should probably put this in onStart?
-            /*if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-                weatherTask();
-                //new weatherTask().execute();
-            if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                updateCalendarView();
-            headlineTask();*/
-            //new headlineReceiver().execute();
-
-            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR }, PERMISSIONS_REQUEST_CODE);
 
             //If the user clicks the alarm icon, go to AlarmSystem
             alarmMore.setOnClickListener(new View.OnClickListener() {
@@ -154,21 +140,13 @@ public class MainActivity extends AppCompatActivity {
             refresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Refreshes the weather (requests location access beforehand)
-                    //if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
-                        weatherTask();
-
-                        //new weatherTask().execute();
-                        //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
-                    //}
-                    //Refreshes the calendar (requests location access beforehand)
-                    //if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                        calendarTask();
-                    //Refreshes the news headlines
+                    weatherTask();
+                    calendarTask();
                     headlineTask();
-                    //new headlineReceiver().execute();
                 }
             });
+
+            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR }, PERMISSIONS_REQUEST_CODE);
         }
     }
 
@@ -549,14 +527,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    //newsTitle.setText(R.string.newsTitle);
                     title = getString(R.string.newsTitle);
-                    updateHeadlinesView(View.GONE, View.VISIBLE);
-                } else {
-                    //newsTitle.setText(R.string.newsError);
+                } else
                     title = getString(R.string.newsError);
-                    updateHeadlinesView(View.GONE, View.GONE);
-                }
 
                 final String finalTitle = title;
                 newsTitle.post(new Runnable() {
@@ -565,6 +538,8 @@ public class MainActivity extends AppCompatActivity {
                         newsTitle.setText(finalTitle);
                     }
                 });
+
+                updateHeadlinesView(View.GONE, View.VISIBLE);
             }
         }).start();
     }
@@ -628,30 +603,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    //Used by the app to request a permission (p)
-    /*private boolean reqPermission(int p) {
-        //Defines the permission we're looking for
-        String per;
-        switch (p) {
-            case MY_PERMISSIONS_REQUEST_READ_CALENDAR:
-                per = Manifest.permission.READ_CALENDAR;
-                break;
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
-                per = Manifest.permission.ACCESS_FINE_LOCATION;
-                break;
-            default:
-                return false;
-        }
-
-        //If the permission is not already granted, request it
-        //Else return true/granted
-        if (ContextCompat.checkSelfPermission(this, per) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{per}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
-
-            //Checks again after the request was made to check the result
-            return ContextCompat.checkSelfPermission(this, per) == PackageManager.PERMISSION_GRANTED;
-        } else
-            return true;
-    }*/
 }
