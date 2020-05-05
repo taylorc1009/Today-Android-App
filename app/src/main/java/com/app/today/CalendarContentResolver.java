@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 class CalendarContentResolver {
     //Used to query the calendar and return the results
@@ -87,7 +88,7 @@ class CalendarContentResolver {
         //Defines the format we want
         String format = "HH:mm";
         //Applies it to our time formatter
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
         //Create a time instance which the system understands for it to convert to a String
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliSeconds);
