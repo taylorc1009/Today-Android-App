@@ -36,7 +36,7 @@ import java.util.Objects;
 public class AlarmSystem extends AppCompatActivity {
     //UI attributes
     ImageView alarmBack, alarmAdd, alarmSave;
-    CardView addCard, alarmsCard;
+    CardView addCard;
     CheckBox chkMon, chkTues, chkWed, chkThurs, chkFri, chkSat, chkSun;
     EditText hour, minute, alarmLabel;
     ConstraintLayout addGroup;
@@ -75,7 +75,6 @@ public class AlarmSystem extends AppCompatActivity {
         minute = findViewById(R.id.minute);
         alarmLabel = findViewById(R.id.alarmLabel);
         alarmLoad = findViewById(R.id.alarmLoad);
-        //alarmsCard = findViewById(R.id.alarmsCard);
         alarmEmpty = findViewById(R.id.alarmEmpty);
 
         //Initialize alarmManager with the system AlarmManager class

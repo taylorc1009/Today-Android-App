@@ -41,6 +41,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -66,10 +67,13 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     //UI attributes
-    TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText;
+    TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText, weatherError;
     ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
+    ConstraintLayout weatherStats, newsHeadingGroup;
+    ProgressBar weatherLoad, newsLoad;
     TableLayout calTable;
     ViewPager2 headlinePager;
+    CircleIndicator3 headlineIndicator;
 
     //OpenWeatherMap key, used to get the weather details
     private static final String WEATHER_API = "2a2d2e85e492fe3c92b568f4fe3ce854";
@@ -98,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
             Log.i("! user is signed in", Objects.requireNonNull(user.getEmail()));
 
             //Initialize UI attributes
+            weatherLoad = findViewById(R.id.weatherLoad);
+            weatherStats = findViewById(R.id.weatherStats);
+            weatherError = findViewById(R.id.weatherError);
             weatherIcon = findViewById(R.id.weatherIcon);
             lastWUpdateTxt = findViewById(R.id.lastWUpdate);
             forecastTxt = findViewById(R.id.forecast);
@@ -109,20 +116,23 @@ public class MainActivity extends AppCompatActivity {
             calTable = findViewById(R.id.calTable);
             alarmMore = findViewById(R.id.alarmIcon);
             newsTitle = findViewById(R.id.newsTitle);
+            newsLoad = findViewById(R.id.newsLoad);
+            newsHeadingGroup = findViewById(R.id.newsHeadingGroup);
             headlinePager = findViewById(R.id.headlinePager);
+            headlineIndicator = findViewById(R.id.headlineIndicator);
             headlineText = findViewById(R.id.headlineText);
             headlineThumb = findViewById(R.id.headlineThumb);
             logOut = findViewById(R.id.logOut);
             refresh = findViewById(R.id.refresh);
 
             //Request required permissions then begin UI operations
-            //TODO << permission request Task should be added here >> should probably put this in onStart then?
+            //TODO << permission request Task should be added here >> should probably put this in onStart?
             if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
-                weatherReceiver();
+                weatherTask();
                 //new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendarView();
-            headlineReceiver();
+            headlineTask();
             //new headlineReceiver().execute();
 
             //If the user clicks the alarm icon, go to AlarmSystem
@@ -147,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     //Refreshes the weather (requests location access beforehand)
                     if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
-                        weatherReceiver();
+                        weatherTask();
 
                         //new weatherTask().execute();
                         //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
@@ -156,17 +166,103 @@ public class MainActivity extends AppCompatActivity {
                     if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                         updateCalendarView();
                     //Refreshes the news headlines
-                    headlineReceiver();
+                    headlineTask();
                     //new headlineReceiver().execute();
                 }
             });
         }
     }
 
-    private void weatherReceiver() {
+    private void weatherTask() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
+                final List<String> weatherDetails = weatherReceiver();
+
+                if(weatherDetails != null && !weatherDetails.isEmpty()) {
+                    weatherIcon.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int weatherID = Integer.parseInt(weatherDetails.get(6));
+                            //Based on the weather ID, this will determine which drawable weather icon to use
+                            if (weatherID == 800)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
+                            else if (weatherID == 801)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
+                            else if (weatherID == 802)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
+                            else if (weatherID == 803 || weatherID == 804)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
+                            else if (weatherID >= 500 && weatherID <= 504)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
+                            else if (weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
+                            else if ((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
+                            else if ((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
+                            else if (weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
+                            else
+                                weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
+                        }
+                    });
+
+                    //Displays our weather details
+
+                    forecastTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            forecastTxt.setText(weatherDetails.get(0).toUpperCase());
+                        }
+                    });
+
+                    temperatureTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            temperatureTxt.setText(weatherDetails.get(1));
+                        }
+                    });
+
+                    highsTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            highsTxt.setText(weatherDetails.get(2));
+                        }
+                    });
+
+                    lowsTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            lowsTxt.setText(weatherDetails.get(3));
+                        }
+                    });
+
+                    windTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            windTxt.setText(weatherDetails.get(4));
+                        }
+                    });
+
+                    lastWUpdateTxt.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            lastWUpdateTxt.setText(weatherDetails.get(5));
+                        }
+                    });
+
+                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE);
+                } else
+                    updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
+            }
+        }).start();
+    }
+
+    private List<String> weatherReceiver() {
         List<String> weatherDetails = new ArrayList<>();
 
-        updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             //Creates an instance of the location service and retrieves the last know location
             //We do this so the system can determine later if there's a location update, and if
@@ -198,46 +294,15 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 weatherDetails.add(weather.getString("id"));
+
+                return weatherDetails;
             } catch (NullPointerException | JSONException e) {
                 Log.e("? NullPointerException upon retrieving location", e.toString());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-            if (!weatherDetails.isEmpty()) {
-                int weatherID = Integer.parseInt(weatherDetails.get(6));
-                //Based on the weather ID, this will determine which drawable weather icon to use
-                if (weatherID == 800)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
-                else if (weatherID == 801)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
-                else if (weatherID == 802)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
-                else if (weatherID == 803 || weatherID == 804)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
-                else if (weatherID >= 500 && weatherID <= 504)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
-                else if (weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
-                else if ((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
-                else if ((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
-                else if (weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
-                else
-                    weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
-
-                //Displays our weather details
-                forecastTxt.setText(weatherDetails.get(0).toUpperCase());
-                temperatureTxt.setText(weatherDetails.get(1));
-                highsTxt.setText(weatherDetails.get(2));
-                lowsTxt.setText(weatherDetails.get(3));
-                windTxt.setText(weatherDetails.get(4));
-                lastWUpdateTxt.setText(weatherDetails.get(5));
-                updateWeatherView(View.GONE, View.VISIBLE, View.GONE);
-            } else
-                updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
         }
+        return null;
     }
 
     //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
@@ -348,10 +413,27 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     //Used to hide/show certain views based on the parameters received
-    private void updateWeatherView(int load, int group, int error) {
-        findViewById(R.id.weatherLoad).setVisibility(load);
-        findViewById(R.id.weatherStats).setVisibility(group);
-        findViewById(R.id.weatherError).setVisibility(error);
+    private void updateWeatherView(final int load, final int group, final int error) {
+        weatherLoad.post(new Runnable() {
+            @Override
+            public void run() {
+                weatherLoad.setVisibility(load);
+            }
+        });
+
+        weatherStats.post(new Runnable() {
+            @Override
+            public void run() {
+                weatherStats.setVisibility(group);
+            }
+        });
+
+        weatherError.post(new Runnable() {
+            @Override
+            public void run() {
+                weatherError.setVisibility(error);
+            }
+        });
     }
 
     //Used to handle the response from the CalendarContentResolver
@@ -463,10 +545,90 @@ public class MainActivity extends AppCompatActivity {
         calTable.addView(eventRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
 
-    private void headlineReceiver() {
+    private void headlineTask() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateHeadlinesView(View.VISIBLE, View.GONE);
+                final ArrayList<Headline> headlines = headlineReceiver();
+                String title;
+
+                //If results aren't empty, display them in the headline table
+                //Else show headline error
+                if(headlines != null && !headlines.isEmpty()) {
+                    //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient? I don't imagine the ViewPager will do this for you
+
+                    headlinePager.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
+
+                            final HeadlineAdapter adapter = new HeadlineAdapter(getApplicationContext(), headlines);
+                            headlinePager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+                            headlinePager.setAdapter(adapter);
+                            headlinePager.setOffscreenPageLimit(3);
+
+                            headlinePager.setPageTransformer(new ViewPager2.PageTransformer() {
+                                @Override
+                                public void transformPage(@NonNull View page, float position) {
+                                    float offset = position * - 30;
+                                    if (position < -1) {
+                                        page.setTranslationX(-offset);
+                                    } else if (position <= 1) {
+                                        float scaleFactor = Math.max(0.7f, 1 - Math.abs(position));
+                                        page.setTranslationX(offset);
+                                        page.setScaleY(scaleFactor);
+                                        page.setAlpha(scaleFactor);
+                                    } else {
+                                        page.setAlpha(0);
+                                        page.setTranslationX(offset);
+                                    }
+
+                                    // NO ZOOM TRANSITION
+                                    /*if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
+                                        if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
+                                            page.setTranslationX(-offset);
+                                        else
+                                            page.setTranslationX(offset);
+                                    else
+                                        page.setTranslationY(offset);*/
+
+                                }
+                            });
+
+                            headlineIndicator.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    headlineIndicator.setViewPager(headlinePager);
+                                    adapter.registerAdapterDataObserver(headlineIndicator.getAdapterDataObserver());
+                                }
+                            });
+                        }
+                    });
+
+                    //newsTitle.setText(R.string.newsTitle);
+                    title = getString(R.string.newsTitle);
+                    updateHeadlinesView(View.GONE, View.VISIBLE);
+                } else {
+                    //newsTitle.setText(R.string.newsError);
+                    title = getString(R.string.newsError);
+                    updateHeadlinesView(View.GONE, View.GONE);
+                }
+
+                final String finalTitle = title;
+                newsTitle.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        newsTitle.setText(finalTitle);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private ArrayList<Headline> headlineReceiver() {
         ArrayList<Headline> headlines = new ArrayList<>();
 
-        updateHeadlinesView(View.VISIBLE, View.GONE);
         //Try to get the news headlines from a requested .json file
         //Else return null so the UI thread knows there was an error
         try {
@@ -481,13 +643,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("? results obj " + i, String.valueOf(jsonObj));
 
                 //Used to remove system char indicators from the URL string
-                StringBuilder thumbnail = new StringBuilder("");
+                StringBuilder thumbnail = new StringBuilder();
                 for(char c : jsonObj.getJSONObject("fields").getString("thumbnail").toCharArray())
                     if(c != '\\')
                         thumbnail.append(c);
 
                 headlines.add(new Headline(jsonObj.getString("webTitle"), jsonObj.getString("webUrl"), thumbnail.toString()));
             }
+
+            return headlines;
         } catch (JSONException e) {
             Log.e("? JSONException", "failed to parse request/result", e);
         } catch (NullPointerException e) {
@@ -495,53 +659,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
-        //If results aren't empty, display them in the headline table
-        //Else show headline error
-        if(!headlines.isEmpty()) {
-            //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
-            //TODO you should probably take a look at the bitmaps lecture to make this more memory efficient? I don't imagine the ViewPager will do this for you
-            HeadlineAdapter adapter = new HeadlineAdapter(getApplicationContext(), headlines);
-            headlinePager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-            headlinePager.setAdapter(adapter);
-            headlinePager.setOffscreenPageLimit(3);
-
-            headlinePager.setPageTransformer(new ViewPager2.PageTransformer() {
-                @Override
-                public void transformPage(@NonNull View page, float position) {
-                    float offset = position * - 30;
-                    if (position < -1) {
-                        page.setTranslationX(-offset);
-                    } else if (position <= 1) {
-                        float scaleFactor = Math.max(0.7f, 1 - Math.abs(position));
-                        page.setTranslationX(offset);
-                        page.setScaleY(scaleFactor);
-                        page.setAlpha(scaleFactor);
-                    } else {
-                        page.setAlpha(0);
-                        page.setTranslationX(offset);
-                    }
-
-                    // NO ZOOM TRANSITION
-                /*if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
-                    if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
-                        page.setTranslationX(-offset);
-                    else
-                        page.setTranslationX(offset);
-                else
-                    page.setTranslationY(offset);*/
-                }
-            });
-            CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
-            indicator.setViewPager(headlinePager);
-            adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
-
-            newsTitle.setText(R.string.newsTitle);
-            updateHeadlinesView(View.GONE, View.VISIBLE);
-        } else {
-            newsTitle.setText(R.string.newsError);
-            updateHeadlinesView(View.GONE, View.GONE);
-        }
+        return null;
     }
 
     //AsyncTask for getting headlines
@@ -629,10 +747,27 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     //Used to hide/show certain views based on the parameters
-    private void updateHeadlinesView(int load, int headline) {
-        findViewById(R.id.newsLoad).setVisibility(load);
-        findViewById(R.id.newsHeading).setVisibility(headline);
-        findViewById(R.id.headlinePager).setVisibility(headline);
+    private void updateHeadlinesView(final int load, final int headline) {
+        newsLoad.post(new Runnable() {
+            @Override
+            public void run() {
+                newsLoad.setVisibility(load);
+            }
+        });
+
+        newsHeadingGroup.post(new Runnable() {
+            @Override
+            public void run() {
+                newsHeadingGroup.setVisibility(headline);
+            }
+        });
+
+        headlinePager.post(new Runnable() {
+            @Override
+            public void run() {
+                headlinePager.setVisibility(headline);
+            }
+        });
     }
 
     //Used by the app to request a permission (p)
