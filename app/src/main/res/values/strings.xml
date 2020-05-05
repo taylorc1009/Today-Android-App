@@ -11,7 +11,7 @@
     <string name="authSign">Signing in…</string>
     <string name="authReg">Registering you…</string>
 
-    <string name="forecast">Forecast</string>
+    <string name="forecast">Condition</string>
     <string name="temperature">Temperature</string>
     <string name="highs">Highs</string>
     <string name="lows">Lows</string>

@@ -15,7 +15,7 @@ import java.util.List;
 
 class CalendarContentResolver {
     //Used to query the calendar and return the results
-    List<Event> getCalendar(Context context) {
+    static List<Event> getCalendar(Context context) {
         List<Event> events = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         HashSet<String> calendarIds = new HashSet<>(); //Using a HashSet to ensure no duplicate results
@@ -83,7 +83,7 @@ class CalendarContentResolver {
     }
 
     //Converts the time of a calendar instance to a String value, used for displaying the time to the user
-    private String getTimeString(long milliSeconds) {
+    private static String getTimeString(long milliSeconds) {
         //Defines the format we want
         String format = "HH:mm";
         //Applies it to our time formatter

@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.animation.Animator;
@@ -60,14 +59,13 @@ import me.relex.circleindicator.CircleIndicator3;
 
 public class MainActivity extends AppCompatActivity {
     //Used to determine which permission we're asking for
-    static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 0;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    static final int PERMISSIONS_REQUEST_CODE = 0;
 
     //UI attributes
     TextView lastWUpdateTxt, forecastTxt, highsTxt, lowsTxt, temperatureTxt, windTxt, calTitle, newsTitle, headlineText, weatherError;
     ImageView alarmMore, weatherIcon, logOut, refresh, headlineThumb;
-    ConstraintLayout weatherStats, newsHeadingGroup;
-    ProgressBar weatherLoad, newsLoad;
+    ConstraintLayout weatherStats, calendarDetails, newsHeadingGroup;
+    ProgressBar weatherLoad, calLoad, newsLoad;
     TableLayout calTable;
     ViewPager2 headlinePager;
     CircleIndicator3 headlineIndicator;
@@ -109,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
             lowsTxt = findViewById(R.id.lowsTxt);
             temperatureTxt = findViewById(R.id.temperature);
             windTxt = findViewById(R.id.windSpeed);
+            calLoad = findViewById(R.id.calLoad);
+            calendarDetails = findViewById(R.id.calendarDetails);
             calTitle = findViewById(R.id.calTitle);
             calTable = findViewById(R.id.calTable);
             alarmMore = findViewById(R.id.alarmIcon);
@@ -124,13 +124,15 @@ public class MainActivity extends AppCompatActivity {
 
             //Request required permissions then begin UI operations
             //TODO << permission request Task should be added here >> should probably put this in onStart?
-            if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
+            /*if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION))
                 weatherTask();
                 //new weatherTask().execute();
             if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
                 updateCalendarView();
-            headlineTask();
+            headlineTask();*/
             //new headlineReceiver().execute();
+
+            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR }, PERMISSIONS_REQUEST_CODE);
 
             //If the user clicks the alarm icon, go to AlarmSystem
             alarmMore.setOnClickListener(new View.OnClickListener() {
@@ -153,21 +155,28 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     //Refreshes the weather (requests location access beforehand)
-                    if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
+                    //if(reqPermission(MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)) {
                         weatherTask();
 
                         //new weatherTask().execute();
                         //Toast.makeText(MainActivity.this, "! INFO: if weather refresh fails, there's no new data to pull or the API request limit for today has been reached", Toast.LENGTH_LONG).show();
-                    }
+                    //}
                     //Refreshes the calendar (requests location access beforehand)
-                    if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
-                        updateCalendarView();
+                    //if(reqPermission(MY_PERMISSIONS_REQUEST_READ_CALENDAR))
+                        calendarTask();
                     //Refreshes the news headlines
                     headlineTask();
                     //new headlineReceiver().execute();
                 }
             });
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        weatherTask();
+        calendarTask();
+        headlineTask();
     }
 
     private void weatherTask() {
@@ -302,113 +311,6 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    //AsyncTask for getting the weather, this is used to determine actions for before (onPreExecute) and after (onPostExecute) another
-    //action (doInBackground, which as the name implies can be done in the background)
-    /*class weatherTask extends AsyncTask<String, Void, String> {
-        //Attributes defined globally for this subclass so they can be accessed by inner classes
-        //private double longitude, latitude;
-
-        //onPreExecute instructs the UI to show that the weather is loading
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
-        }
-
-        //doInBackground gets the users location then uses it to retrieve the weather in their location
-        @Override
-        protected String doInBackground(String... args) {
-            //The GPS permission is required for the completion of weather retrieval in the current location
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                //Creates an instance of the location service and retrieves the last know location
-                //We do this so the system can determine later if there's a location update, and if
-                //there is, request a weather update for the new location
-                LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                assert lm != null;
-                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                try {
-                    assert location != null;
-                    double longitude = location.getLongitude(), latitude = location.getLatitude();
-
-                    return HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API);
-                } catch (NullPointerException e) {
-                    Log.e("? NullPointerException upon retrieving location", e.toString());
-                }
-            }
-            return null;
-        }
-
-        //onPostExecute handles the weather response
-        @Override
-        protected void onPostExecute(String result) {
-            //Detects whether or not we actually got a result
-            if (result != null) {
-                //Try to update the UI using the results in the JSON file
-                //Else show the error message (in the catch)
-                try {
-                    //Stores the .json result
-                    JSONObject jsonObj = new JSONObject(result);
-
-                    //Organises the results into suitable Objects
-                    JSONObject main = jsonObj.getJSONObject("main");
-                    JSONObject wind = jsonObj.getJSONObject("wind");
-                    JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
-                    long updatedAt = jsonObj.getLong("dt");
-
-                    List<String> weatherDetails = new ArrayList<>();
-
-                    //Add the objects main values into a list of strings to be displayed
-                    weatherDetails.add(weather.getString("description"));
-
-                    //Round numerical values to display a whole number
-                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
-                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
-                    weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
-                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " MPH WINDS");
-
-                    weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
-
-                    int weatherID = Integer.parseInt(weather.getString("id"));
-                    //Based on the weather ID, this will determine which drawable weather icon to use
-                    if (weatherID == 800)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clear));
-                    else if (weatherID == 801)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.fair));
-                    else if (weatherID == 802)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightclouds));
-                    else if (weatherID == 803 || weatherID == 804)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.clouds));
-                    else if (weatherID >= 500 && weatherID <= 504)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.lightrain));
-                    else if (weatherID == 511 || (weatherID >= 600 && weatherID <= 602) || (weatherID >= 611 && weatherID <= 613) || weatherID == 615 || weatherID == 616 || (weatherID >= 620 && weatherID <= 622))
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ice));
-                    else if ((weatherID >= 520 && weatherID <= 522) || weatherID == 531 || (weatherID >= 300 && weatherID <= 302) || (weatherID >= 310 && weatherID <= 314) || weatherID == 321)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.rain));
-                    else if ((weatherID >= 200 && weatherID <= 202) || (weatherID >= 210 && weatherID <= 212) || weatherID == 221 || (weatherID >= 230 && weatherID <= 232))
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.storm));
-                    else if (weatherID == 701 || weatherID == 711 || weatherID == 721 || weatherID == 731 || weatherID == 741 || weatherID == 751 || weatherID == 761 || weatherID == 762 || weatherID == 771 || weatherID == 781)
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.atmosphere));
-                    else
-                        weatherIcon.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.info));
-
-                    forecastTxt.setText(weatherDetails.get(0).toUpperCase());
-                    temperatureTxt.setText(weatherDetails.get(1));
-                    highsTxt.setText(weatherDetails.get(2));
-                    lowsTxt.setText(weatherDetails.get(3));
-                    windTxt.setText(weatherDetails.get(4));
-                    lastWUpdateTxt.setText(weatherDetails.get(5));
-                    updateWeatherView(View.GONE, View.VISIBLE, View.GONE);
-                } catch (JSONException e) {
-                    Log.e("? weather JSONException", ".json empty?", e);
-                    updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
-                }
-            }
-            else
-                updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
-        }
-    }*/
-
     //Used to hide/show certain views based on the parameters received
     private void updateWeatherView(final int load, final int group, final int error) {
         weatherLoad.post(new Runnable() {
@@ -434,39 +336,83 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Used to handle the response from the CalendarContentResolver
-    private void updateCalendarView() {
-        //First, clear the table of calendar events in the UI
-        calTable.removeAllViews();
+    private void calendarTask() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateCalendarView(View.VISIBLE, View.GONE);
+                final String title;
+                final List<Event> calendar;
+                Context context = calTable.getContext();
 
-        //Create a CalendarContentResolver to query and return the events of the calendar
-        CalendarContentResolver resolver = new CalendarContentResolver();
-        List<Event> calendar = resolver.getCalendar(this);
+                if(ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                    //Create a CalendarContentResolver to query and return the events of the calendar
+                    //CalendarContentResolver resolver = new CalendarContentResolver();
+                    calendar = CalendarContentResolver.getCalendar(context);
+                else
+                    calendar = null;
 
-        //If the calendar permission was granted, then this should continue
-        //Else show error message
-        if(calendar != null) {
-            //If there are events happening today, add them to the UI table
-            //Else show there are no events today
-            if(!calendar.isEmpty()) {
-                calTitle.setText(R.string.calTitle);
+                //If the calendar permission was granted, then this should continue
+                //Else show error message
+                if(calendar != null) {
+                    //If there are events happening today, add them to the UI table
+                    //Else show there are no events today
+                    if(!calendar.isEmpty()) {
+                        title = getString(R.string.calTitle);
 
-                for(Event event : calendar)
-                    createCalendarTableRow(event.getTitle(), event.getDuration(), event.getDescription());
+                        calTable.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //First, clear the table of calendar events in the UI
+                                calTable.removeAllViews();
 
-                calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+                                for(Event event : calendar)
+                                    createCalendarTableRow(event.getTitle(), event.getDuration(), event.getDescription());
 
-                /* This should be used to fix the layout constraints as for some reason they're removed after using 'view.setLayoutParams'
-                Instead, I've cheated and put the table in its own ConstraintLayout - this isn't the most practical fix
-                ConstraintSet setLayout = new ConstraintSet();
-                setLayout.clone((ConstraintLayout) calTable.getParent());
-                setLayout.connect(findViewById(R.id.calIcon).getId(), ConstraintSet.BOTTOM, calTable.getId(), ConstraintSet.TOP);
-                setLayout.connect(((ConstraintLayout) calTable.getParent()).getId(), ConstraintSet.START, calTable.getId(), ConstraintSet.START);
-                setLayout.applyTo((ConstraintLayout) calTable.getParent());*/
-            } else
-                calTitle.setText(R.string.calEmpty);
-        }
-        else
-            calTitle.setText(R.string.calError);
+                                calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+
+                                /* This should be used to fix the layout constraints as for some reason they're removed after using 'view.setLayoutParams'
+                                Instead, I've cheated and put the table in its own ConstraintLayout - this isn't the most practical fix
+                                ConstraintSet setLayout = new ConstraintSet();
+                                setLayout.clone((ConstraintLayout) calTable.getParent());
+                                setLayout.connect(findViewById(R.id.calIcon).getId(), ConstraintSet.BOTTOM, calTable.getId(), ConstraintSet.TOP);
+                                setLayout.connect(((ConstraintLayout) calTable.getParent()).getId(), ConstraintSet.START, calTable.getId(), ConstraintSet.START);
+                                setLayout.applyTo((ConstraintLayout) calTable.getParent());*/
+
+                            }
+                        });
+                    } else
+                        title = getString(R.string.calEmpty);
+                }
+                else
+                    title = getString(R.string.calError);
+
+                calTitle.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        calTitle.setText(title);
+                    }
+                });
+
+                updateCalendarView(View.GONE, View.VISIBLE);
+            }
+        }).start();
+    }
+
+    private void updateCalendarView(final int load, final int group) {
+        calLoad.post(new Runnable() {
+            @Override
+            public void run() {
+                calLoad.setVisibility(load);
+            }
+        });
+
+        calendarDetails.post(new Runnable() {
+            @Override
+            public void run() {
+                calendarDetails.setVisibility(group);
+            }
+        });
     }
 
     private void createCalendarTableRow(String title, String duration, String description) {
@@ -659,90 +605,6 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    //AsyncTask for getting headlines
-    /*class headlineReceiver extends AsyncTask<String, Void, List<Headline>> {
-        //onPreExecute shows the user the weather is loading
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            updateHeadlinesView(View.VISIBLE, View.GONE);
-        }
-
-        //doInBackground retrieves headlines and passes them to onPostExecute
-        @Override
-        protected List<Headline> doInBackground(String... strings) {
-            return HeadlineReceiver.getHeadlines();
-        }
-
-        //onPostExecutes shows the results to the user
-        @Override
-        protected void onPostExecute(List<Headline> result) {
-            //Clean the headlines List before new data is added
-            if(headlines != null && !headlines.isEmpty())
-                headlines.clear();
-
-            //If results aren't empty, display them in the headline table
-            //Else show headline error
-            if(result != null) {
-                //Integer used just to label the headlines with a number
-                for(Headline headline : result) {
-                    try {
-                        assert headlines != null;
-                        headlines.add(headline);
-                    } catch(NullPointerException e) {
-                        Log.e("? headlines ArrayList result equals null", e.toString());
-                    }
-                }
-                updateArticles();
-                newsTitle.setText(R.string.newsTitle);
-                updateHeadlinesView(View.GONE, View.VISIBLE);
-            } else {
-                newsTitle.setText(R.string.newsError);
-                updateHeadlinesView(View.GONE, View.GONE);
-            }
-        }
-    }
-
-    private void updateArticles() {
-        //headlinePager.removeAllViews(); <-- ViewPager2 seems to do this automatically?
-
-        HeadlineAdapter adapter = new HeadlineAdapter(this, headlines);
-        headlinePager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-        headlinePager.setAdapter(adapter);
-        headlinePager.setOffscreenPageLimit(3);
-
-        headlinePager.setPageTransformer(new ViewPager2.PageTransformer() {
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                float offset = position * - 30;
-                if (position < -1) {
-                    page.setTranslationX(-offset);
-                } else if (position <= 1) {
-                    float scaleFactor = Math.max(0.7f, 1 - Math.abs(position));
-                    page.setTranslationX(offset);
-                    page.setScaleY(scaleFactor);
-                    page.setAlpha(scaleFactor);
-                } else {
-                    page.setAlpha(0);
-                    page.setTranslationX(offset);
-                }
-
-                // NO ZOOM TRANSITION
-                /*if (headlinePager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL)
-                    if (ViewCompat.getLayoutDirection(headlinePager) == ViewCompat.LAYOUT_DIRECTION_RTL)
-                        page.setTranslationX(-offset);
-                    else
-                        page.setTranslationX(offset);
-                else
-                    page.setTranslationY(offset);*
-            }
-        });
-
-        CircleIndicator3 indicator = findViewById(R.id.headlineIndicator);
-        indicator.setViewPager(headlinePager);
-        adapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
-    }*/
-
     //Used to hide/show certain views based on the parameters
     private void updateHeadlinesView(final int load, final int headline) {
         newsLoad.post(new Runnable() {
@@ -768,7 +630,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Used by the app to request a permission (p)
-    private boolean reqPermission(int p) {
+    /*private boolean reqPermission(int p) {
         //Defines the permission we're looking for
         String per;
         switch (p) {
@@ -791,5 +653,5 @@ public class MainActivity extends AppCompatActivity {
             return ContextCompat.checkSelfPermission(this, per) == PackageManager.PERMISSION_GRANTED;
         } else
             return true;
-    }
+    }*/
 }
