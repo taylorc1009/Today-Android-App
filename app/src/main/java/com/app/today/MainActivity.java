@@ -1,21 +1,22 @@
 /*  40398643 | Taylor Courtney
-*
-*  TODO
-*   Add a wait between alarmGreet animIn and animOut
-*   Fix alarm not ringing on app kill
-*   - Add an edit alarm option to AlarmSystem
-*   Add tabs? Home and Alarms
-*   - A side menu may be better, so you can have the log out option in there too
-*   Add API keys to a JSON file and encrypt it?
-*   - Could do the same with the google-services.json
-*   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
-*   Get reminders from calendar
-*   - Possibly more details too, for example locations
-*   - Improve calendar event layouts
-*   Fix EditText handle colours in SignInActivity
-*   Add a sliding down expand animation
-*   Move the change alpha animation to AppUtilities
-* */
+ *
+ *  TODO
+ *   Make requestLocationUpdates into a task, so we do not try to display weather results until we have a location
+ *   Add a wait between alarmGreet animIn and animOut
+ *   Fix alarm not ringing on app kill
+ *   - Add an edit alarm option to AlarmSystem
+ *   Add tabs? Home and Alarms
+ *   - A side menu may be better, so you can have the log out option in there too
+ *   Add API keys to a JSON file and encrypt it?
+ *   - Could do the same with the google-services.json
+ *   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
+ *   Get reminders from calendar
+ *   - Possibly more details too, for example locations
+ *   - Improve calendar event layouts
+ *   Fix EditText handle colours in SignInActivity
+ *   Add a sliding down expand animation
+ *   Move the change alpha animation to AppUtilities
+ * */
 
 package com.app.today;
 
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
 
+    //protected double latitude, longitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         //Acquires the current user and determines whether they are logged in or not
         user = mAuth.getCurrentUser();
 
-        if(user == null) {
+        if (user == null) {
             //If not, go to sign in page
             Intent alarmActivity = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(alarmActivity);
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR }, PERMISSIONS_REQUEST_CODE);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR}, PERMISSIONS_REQUEST_CODE);
         }
     }
 
@@ -164,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
                 final List<String> weatherDetails = weatherReceiver();
 
-                if(weatherDetails != null && !weatherDetails.isEmpty()) {
+                if (weatherDetails != null && !weatherDetails.isEmpty()) {
                     weatherIcon.post(new Runnable() {
                         @Override
                         public void run() {
@@ -194,42 +197,36 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     //Displays our weather details
-
                     forecastTxt.post(new Runnable() {
                         @Override
                         public void run() {
                             forecastTxt.setText(weatherDetails.get(0).toUpperCase());
                         }
                     });
-
                     temperatureTxt.post(new Runnable() {
                         @Override
                         public void run() {
                             temperatureTxt.setText(weatherDetails.get(1));
                         }
                     });
-
                     highsTxt.post(new Runnable() {
                         @Override
                         public void run() {
                             highsTxt.setText(weatherDetails.get(2));
                         }
                     });
-
                     lowsTxt.post(new Runnable() {
                         @Override
                         public void run() {
                             lowsTxt.setText(weatherDetails.get(3));
                         }
                     });
-
                     windTxt.post(new Runnable() {
                         @Override
                         public void run() {
                             windTxt.setText(weatherDetails.get(4));
                         }
                     });
-
                     lastWUpdateTxt.post(new Runnable() {
                         @Override
                         public void run() {
@@ -248,18 +245,34 @@ public class MainActivity extends AppCompatActivity {
         List<String> weatherDetails = new ArrayList<>();
 
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            /*final LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                @Override
+                public void onProviderEnabled(String provider) {}
+                @Override
+                public void onProviderDisabled(String provider) {}
+            };*/
+
             //Creates an instance of the location service and retrieves the last know location
             //We do this so the system can determine later if there's a location update, and if
             //there is, request a weather update for the new location
-            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            assert lm != null;
-            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            try {
-                assert location != null;
-                double longitude = location.getLongitude(), latitude = location.getLatitude();
-                String result = new HttpRequestTask().execute("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API).get();
+            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            assert locationManager != null;
+            //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener, Looper.getMainLooper());
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            assert location != null;
+            double longitude = location.getLongitude(), latitude = location.getLatitude();
 
+            try {
+                String result = new HttpRequestTask().execute("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API).get();
                 JSONObject jsonObj = new JSONObject(result);
+
                 //Organises the results into suitable Objects
                 JSONObject main = jsonObj.getJSONObject("main");
                 JSONObject wind = jsonObj.getJSONObject("wind");
@@ -281,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return weatherDetails;
             } catch (NullPointerException | JSONException e) {
-                Log.e("? NullPointerException upon retrieving location", e.toString());
+                Log.e("? NullPointerException upon retrieving weather", e.toString());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -297,14 +310,12 @@ public class MainActivity extends AppCompatActivity {
                 weatherLoad.setVisibility(load);
             }
         });
-
         weatherStats.post(new Runnable() {
             @Override
             public void run() {
                 weatherStats.setVisibility(group);
             }
         });
-
         weatherError.post(new Runnable() {
             @Override
             public void run() {
@@ -356,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
                                 setLayout.connect(findViewById(R.id.calIcon).getId(), ConstraintSet.BOTTOM, calTable.getId(), ConstraintSet.TOP);
                                 setLayout.connect(((ConstraintLayout) calTable.getParent()).getId(), ConstraintSet.START, calTable.getId(), ConstraintSet.START);
                                 setLayout.applyTo((ConstraintLayout) calTable.getParent());*/
-
                             }
                         });
                     } else
@@ -384,7 +394,6 @@ public class MainActivity extends AppCompatActivity {
                 calLoad.setVisibility(load);
             }
         });
-
         calendarDetails.post(new Runnable() {
             @Override
             public void run() {
@@ -516,7 +525,6 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                             });
-
                             headlineIndicator.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -588,14 +596,12 @@ public class MainActivity extends AppCompatActivity {
                 newsLoad.setVisibility(load);
             }
         });
-
         newsHeadingGroup.post(new Runnable() {
             @Override
             public void run() {
                 newsHeadingGroup.setVisibility(headline);
             }
         });
-
         headlinePager.post(new Runnable() {
             @Override
             public void run() {
