@@ -86,7 +86,7 @@ public class SignInActivity extends AppCompatActivity {
                         public void onAnimationEnd(Animator animation) {
                             cleanView();
                         }
-                    }); // doesn't fade out then clear
+                    });
                 }
             }
         });

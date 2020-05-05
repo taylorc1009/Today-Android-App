@@ -1,6 +1,6 @@
 package com.app.today;
 
-import java.util.Date;
+//import java.util.Date;
 
 class Event {
     //Calendar event, holds the information to show the user
