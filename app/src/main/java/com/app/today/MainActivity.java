@@ -13,6 +13,7 @@
  *   Get reminders from calendar
  *   - Possibly more details too, for example locations
  *   - Improve calendar event layouts
+ *   Add a feature to view a sample of news reports?
  *   Fix EditText handle colours in SignInActivity
  *   Add a sliding down expand animation
  *   Move the change alpha animation to AppUtilities
