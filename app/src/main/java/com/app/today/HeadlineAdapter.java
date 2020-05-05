@@ -60,7 +60,7 @@ public class HeadlineAdapter extends RecyclerView.Adapter<HeadlineAdapter.Headli
                 if (!url.startsWith("http://") && !url.startsWith("https://"))
                     url = "http://" + url;
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // <-- shouldn't need this, try to fix
+                //browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //TODO <-- shouldn't need this, try to fix
                 context.startActivity(browserIntent);
             }
         });
