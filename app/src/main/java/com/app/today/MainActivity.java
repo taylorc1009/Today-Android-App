@@ -1,7 +1,6 @@
 /*  40398643 | Taylor Courtney
  *
  *  TODO
- *   Make requestLocationUpdates into a task, so we do not try to display weather results until we have a location
  *   Interchangeable weather units
  *   Add a wait between alarmGreet animIn and animOut
  *   Fix alarm not ringing on app kill
@@ -405,7 +404,6 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
-                // TODO could query imperial units then convert the temperature to celsius? Or allow the user to decide the units?
                 int windMPH = (int) Math.round(Double.parseDouble(wind.getString("speed")) * 2.236936); //Converts unit of metres/second to miles/hour
                 weatherDetails.add(windMPH + " MPH WINDS");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
