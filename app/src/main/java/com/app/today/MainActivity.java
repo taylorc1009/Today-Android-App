@@ -405,12 +405,9 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
-                //The metric unit of wind speed is in metres per second, ideally we'd use miles per hour (imperial) but there is no OpenWeatherMap query to allow imperial wind speed and metric temperatures
                 // TODO could query imperial units then convert the temperature to celsius? Or allow the user to decide the units?
-                if (Integer.parseInt(wind.getString("speed")) > 1)
-                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " METRE(S)/SECOND WINDS");
-                else
-                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " METRE/SECOND WINDS");
+                int windMPH = (int) Math.round(Double.parseDouble(wind.getString("speed")) * 2.236936); //Converts unit of metres/second to miles/hour
+                weatherDetails.add(windMPH + " MPH WINDS");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 weatherDetails.add(weather.getString("id"));
