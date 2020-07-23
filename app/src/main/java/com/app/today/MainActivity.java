@@ -1,22 +1,19 @@
-/*  40398643 | Taylor Courtney
- *
- *  TODO
- *   Interchangeable weather units
- *   Add a wait between alarmGreet animIn and animOut
- *   Fix alarm not ringing on app kill
- *   - Add an edit alarm option to AlarmSystem
- *   Add tabs? Home and Alarms
- *   - A side menu may be better, so you can have the log out option in there too
- *   Add API keys to a JSON file and encrypt it?
- *   - Could do the same with the google-services.json
+/* TODO
+ *   Add:
+ *   - wait between alarmGreet animIn and animOut
+ *   - sliding down expand animation
+ *   - interchangeable weather units
+ *   - edit alarm option to AlarmSystem
+ *   - tabs? Home and Alarms (+ a side menu may be better, so you can have the log out option in there too)
+ *   - feature to view a sample of news reports
+ *   - more calendar details, for example locations and have reminders instead of just events, and improve the layout
+ *   Fix:
+ *   - alarm not ringing on app kill
+ *   - EditText handle and cursor colours in SignInActivity
+ *   - news header not taking a new line when reaching the CircleIndicator
  *   It would be cool to make the weather details do the slide up with scroll down animation you see in, for example, Spotify playlist titles
- *   Get reminders from calendar
- *   - Possibly more details too, for example locations
- *   - Improve calendar event layouts
- *   Add a feature to view a sample of news reports?
- *   Fix EditText handle colours in SignInActivity
- *   Add a sliding down expand animation
- *   Move the change alpha animation to AppUtilities
+ *   Move the change alpha animation to AppUtilities?
+ *   Move API keys to a JSON file and encrypt it? (could do the same with the google-services.json)
  * */
 
 package com.app.today;
@@ -65,7 +62,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import me.relex.circleindicator.CircleIndicator3;
 
 public class MainActivity extends AppCompatActivity {
-    //Used to determine which permission we're asking for
+    //Used to determine which set of permissions we're asking for
     static final int PERMISSIONS_REQUEST_CODE = 0;
 
     //UI attributes
@@ -478,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 calTable.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
 
-                                /* This should be used to fix the layout constraints as for some reason they're removed after using 'view.setLayoutParams'
+                                /* This should be used to fix the layout constraints but for some reason they're removed after using 'View.setLayoutParams'
                                 Instead, I've cheated and put the table in its own ConstraintLayout - this isn't the most practical fix
                                 ConstraintSet setLayout = new ConstraintSet();
                                 setLayout.clone((ConstraintLayout) calTable.getParent());
@@ -530,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
 
         CardView card = AppUtilities.createTableCard(context, 16, 8, 8, 8, 8);
 
-        ConstraintLayout constraintLayout = AppUtilities.createConstraintLayout(context, 2000+rowId, 8, 8, 8, 8);
+        final ConstraintLayout constraintLayout = AppUtilities.createConstraintLayout(context, 2000+rowId, 8, 8, 8, 8);
 
         output = title + " | " + duration;
         TextView eventTxt = AppUtilities.createText(context, 2100+rowId, output, 16, R.color.black, Typeface.BOLD);
@@ -538,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
         output = description;
         final TextView eventDesc = AppUtilities.createText(context, 2200+rowId, output, 15, R.color.black, Typeface.BOLD);
-        eventDesc.setAlpha(0);
+        //eventDesc.setAlpha(0);
         eventDesc.setVisibility(View.GONE);
         constraintLayout.addView(eventDesc);
 
@@ -551,6 +548,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(eventDesc.getVisibility() == View.GONE) {
                     expand.animate().rotation(180);
+
+                    //AppUtilities.expand(eventDesc);
                     eventDesc.setVisibility(View.VISIBLE);
                     eventDesc.animate().alpha(1).setDuration(300).setListener(null);
                 }
@@ -562,6 +561,7 @@ public class MainActivity extends AppCompatActivity {
                             eventDesc.setVisibility(View.GONE);
                         }
                     });
+                    //AppUtilities.collapse(eventDesc);
                 }
             }
         });
