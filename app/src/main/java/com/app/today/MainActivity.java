@@ -2,6 +2,7 @@
  *
  *  TODO
  *   Make requestLocationUpdates into a task, so we do not try to display weather results until we have a location
+ *   Interchangeable weather units
  *   Add a wait between alarmGreet animIn and animOut
  *   Fix alarm not ringing on app kill
  *   - Add an edit alarm option to AlarmSystem
@@ -35,9 +36,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -52,6 +52,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected FirebaseUser user;
 
-    //protected double latitude, longitude;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    @SuppressLint("MissingPermission")
     private List<String> weatherReceiver() {
         List<String> weatherDetails = new ArrayList<>();
 
@@ -298,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
             //Creates an instance of the location service and retrieves the last know location
             //We do this so the system can determine later if there's a location update, and if
             //there is, request a weather update for the new location
-            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            assert locationManager != null;
+            /*final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            assert locationManager != null;*/
 
             /*class looperThread extends Thread {
                 @Override
@@ -352,12 +357,37 @@ public class MainActivity extends AppCompatActivity {
                 public void onProviderDisabled(String provider) {}
             });*/
 
-            @SuppressLint("MissingPermission")
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            /*@SuppressLint("MissingPermission")
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);*/
 
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000); // milliseconds
+        locationRequest.setFastestInterval(3000); // milliseconds
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY); // makes a GPS request using a moderate amount of system resources
+
+        LocationServices.getFusedLocationProviderClient(MainActivity.this).requestLocationUpdates(locationRequest, new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                LocationServices.getFusedLocationProviderClient(MainActivity.this).removeLocationUpdates(this);
+                if(locationResult != null && locationResult.getLocations().size() > 0) {
+                    int latestLocationIndex = locationResult.getLocations().size() - 1;
+                    longitude = locationResult.getLocations().get(latestLocationIndex).getLongitude();
+                    latitude = locationResult.getLocations().get(latestLocationIndex).getLatitude();
+                }
+                else {
+                    //Puts the result out of range so no location is used later
+                    longitude = 1000;
+                    latitude = 1000;
+                }
+            }
+        }, Looper.getMainLooper());
+
+        //If result is in range with the max and min longitude and latitude
+        if((longitude >= -180 && longitude <= 180) && (latitude >= -90 && latitude <= 90)) {
             try {
-                assert location != null;
-                double longitude = location.getLongitude(), latitude = location.getLatitude();
+                /*assert location != null;
+                double longitude = location.getLongitude(), latitude = location.getLatitude();*/
 
                 String result = new HttpRequestTask().execute("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&APPID=" + WEATHER_API).get();
                 JSONObject jsonObj = new JSONObject(result);
@@ -375,8 +405,12 @@ public class MainActivity extends AppCompatActivity {
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_max"))) + "°C");
                 weatherDetails.add(Math.round(Double.parseDouble(main.getString("temp_min"))) + "°C");
-                weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " MPH WINDS");
-
+                //The metric unit of wind speed is in metres per second, ideally we'd use miles per hour (imperial) but there is no OpenWeatherMap query to allow imperial wind speed and metric temperatures
+                // TODO could query imperial units then convert the temperature to celsius? Or allow the user to decide the units?
+                if (Integer.parseInt(wind.getString("speed")) > 1)
+                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " METRE(S)/SECOND WINDS");
+                else
+                    weatherDetails.add(Math.round(Double.parseDouble(wind.getString("speed"))) + " METRE/SECOND WINDS");
                 weatherDetails.add("last updated: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(new Date(updatedAt * 1000)));
 
                 weatherDetails.add(weather.getString("id"));
@@ -387,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-        //}
+        }
         return null;
     }
 
