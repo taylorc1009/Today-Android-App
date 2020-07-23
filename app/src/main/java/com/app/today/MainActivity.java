@@ -30,15 +30,14 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -51,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -146,24 +146,69 @@ public class MainActivity extends AppCompatActivity {
             refresh.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    weatherTask();
-                    calendarTask();
+                    ArrayList<String> permissionsList = new ArrayList<>();
+
+                    if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                        weatherTask();
+                    else {
+                        updateWeatherView(View.VISIBLE, View.GONE, View.GONE);
+                        permissionsList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                    }
+                    if (checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+                        calendarTask();
+                    else {
+                        updateCalendarView(View.VISIBLE, View.GONE);
+                        permissionsList.add(Manifest.permission.READ_CALENDAR);
+                    }
                     headlineTask();
+
+                    if(!permissionsList.isEmpty())
+                        requestPermissions(permissionsList.toArray(new String[0]), PERMISSIONS_REQUEST_CODE);
                 }
             });
 
+            headlineTask();
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CALENDAR}, PERMISSIONS_REQUEST_CODE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        weatherTask();
-        calendarTask();
-        headlineTask();
+        //Converts the array to a list making it easier to manage permission results (by using contains
+        //and indexOf; we don't want to check results for permissions we didn't request)
+        ArrayList<String> permissionsList = new ArrayList<>(Arrays.asList(permissions));
+
+        //TODO
+        // When testing this, permissions don't appear to be requested in the order they're stored in
+        // the String[] parameter, so could this affect the correlation between the index of a
+        // permission and its grantResult index?
+
+        //These permission result statements are in place to prevent any execution of these methods
+        //if the user denied permission(s)
+        if (requestCode == PERMISSIONS_REQUEST_CODE && grantResults.length > 0) {
+            if(permissionsList.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (grantResults[permissionsList.indexOf(Manifest.permission.ACCESS_FINE_LOCATION)] == PackageManager.PERMISSION_GRANTED)
+                    weatherTask();
+                else
+                    updateWeatherView(View.GONE, View.GONE, View.VISIBLE);
+            }
+
+            if(permissionsList.contains(Manifest.permission.READ_CALENDAR)) {
+                if (grantResults[permissionsList.indexOf(Manifest.permission.READ_CALENDAR)] == PackageManager.PERMISSION_GRANTED)
+                    calendarTask();
+                else {
+                    calTitle.setText(getString(R.string.calError));
+                    updateCalendarView(View.GONE, View.VISIBLE);
+                }
+            }
+        }
     }
 
     private void weatherTask() {
+        //This method is executed within a new thread as it downloads data, thus ending after we want the
+        //UI to be drawn; if we left this method to execute on the UI thread then it would freeze all
+        //parent procedures (including drawing of UI widgets) until this one is finished (because a single
+        //thread executes methods in a serial fashion, nothing runs in parallel)
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -199,7 +244,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    //Displays our weather details
+                    //Displays our weather details; this method is invoked post-drawing (in a different
+                    //thread) of the weather widgets in order to avoid halting the UI thread for this
+                    //method to finish executing
                     forecastTxt.post(new Runnable() {
                         @Override
                         public void run() {
@@ -247,12 +294,55 @@ public class MainActivity extends AppCompatActivity {
     private List<String> weatherReceiver() {
         List<String> weatherDetails = new ArrayList<>();
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            final LocationListener locationListener = new LocationListener() {
+        //if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            //Creates an instance of the location service and retrieves the last know location
+            //We do this so the system can determine later if there's a location update, and if
+            //there is, request a weather update for the new location
+            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            assert locationManager != null;
+
+            /*class looperThread extends Thread {
+                @Override
+                public void run() {
+                    Looper.prepare();
+
+                    Handler handler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
+                                    @Override
+                                    public void onLocationChanged(Location location) {
+                                        locationManager.removeUpdates(this);
+                                        longitude = location.getLongitude();
+                                        latitude = location.getLatitude();
+                                    }
+
+                                    @Override
+                                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                                    }
+
+                                    @Override
+                                    public void onProviderEnabled(String provider) {
+                                    }
+
+                                    @Override
+                                    public void onProviderDisabled(String provider) {
+                                    }
+                                });
+                            }
+                        }
+                    };
+                    Looper.loop();
+                }
+            }*/
+
+            /*locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    /*longitude = location.getLongitude();
-                    latitude = location.getLatitude();*/
+                    locationManager.removeUpdates(this);
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
                 }
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -260,14 +350,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onProviderEnabled(String provider) {}
                 @Override
                 public void onProviderDisabled(String provider) {}
-            };
+            });*/
 
-            //Creates an instance of the location service and retrieves the last know location
-            //We do this so the system can determine later if there's a location update, and if
-            //there is, request a weather update for the new location
-            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            assert locationManager != null;
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener, Looper.getMainLooper());
+            @SuppressLint("MissingPermission")
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
             try {
@@ -302,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-        }
+        //}
         return null;
     }
 
