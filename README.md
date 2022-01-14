@@ -3,6 +3,8 @@ Today is an Android app that presents information to you which you may wish to k
 
 The app also acts as an alarm. The idea of having an integrated alarm is that it becomes faster for users to access the information they need to before starting their day, as soon as they wake up. The reason the process is faster is because access to the aforementioned information is seamless; when the alarm has been dismissed by the user, they are taken straight to the home screen that lists all said information.
 
+The app is connected to Firebase which is where users' accounts are stored. Alarms that each user has created is also stored in a Firebase Database under their account's ID.
+
 ## Screenshots
 
 Login/Register Page | Login/Register Page
